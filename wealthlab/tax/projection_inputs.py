@@ -59,6 +59,7 @@ class TaxPlan(TaxModel):
     federal_wage_withholding: Decimal = Field(ge=0, le=1)
     nj_wage_withholding: Decimal = Field(ge=0, le=1)
     funding_sources: list[FundingSource] = Field(default_factory=list)
+    settlement_timing: Literal["year_end", "monthly_accrued"] = "year_end"
     state_deduction_mode: Literal["actual_payments", "entered"] = "actual_payments"
     state_refund_taxable_fractions: dict[int, Annotated[Decimal, Field(ge=0, le=1)]] = Field(
         default_factory=dict

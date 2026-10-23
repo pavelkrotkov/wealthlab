@@ -1,6 +1,5 @@
 """Evaluate a proposed account sale without mutating cash, basis or recognized income."""
 
-from datetime import date
 from decimal import Decimal
 
 from wealthlab.tax import payments, state_deduction
@@ -30,13 +29,13 @@ def due(case, ledger, amounts, start, end) -> Decimal:
     federal_cash = withholding["employee_payroll_withheld"] + withholding["federal_income_withheld"]
     federal_cash += withholding["federal_estimates"]
     nj_cash = withholding["nj_withheld"] + withholding["nj_estimates"]
-    if end >= date(start.year + 1, 1, 1):
+    if payments.settlement_due(ledger.plan, start, end):
         nj_cash = max(nj_cash, result["nj_balance"])
     case = state_deduction.add(case, nj_cash, ledger.plan.state_deduction_mode)
     result = evaluate(case)
-    if end >= date(start.year + 1, 1, 1):
+    if payments.settlement_due(ledger.plan, start, end):
         balances = payments.balances(result)
-        # December withholding can exceed final liability; that overpayment is
+        # Scheduled withholding can exceed accrued liability; that overpayment is
         # still cash unavailable until the refund date, not spendable today.
         federal_cash = max(federal_cash, balances["federal"])
         nj_cash = max(nj_cash, balances["new_jersey"])

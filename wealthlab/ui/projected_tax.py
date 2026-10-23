@@ -27,7 +27,10 @@ def display(rows: list[dict]) -> None:
         "A partial final year is not a complete annual return. Tax owed reduces net wealth; "
         "refunds increase wealth but remain unavailable cash until their receipt month."
     )
-    missed = sum(row.get("tax_payment_gap", 0) > 0 for row in rows)
+    missed = sum(
+        row.get("tax_payment_gap", 0) > 0 or row.get("tax_settlement_payment_gap", 0) > 0
+        for row in rows
+    )
     st.caption(
         f"Months with a missed scheduled tax payment: {missed}. "
         "These timing gaps are separate from outstanding assessed tax."

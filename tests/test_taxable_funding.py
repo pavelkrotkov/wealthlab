@@ -89,3 +89,32 @@ def test_sale_includes_state_payment_itemized_deduction(payload):
     assert row["funding_shortfall"] == 0
     assert row["tax_owed"] == 0
     assert row["closing_cash"] <= D(".02")
+
+
+@pytest.mark.parametrize(
+    ("timing", "sold", "balance"),
+    [
+        ("year_end", "10000", "2137"),
+        ("monthly_accrued", "12717.79", "0"),
+    ],
+)
+def test_september_sale_funds_selected_payment_schedule(payload, timing, sold, balance):
+    """Independent 15% federal and 6.37% NJ marginal rates apply to the sale.
+
+    Scheduled mode owes that tax later; monthly mode sells enough to pay it now.
+    Both report the liability, and neither silently earmarks future cash.
+    """
+    household = scenario(payload).model_copy(
+        update={
+            "start": date(2026, 9, 1),
+            "end": date(2026, 10, 1),
+        }
+    )
+    plan = household.tax_plan.model_copy(update={"settlement_timing": timing})
+    row = project(household.model_copy(update={"tax_plan": plan}))[0]
+    assert row["funding_sale_proceeds"] == D(sold)
+    assert row["annual_tax"]["total_balance"] == D(balance)
+    assert row["tax_position"] == D(balance)
+    assert row["tax_settlement_paid"] == D(sold) - 10000
+    assert row["net_wealth"] == 100000 - D(sold) - D(balance)
+    assert row["closing_cash"] == 0

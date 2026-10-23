@@ -1,5 +1,6 @@
 """Apply real cash payments once and separate refunds across jurisdictions."""
 
+from datetime import date
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
@@ -72,3 +73,7 @@ def estimated_requests(plan, start, end) -> dict:
         federal_estimates=sum((item.federal for item in events), Decimal(0)),
         nj_estimates=sum((item.new_jersey for item in events), Decimal(0)),
     )
+
+
+def settlement_due(plan, start, end):
+    return plan.settlement_timing == "monthly_accrued" or end >= date(start.year + 1, 1, 1)

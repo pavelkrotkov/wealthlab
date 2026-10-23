@@ -29,7 +29,10 @@ def month(
     row["funding_shortfall"] = row["debt_shortfall"] + sum(
         value for key, value in row.items() if key.endswith("_unfunded")
     )
-    row["funding_failure"] = row["funding_shortfall"] > 0 or row.get("tax_payment_gap", 0) > 0
+    row["funding_failure"] = any(
+        row.get(key, 0) > 0
+        for key in ("funding_shortfall", "tax_payment_gap", "tax_settlement_payment_gap")
+    )
     demand = (
         row["debt_payment"]
         + row["current_fees_due"]
