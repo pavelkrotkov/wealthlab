@@ -16,7 +16,7 @@ Research checked October 23, 2026. Repository documentation is evidence of inten
 
 ## Proposed implementation direction
 
-A small Python calculation package and Streamlit UI avoids separate frontend/API infrastructure. Use NumPy/SciPy for path generation and bounded policy search, a maintained tax package where it passes contract tests, and QuantLib for pricing. Lock dependencies after runnable spikes on Apple Silicon and Linux. Benchmark OWL with synthetic cases that fit its documented domain; evaluate proposals with the same household ledger used for manual scenarios.
+A small Python calculation package and Streamlit UI avoids separate frontend/API infrastructure. Use NumPy/SciPy for path generation and bounded policy search, a maintained tax package where it passes contract tests, and QuantLib for pricing. Lock dependencies after runnable spikes on local macOS and Linux. Benchmark OWL with synthetic cases that fit its documented domain; evaluate proposals with the same household ledger used for manual scenarios.
 
 Do not combine independent calculators by adding their total taxes. Aggregate each jurisdiction's annual taxable events once, calculate liability once, and reconcile it to cash payments. Reuse must reduce custom code without silently dropping stock-lot, compensation or jurisdiction semantics.
 
