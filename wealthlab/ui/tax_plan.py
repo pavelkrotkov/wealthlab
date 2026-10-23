@@ -1,0 +1,33 @@
+"""Opt in to an editable household tax plan; no automatic tax-free income defaults."""
+
+import json
+
+import streamlit as st
+
+from wealthlab.tax.projection_example import template
+
+
+def controls(payload: dict, scenario) -> str | None:
+    with st.expander("Household tax assumptions"):
+        enabled = st.checkbox(
+            "Calculate federal and New Jersey taxes", value=payload.get("tax_plan") is not None
+        )
+        st.caption(
+            "The starter assumes every income stream is wages, 20% federal and 6% NJ wage "
+            "withholding, no dependents or deductions, and frozen 2025 tax law. "
+            "Edit every affected annual case and income rule. Payroll follows modeled liability. "
+            "Year-end balances are paid in December; refunds arrive the following April. "
+            "Dated estimated payments and optional taxable funding accounts are editable below. "
+            "Funding uses proportional basis, explicit gain character and allowed/denied losses. "
+            "Itemized deductions are entered assumptions; "
+            "state-payment coupling is not automatic yet. "
+            "This is a planning convention, not a filing/payment calendar."
+        )
+        if not enabled:
+            return None
+        plan = payload.get("tax_plan") or template(scenario).model_dump(mode="json")
+        return st.text_area(
+            "Annual tax cases, income rules and dated events (JSON)",
+            json.dumps(plan, indent=2),
+            height=300,
+        )

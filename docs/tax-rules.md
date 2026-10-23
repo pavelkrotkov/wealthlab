@@ -1,6 +1,6 @@
 # Tax rule mappings and validation
 
-Research date: October 23, 2026. The annual tax adapter is being implemented in issue #4; the separate Annual tax UI is available, but it is not yet connected to household cash flows or a complete planning interface.
+Research date: October 23, 2026. The annual tax adapter is being implemented in issue #4; the separate Annual tax UI and optional household tax plan are available. Household cash-flow conventions are in [ADR 0003](adr/0003-tax-cash-flow.md); itemized-deduction/payment coupling and final review remain in progress.
 
 ## Federal
 
@@ -30,4 +30,8 @@ This is still an income-tax core: other-state credits, refundable child/earned-i
 
 ## Funding and payment conventions under development
 
-The annual UI reconciles federal income-tax payments, employee payroll withholding, and NJ payments separately; entered payments never reduce taxable income. The withdrawal-funding solver evaluates the additional tax created by each proposed withdrawal, spends only available liquid resources, and reports unpaid taxes and spending separately. A refund is a receivable until its receipt date, not available cash. The solver returns a feasible funding amount rather than an optimal minimum, because tax cliffs can cause conservative over-withdrawal. Its iteration cap is visible and failure cannot become invented financing. This solver is tested independently but is not yet bound to household account sales or the monthly UI.
+The annual UI reconciles federal income-tax payments, employee payroll withholding, and NJ payments separately; entered payments never reduce taxable income. The withdrawal-funding solver evaluates the additional tax created by each proposed withdrawal, spends only available liquid resources, and reports unpaid taxes and spending separately. A refund is a receivable until its receipt date, not available cash. The solver returns a feasible funding amount rather than an optimal minimum, because tax cliffs can cause conservative over-withdrawal. Its iteration cap is visible and failure cannot become invented financing. The solver is now bound to explicitly permitted taxable-account sales in the monthly household UI. Remaining federal/NJ basis is reported, and unavailable accounts cannot fund spending.
+
+## Filing-age conventions
+
+The household template preserves separate federal and NJ filing ages. The [2025 IRS Form 1040 instructions](https://www.irs.gov/pub/irs-prior/i1040gi--2025.pdf) and [Publication 501](https://www.irs.gov/publications/p501) treat the day before the birthday as reaching age 65, including January 1 birthdays. The 2025 NJ instructions instead specify birth in 1960 or earlier for the senior exemption. An independent case for January 1, 1961 gives federal age 65 and NJ age 64 in 2025, with the corresponding standard deduction and NJ exemption. The local reference mirror was checked for both passages.

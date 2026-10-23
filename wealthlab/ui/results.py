@@ -6,6 +6,7 @@ import streamlit as st
 from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
+from wealthlab.ui.projected_tax import display as tax_summary
 
 
 def display(scenario: Scenario, rows: list[dict]) -> None:
@@ -13,7 +14,10 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.caption(
         "Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance"
     )
-    table = pd.DataFrame(rows).drop(columns=["account_balances", "debt_balances"])
+    table = pd.DataFrame(rows).drop(
+        columns=["account_balances", "debt_balances", "annual_tax", "funding_basis"],
+        errors="ignore",
+    )
     numeric = table.drop(columns=["date", "period_end"]).astype(float)
     nominal, real, gap = st.columns(3)
     nominal.metric("Ending net wealth · nominal USD", f"${rows[-1]['net_wealth']:,.2f}")
@@ -21,10 +25,12 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     gap.metric("Unfunded obligations / spending", f"${numeric.funding_shortfall.sum():,.2f}")
     st.caption(
         f"Current spending reserve target: ${rows[-1]['reserve_target']:,.2f} nominal USD. "
-        "Annualized from the last period; excludes contributions and unimplemented taxes."
+        "Spending is annualized from the last period; contributions are excluded. "
+        "Taxes, when enabled, add a separate year-to-date liability run rate."
     )
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
+    tax_summary(rows)
     with st.expander("Ending accounts, debts and reproduction details"):
         st.caption(
             "All reported account and debt balances are converted to USD at the stated fixed rates."
@@ -33,6 +39,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             dict(
                 accounts=rows[-1]["account_balances"],
                 debts=rows[-1]["debt_balances"],
+                funding_basis=rows[-1].get("funding_basis", {}),
                 input_sha256=fingerprint(scenario),
                 schema_version=scenario.schema_version,
                 ytd=scenario.ytd.model_dump(mode="json"),

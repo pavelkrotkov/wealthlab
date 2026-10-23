@@ -1,4 +1,4 @@
-"""First scenario workflow; no taxes, market risk or optimization claims yet."""
+"""Local cash-flow scenarios with optional explicit annual tax assumptions."""
 
 import streamlit as st
 from pydantic import ValidationError
@@ -11,12 +11,15 @@ from wealthlab.ui import editor, files, results
 def show():
     st.header("Household cash flow")
     st.warning(
-        "Cash-flow foundation: income is gross and taxes are not calculated yet. "
-        "Non-cash assets have no returns and are not sold to fund spending. "
-        "This screen cannot establish after-tax affordability or retirement safety."
+        "Enable household tax assumptions to include federal/NJ taxes. "
+        "Without a tax plan, income is gross and taxes are omitted. "
+        "Assets still have no returns. Only explicitly permitted taxable accounts can be sold, "
+        "using entered proportional-basis assumptions. "
+        "This screen does not yet establish retirement safety."
     )
     st.caption(
-        "Payments use cash accounts in listed order: debts, fees, essential, healthcare, "
+        "Payments use cash accounts in listed order: tax withholding/settlement when enabled, "
+        "debts, fees, essential, healthcare, "
         "mortgage, education, discretionary, then contributions. Unpaid debt interest "
         "accrues; fees remain owed; unmet spending is a shortfall. No new borrowing is assumed."
     )

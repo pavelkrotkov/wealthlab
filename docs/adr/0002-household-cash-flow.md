@@ -1,6 +1,6 @@
 # ADR 0002: Household cash-flow foundation
 
-Status: implemented first slice; household tax support remains incomplete.
+Status: implemented first slice. Optional tax integration is now described in [ADR 0003](0003-tax-cash-flow.md); the original no-tax behavior below remains available when the tax plan is disabled.
 
 The scenario has an explicit schema version, one or two members, inclusive start/exclusive end, accounts, monthly income and expense schedules, debts, contributions, currency rates, input provenance and year-to-date context. Required unknown amounts are not replaced with zero. Unresolved records block projection. The public starter is deliberately synthetic.
 

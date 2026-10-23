@@ -23,14 +23,7 @@ def service(scenario: Scenario, wallet: Wallet, balances: dict, start, end) -> d
         debt_shortfall=Decimal(0),
     )
     for debt in scenario.debts:
-        opening = balances[debt.id]
-        interest = money(opening * Decimal(str(debt.annual_rate)) / 12 * fraction(start, end))
-        scheduled = money(
-            debt.monthly_payment
-            * Decimal(str(scenario.usd_per_currency[debt.currency]))
-            * fraction(start, end)
-        )
-        due = min(opening + interest, scheduled)
+        interest, due = payment(debt, balances[debt.id], scenario, start, end)
         paid = wallet.pay(due)
         balances[debt.id] += interest - paid
         totals["interest"] += interest
@@ -39,3 +32,13 @@ def service(scenario: Scenario, wallet: Wallet, balances: dict, start, end) -> d
         totals["debt_payment"] += paid
         totals["debt_shortfall"] += due - paid
     return totals
+
+
+def payment(debt, opening: Decimal, scenario: Scenario, start, end) -> tuple[Decimal, Decimal]:
+    interest = money(opening * Decimal(str(debt.annual_rate)) / 12 * fraction(start, end))
+    scheduled = money(
+        debt.monthly_payment
+        * Decimal(str(scenario.usd_per_currency[debt.currency]))
+        * fraction(start, end)
+    )
+    return interest, min(opening + interest, scheduled)

@@ -2,12 +2,10 @@
 
 from decimal import Decimal
 
-import pandas as pd
-from taxcalc import Calculator, Policy, Records
-
 from wealthlab.household.calendar import money
 from wealthlab.tax.capital import next_carry
 from wealthlab.tax.facts import Deductions, FederalIncome
+from wealthlab.tax.federal_engine import values as engine_values
 from wealthlab.tax.filing import Filing
 from wealthlab.tax.mapping import record
 from wealthlab.tax.policy import TaxPolicy
@@ -37,12 +35,8 @@ def calculate(
     year, scale, label = policy.valuation()
     if filing.status != "joint" and (income.wages_spouse or income.deferrals_spouse):
         raise ValueError("Spouse wage inputs are supported only on joint returns.")
-    frame = pd.DataFrame([record(filing, income, deductions, scale)])
-    records = Records(data=frame, start_year=year, gfactors=None, weights=None, adjust_ratios=None)
-    calc = Calculator(policy=Policy(), records=records)
-    calc.advance_to_year(year)
-    calc.calc_all()
-    values = {key: money(float(calc.array(key)[0]) * scale) for key in OUTPUTS}
+    raw = engine_values(record(filing, income, deductions, scale), year, OUTPUTS)
+    values = {key: money(value * scale) for key, value in raw.items()}
     return breakdown(values, income, label)
 
 

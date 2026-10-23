@@ -40,6 +40,10 @@ def form(case: AnnualCase) -> AnnualCase | None:
                 for name in fields:
                     st.caption(name.replace("_", " ").title())
                     data[name] = table(data[name], f"tax_{name}")
+        data["nj_filing"] = st.text_area(
+            "NJ filing override (JSON; null inherits federal filing)",
+            json.dumps(data.get("nj_filing"), indent=2),
+        )
         data["nj_regime"] = st.selectbox(
             "NJ rule regime",
             ["published_2025", "freeze_2025"],
@@ -83,7 +87,9 @@ def parse(data: dict, case: AnnualCase) -> AnnualCase:
     can fail. Otherwise an invalid dependent or carry list would trap the user.
     """
     for section, original in case.model_dump(mode="json").items():
-        if isinstance(original, dict):
+        if section == "nj_filing":
+            data[section] = json.loads(data[section])
+        elif isinstance(original, dict):
             for name, value in original.items():
                 if isinstance(value, (dict, list)):
                     data[section][name] = json.loads(data[section][name])

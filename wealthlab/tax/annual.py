@@ -6,7 +6,6 @@ from typing import Literal
 from pydantic import Field
 
 from wealthlab.household.records import Money
-from wealthlab.tax import federal, new_jersey
 from wealthlab.tax.facts import Deductions, FederalIncome, TaxModel
 from wealthlab.tax.filing import Filing
 from wealthlab.tax.nj_facts import NJDeductions, NJIncome
@@ -23,6 +22,7 @@ class Payments(TaxModel):
 
 class AnnualCase(TaxModel):
     filing: Filing
+    nj_filing: Filing | None = None
     policy: TaxPolicy
     federal_income: FederalIncome
     federal_deductions: Deductions
@@ -34,9 +34,11 @@ class AnnualCase(TaxModel):
 
 def evaluate(case: AnnualCase) -> dict:
     """Payments describe cash already paid; they never reduce taxable income twice."""
+    from wealthlab.tax import federal, new_jersey
+
     fed = federal.calculate(case.filing, case.federal_income, case.federal_deductions, case.policy)
     nj = new_jersey.calculate(
-        case.filing,
+        case.nj_filing or case.filing,
         case.nj_income,
         case.nj_deductions,
         case.policy.year,
