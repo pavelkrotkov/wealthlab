@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 
 from wealthlab.portfolio.wash_basis import adjusted_replacement, loss_amount
+from wealthlab.portfolio.wash_keys import key
 
 
 def eligible(lot, row, book, used):
@@ -16,25 +17,29 @@ def eligible(lot, row, book, used):
     )
 
 
-def match(book, row, used):
-    candidates = sorted(list(book.lots.values()), key=lambda lot: lot.acquired)
+def match(book, row, used, jurisdiction):
+    candidates = sorted(
+        list(book.lots.values()), key=lambda lot: (lot.acquired, book.share_order[lot.id])
+    )
     for original in candidates:
-        if row["wash_unmatched_quantity"] == 0:
+        if row[key(jurisdiction, "unmatched_quantity")] == 0:
             break
         lot = book.lots.get(original.id)
         if lot is not None and eligible(lot, row, book, used):
-            apply(book, lot, row, used)
+            apply(book, lot, row, used, jurisdiction)
 
 
-def apply(book, lot, row, used):
-    quantity = min(lot.quantity, row["wash_unmatched_quantity"])
-    amount = loss_amount(row, quantity)
-    replacement, taxable = adjusted_replacement(book, lot, quantity, amount, row, used)
-    row["wash_unmatched_quantity"] -= quantity
-    row["federal_wash_disallowed"] += amount
-    row["federal_wash_deferred"] += amount if taxable else Decimal(0)
-    row["federal_wash_permanent"] += Decimal(0) if taxable else amount
-    row["wash_matches"].append(
+def apply(book, lot, row, used, jurisdiction):
+    quantity = min(lot.quantity, row[key(jurisdiction, "unmatched_quantity")])
+    amount = loss_amount(row, quantity, jurisdiction)
+    replacement, taxable = adjusted_replacement(
+        book, lot, quantity, amount, row, used, jurisdiction
+    )
+    row[key(jurisdiction, "unmatched_quantity")] -= quantity
+    row[key(jurisdiction, "disallowed")] += amount
+    row[key(jurisdiction, "deferred")] += amount if taxable else Decimal(0)
+    row[key(jurisdiction, "permanent")] += Decimal(0) if taxable else amount
+    row[key(jurisdiction, "matches")].append(
         dict(
             replacement_lot=replacement,
             account_id=lot.account_id,

@@ -1,0 +1,53 @@
+"""Matched annual liability comparisons preserve separate scenario carryforward paths."""
+
+from wealthlab.portfolio.tax_recognition import gains, with_carry, with_gains
+from wealthlab.tax.annual import evaluate
+
+
+def validate_tax_cases(case):
+    if not case.lot_tax_cases:
+        if any(policy.mode == "tax_budget" for policy in case.sale_policies):
+            raise ValueError("Tax-budget policies require annual lot_tax_cases forecasts.")
+        return
+    if not case.federal_wash_tracking or case.nj_wash_treatment == "unconfirmed":
+        raise ValueError(
+            "Lot tax comparison requires federal wash tracking and an explicit NJ treatment."
+        )
+    years = [item.policy.year for item in case.lot_tax_cases]
+    if years != list(range(case.as_of.year, case.end.year + 1)):
+        raise ValueError("Supply one ordered annual tax case for every projection calendar year.")
+    validate_later_carries(case.lot_tax_cases)
+
+
+def validate_later_carries(cases):
+    for item in cases[1:]:
+        if item.federal_income.short_carry or item.federal_income.long_carry:
+            raise ValueError(
+                "Enter opening capital carry only in the first year; later carries are computed."
+            )
+
+
+def report(case, book, through_year=None):
+    previous_with = previous_without = None
+    results = []
+    for annual in case.lot_tax_cases:
+        if through_year is not None and annual.policy.year > through_year:
+            break
+        federal, nj, pending = gains(book, annual.policy.year)
+        baseline = with_carry(annual, previous_without)
+        modeled = with_gains(with_carry(annual, previous_with), federal, nj)
+        previous_without = evaluate(baseline)
+        previous_with = evaluate(modeled)
+        results.append(
+            dict(
+                year=annual.policy.year,
+                recognized_federal=federal,
+                recognized_nj=nj,
+                pending_losses=pending,
+                without_lot_trades=previous_without,
+                with_lot_trades=previous_with,
+                incremental_liability=previous_with["total_liability"]
+                - previous_without["total_liability"],
+            )
+        )
+    return results

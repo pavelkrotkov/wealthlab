@@ -12,7 +12,7 @@ def inputs():
         enabled = st.checkbox("Add this decision when calculating", key="sale_enabled")
         mode = st.selectbox(
             "Decision",
-            ["retain", "sell_all", "original_fraction", "target_weight"],
+            ["retain", "sell_all", "original_fraction", "target_weight", "tax_budget"],
             key="sale_mode",
         )
         st.caption(
@@ -25,10 +25,14 @@ def inputs():
         account = st.text_input("Sale account ID", key="sale_account")
         security = st.text_input("Sale security ID", key="sale_security")
         target = st.number_input("Target fraction", 0.0, 1.0, 0.5, key="sale_fraction")
+        budget = st.number_input(
+            "Cumulative annual tax budget · USD", 0.0, value=1000.0, key="sale_tax_budget"
+        )
         prices = st.text_input("Prices on decision date (JSON)", "{}", key="sale_prices")
         fee = st.number_input("Sale commission · USD", 0.0, value=0.0, key="sale_fee")
         selection = st.selectbox("Lot priority", ["fifo", "hifo"], key="sale_selection")
     return dict(
+        tax_budget=budget if mode == "tax_budget" else None,
         enabled=enabled,
         id=identity,
         date=when,

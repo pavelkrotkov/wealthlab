@@ -30,6 +30,16 @@ def display(decisions):
         },
     )
     st.caption("Before/after weights include every configured account and cash, before tax.")
+    for row in decisions:
+        if "tax_budget" in row:
+            status = "within budget" if row["budget_met"] else "already over budget"
+            st.caption(
+                f"{row['policy']}: estimated annual tax change "
+                f"${row['estimated_incremental_liability']:,.2f} / "
+                f"${row['tax_budget']:,.2f} budget ({status}). "
+                "Largest evaluated feasible sale; future trades and changed forecasts "
+                "can revise taxes."
+            )
 
 
 def percent(value):

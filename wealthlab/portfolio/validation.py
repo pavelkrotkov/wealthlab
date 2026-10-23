@@ -2,9 +2,11 @@
 
 from wealthlab.portfolio.chronology import validate_dates
 from wealthlab.portfolio.policy_validation import validate_policies
+from wealthlab.portfolio.tax_reporting import validate_tax_cases
 
 
 def validate(case):
+    validate_tax_cases(case)
     validate_policies(case)
     validate_wash_context(case)
     validate_dates(case)
@@ -36,11 +38,15 @@ def validate_references(case):
 
 
 def validate_wash_context(case):
-    if not case.federal_wash_tracking:
+    """Either jurisdiction needs the same complete household purchase history.
+
+    A per-security group cannot silently stand in for unsupported conversion ratios.
+    """
+    if not (case.federal_wash_tracking or case.nj_wash_treatment == "federal_rules"):
         return
     if not case.opening_wash_context_complete:
         raise ValueError(
-            "Federal wash tracking requires complete opening household context: "
+            "Wash tracking requires complete opening household context: "
             "all retained purchases in the prior 30 days, adjusted bases, and no "
             "unresolved pre-opening loss sales. Extend the case earlier when needed."
         )

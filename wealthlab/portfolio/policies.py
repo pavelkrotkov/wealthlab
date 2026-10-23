@@ -14,7 +14,9 @@ class SalePolicy(Record):
     date: date
     account_id: str
     security_id: str
-    mode: Literal["retain", "sell_all", "original_fraction", "target_weight"]
+    mode: Literal["retain", "sell_all", "original_fraction", "target_weight", "tax_budget"]
+    tax_budget: Money | None = None
+    budget_grid_points: int = Field(default=32, ge=2, le=128)
     fraction: Decimal | None = Field(default=None, ge=0, le=1)
     prices: dict[str, Price]
     commission: Money = Decimal(0)
@@ -25,4 +27,6 @@ class SalePolicy(Record):
         needs_target = self.mode in {"original_fraction", "target_weight"}
         if needs_target != (self.fraction is not None):
             raise ValueError("Supply fraction exactly for original_fraction or target_weight.")
+        if (self.mode == "tax_budget") != (self.tax_budget is not None):
+            raise ValueError("Supply tax_budget exactly for tax_budget policies.")
         return self

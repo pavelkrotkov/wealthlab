@@ -1,5 +1,7 @@
 """Purchases consume account cash and capitalize commissions into both bases."""
 
+from decimal import Decimal
+
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.models import Lot
 
@@ -26,4 +28,5 @@ def buy(book, trade):
     )
     book.cash[trade.account_id] -= cost
     book.lots[lot.id] = lot
+    book.share_order[lot.id] = (len(book.origins), Decimal(0))
     book.origins[lot.id] = lot.id

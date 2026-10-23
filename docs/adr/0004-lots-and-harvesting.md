@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: lot accounting, initial federal wash tracking and gross sale policies implemented; NJ recognition, tax-budget/harvesting policies and household integration in progress under #5.
+Status: lot accounting, conditional federal/NJ wash tracking, dated sale and tax-budget policies, and annual liability comparisons implemented; matched harvesting strategies and household cash integration remain in progress under #5.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
@@ -16,7 +16,7 @@ Optional `federal_wash_tracking` processes each trade before observing later tra
 
 `opening_wash_context_complete` confirms all relevant retained household purchases are represented, opening bases are adjusted, and there are no unresolved pre-opening loss sales. Otherwise the case must start earlier. An unresolved forward window reports a pending loss rather than an available deduction. The closing date includes all supplied trades that day, so day 30 closes the window. Disposals remain assigned to their original sale dates.
 
-Federal disallowed, basis-deferred, permanently denied and pending losses are separate fields. Economic cost is optional and independent of tax basis: if unknown, economic P&L remains unknown; a federal deferral never becomes a new economic loss. NJ gains remain unadjusted and labeled as such. Cross-security matching/conversion ratios, controlled corporations, derivatives and full household tax attribution are not implemented here. Duplicate substantially-identical groups across different security IDs block enabled tracking rather than silently skipping the relation. This is an initial model under development, not a broker tax-reporting replacement.
+Federal disallowed, basis-deferred, permanently denied and pending losses are separate fields. Economic cost is optional and independent of tax basis: if unknown, economic P&L remains unknown; a federal deferral never becomes a new economic loss. NJ gains remain unconfirmed by default; the explicit NJ scenario choices below enable conditional recognition. Cross-security matching/conversion ratios, controlled corporations, derivatives and full household tax attribution are not implemented here. Duplicate substantially-identical groups across different security IDs block enabled tracking rather than silently skipping the relation. This is an initial model under development, not a broker tax-reporting replacement.
 
 ## Implemented dated sale decisions
 
@@ -28,11 +28,33 @@ Each optional `sale_policies` entry supplies a date, account, security, lot prio
 
 All generated orders use the ordinary lot selection, cash and wash ledger. Executed orders are exported for inspection. Tests cover cumulative staging, commissions, household account limits, locked shares, same-day order, HIFO exclusion of new purchases, and invariance to future/closing price changes.
 
+## NJ scenario treatment and independent basis
+
+`nj_wash_treatment` defaults to `unconfirmed`: raw NJ basis gains remain visible, but recognized NJ income is unknown and annual tax comparisons are blocked. `federal_rules` explicitly applies the modeled federal stock/securities matching mechanics to the separate NJ loss amounts and basis. `no_wash_assumption` is an explicit counterfactual that recognizes raw NJ gains/losses without wash adjustments; it is not a validated statement of NJ law.
+
+The same matching implementation serves both jurisdictions, but each has independent losses, replacement usage, deferred/denied amounts and pending windows. A federal gain may coexist with an NJ loss or vice versa. Partial splits retain purchase order and both ledgers' usage markers. Split IDs are never recycled after disposal. No jurisdiction's wash adjustment changes economic cost or the other jurisdiction's basis. Retirement-account sales are not distributions; IRA/Roth replacement-loss denial is conditional on the selected NJ mechanics.
+
+[2025 NJ-1040 instructions, printed page 12](https://www.nj.gov/treasury/taxation/pdf/current/1040i.pdf) generally use federal cost/adjusted basis, identify exceptions, and direct taxpayers to list NJ-taxable Schedule D transactions. [NJ Capital Gains guidance, updated March 31, 2026](https://www.nj.gov/treasury/taxation/njit9.shtml) describes basis exceptions, realization-year reporting and lack of short/long-term differentiation. These support the general basis/category mapping. They do not explicitly resolve every spouse/IRA wash edge case checked here; the detailed NJ matching choice remains a disclosed modeling assumption. NJ-exempt obligations, business-interest basis adjustments and other special dispositions require separate validated mappings before being treated as supported ordinary taxable securities.
+
+## Annual lot-tax comparisons
+
+Optional `lot_tax_cases` supplies one annual filing-unit forecast per calendar year, in order. Each baseline contains other income, deductions and pre-opening activity, excluding the disposals modeled by this lot case. Federal wash tracking and an explicit NJ treatment are required. Only the first year supplies opening capital-loss carry; later years propagate the with-trade and without-trade carries independently. NJ disposition losses follow the NJ engine's same-category rules and do not become a federal-style capital carry.
+
+Recognized short-term, long-term and collectibles gains retain their character. Pending losses receive no deduction. A January replacement revises the original December loss year, rather than creating a January loss. Results show both annual liabilities, their difference, pending amounts and remaining federal carry. Entered deductions are fixed in this comparison: it does not infer the payment-date SALT/refund feedback or subtract liability from portfolio cash. It is a conditional annual-liability comparison, not spendable terminal wealth or the final matched harvesting-strategy comparison.
+
+## Tax-budget decisions
+
+`tax_budget` policies require the annual forecasts and an explicit nonnegative dollar budget. At the decision date, trial sales use the same selected lots, commissions, separate bases and wash ledgers as actual execution. Only trades already executed are observed. Full-year other-income forecasts are supplied assumptions; future trade prices/orders are unavailable to the decision. Pending wash losses cannot finance a tax benefit.
+
+The budget limits the current year's modeled liability difference versus the no-modeled-lot-trades path, including each path's earlier carry consequences. It is cumulative: repeated policies cannot reuse a previously consumed annual budget. If earlier trades already exceed it and no evaluated sale repairs that, zero shares are sold and the diagnostic remains over budget. Tax liability is reported rather than paid from cash in this workbench. Subsequent manual trades or revised forecasts can invalidate the decision-date estimate.
+
+The bounded search evaluates a configurable 2–128 interval grid (default 32), then refines above the largest feasible sample to microshare resolution or 24 iterations. Because credits, loss lots and tax cliffs can make liability nonmonotone, the result is the largest evaluated feasible quantity, not a certified global optimum. All reported executed quantities satisfy the evaluated budget unless the baseline was already over it; that condition is explicit.
+
 ## Next implementation constraints
 
 Wash matching must consider the entire configured household, including spouse and IRA/Roth purchases, with explicit substantially-identical groups. Groups and replacement eligibility are assumptions; the program cannot infer legal identity from different tickers. Preserve share-level partial matches, replacement basis adjustments and holding-period carryover; IRA replacements must not receive a taxable-account basis increase. Track unresolved future wash windows without giving a decision policy access to future purchases or returns. A December loss and January replacement require original-year recognition, not a January capital loss.
 
-Policies must distinguish fractions of original shares, portfolio-value concentration targets and economic exposure. Tax-budget decisions use the household tax engine and available information. A matched harvesting-off run shares prices, cash flows and fees. Gross losses, disallowed/deferred losses, recognized losses, own-gain use, external-gain offsets, carry and terminal liquidation must remain separate. Account sales that fund household obligations will eventually select actual lots instead of the tax layer's interim proportional-basis adapter; the two adapters must never dispose of the same account twice.
+Policies must distinguish fractions of original shares, portfolio-value concentration targets and economic exposure. Tax-budget decisions already use the annual filing-unit engine and available information; household cash funding still needs actual-lot integration. A matched harvesting-off run shares prices, cash flows and fees. Gross losses, disallowed/deferred losses, recognized losses, own-gain use, external-gain offsets, carry and terminal liquidation must remain separate. Account sales that fund household obligations will eventually select actual lots instead of the tax layer's interim proportional-basis adapter; the two adapters must never dispose of the same account twice.
 
 ## Primary reference checks
 

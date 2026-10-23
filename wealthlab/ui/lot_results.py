@@ -4,6 +4,7 @@ import json
 
 import streamlit as st
 
+from wealthlab.ui.lot_tax_results import display as lot_tax_results
 from wealthlab.ui.sale_results import display as sale_results
 from wealthlab.ui.wash_results import display as wash_results
 
@@ -13,6 +14,9 @@ def results(result):
     st.caption(result["scope"])
     sale_results(result["sale_decisions"])
     wash_results(result["disposals"])
+    wash_results(result["disposals"], "nj")
+    st.caption("NJ treatment: " + result["nj_wash_treatment"])
+    lot_tax_results(result["annual_tax_comparison"])
     st.subheader("Disposed lot details")
     st.dataframe(result["disposals"], hide_index=True, width="stretch")
     st.subheader("Original shares sold and ending concentration")

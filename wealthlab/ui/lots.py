@@ -18,8 +18,8 @@ def show():
     st.header("Tax lots and transactions")
     st.warning(
         "Gross lot accounting by default; optional federal wash tracking is available. "
-        "Dated sale policies use explicit price snapshots; NJ wash treatment and "
-        "household-tax integration are under construction. "
+        "Dated sale policies use explicit price snapshots; NJ recognition is an explicit "
+        "scenario assumption. Household cash-tax funding remains under construction. "
         "These results do not establish a harvesting benefit or after-tax wealth. "
         "Amounts are USD; short positions, derivatives and currency translation "
         "are not supported here."
@@ -39,12 +39,23 @@ def show():
                 "Accounts, securities, lots and dated trades (JSON)", raw, height=400
             )
             lots = st.file_uploader("Replace opening lots from CSV", type="csv")
+            nj_mode = st.selectbox(
+                "NJ wash treatment override",
+                ["Use case JSON", "unconfirmed", "federal_rules", "no_wash_assumption"],
+            )
+            st.caption(
+                "Add lot_tax_cases in JSON for annual liability comparisons. Enter other income "
+                "and deductions excluding these lot trades; one case per calendar year. "
+                "Only the first case supplies opening capital carries."
+            )
             decision = sale_policy_editor.inputs()
             submitted = st.form_submit_button("Calculate lot accounting", type="primary")
         if submitted:
             payload = json.loads(edited)
             if not isinstance(payload, dict):
                 raise ValueError("Lot case JSON must be an object.")
+            if nj_mode != "Use case JSON":
+                payload["nj_wash_treatment"] = nj_mode
             sale_policy_editor.append(payload, decision)
             if lots:
                 payload["lots"] = list(csv.DictReader(io.StringIO(read(lots))))

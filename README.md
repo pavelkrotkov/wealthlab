@@ -1,6 +1,6 @@
 # Wealthlab
 
-A local-first financial scenario workbench. **Early implementation: household editing, monthly cash-flow comparison, a separate annual federal/NJ tax workbench and engine checks run locally. Optional household tax cash flows and permitted taxable-account funding now run. State-tax payment deductions and conditional refund recognition are included. The Tax lots page adds lot accounting, optional federal wash tracking and dated retain/sell/staged/concentration policies; tax-budget and harvesting policies, market paths, product strategies and optimization remain in progress.**
+A local-first financial scenario workbench. **Early implementation: household editing, monthly cash-flow comparison, a separate annual federal/NJ tax workbench and engine checks run locally. Optional household tax cash flows and permitted taxable-account funding now run. State-tax payment deductions and conditional refund recognition are included. The Tax lots page adds lot accounting, optional federal/NJ wash scenarios, dated retain/sell/staged/concentration/tax-budget policies and conditional annual liability comparisons; matched harvesting strategies, market paths, product strategies and optimization remain in progress.**
 
 The intended workflow is to define a household, compare explicit policies under the same market paths, inspect spending shortfalls and taxes, and explore better policies within user-set bounds.
 

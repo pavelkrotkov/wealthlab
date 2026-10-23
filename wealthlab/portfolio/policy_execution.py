@@ -4,36 +4,28 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.concentration import ratio
-from wealthlab.portfolio.orders import Trade
 from wealthlab.portfolio.policy_amounts import eligible_lots, positions, requested
+from wealthlab.portfolio.policy_order import sale
+from wealthlab.portfolio.tax_budget import choose, diagnostics
 
 
 def execute(case, book, policy):
     before, wealth = positions(book, policy)
-    desired = requested(case, book, policy)
     lots = eligible_lots(case, book, policy)
+    desired = (
+        choose(case, book, policy, lots)
+        if policy.mode == "tax_budget"
+        else requested(case, book, policy)
+    )
     available = sum((lot.quantity for lot in lots), Decimal(0))
     quantity = min(desired, available)
     price = policy.prices[policy.security_id]
     if money(quantity * price) < policy.commission:
         quantity = Decimal(0)
     if quantity:
-        trade = Trade(
-            id=policy.id,
-            provenance=policy.provenance,
-            date=policy.date,
-            action="sell",
-            account_id=policy.account_id,
-            security_id=policy.security_id,
-            quantity=quantity,
-            price=price,
-            commission=policy.commission,
-            selection="specific",
-            lot_ids=[lot.id for lot in lots],
-        )
-        book.trade(trade)
+        book.trade(sale(policy, quantity, lots))
     after, closing_wealth = positions(book, policy)
-    return dict(
+    result = dict(
         policy=policy.id,
         date=policy.date.isoformat(),
         mode=policy.mode,
@@ -45,6 +37,9 @@ def execute(case, book, policy):
         target_fraction=policy.fraction,
         commission=policy.commission if quantity else Decimal(0),
     )
+    if policy.mode == "tax_budget":
+        result.update(diagnostics(case, book, policy))
+    return result
 
 
 def replay(case, book):

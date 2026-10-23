@@ -1,5 +1,8 @@
 """A trade is validated before any cash or lot mutation; cash never finances itself."""
 
+from decimal import Decimal
+from itertools import chain
+
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.disposal import dispose, split_proceeds
 from wealthlab.portfolio.purchase import buy
@@ -12,13 +15,18 @@ class Book:
         self.accounts = {item.id: item for item in case.accounts}
         self.securities = {item.id: item for item in case.securities}
         self.lots = {item.id: item for item in case.lots}
+        self.allocated_ids = {item.id for item in chain(case.lots, case.trades, case.sale_policies)}
+        # Splitting a replacement must preserve purchase order independently of lot IDs.
+        self.share_order = {lot.id: (index, Decimal(0)) for index, lot in enumerate(case.lots)}
         self.origins = {item.id: item.id for item in case.lots}
         self.cash = {item.id: item.cash for item in case.accounts}
         self.disposals = []
         self.history = []
         self.wash = WashLedger(case)
+        self.nj_wash = WashLedger(case, "nj")
 
     def trade(self, trade):
+        """Both tax ledgers observe the same executed shares and cash movements."""
         first = len(self.disposals)
         if trade.action == "buy":
             buy(self, trade)
@@ -26,6 +34,7 @@ class Book:
             self.sell(trade)
         self.history.append(trade)
         self.wash.after_trade(self, first)
+        self.nj_wash.after_trade(self, first)
 
     def sell(self, trade):
         portions = select(self.lots, trade)
