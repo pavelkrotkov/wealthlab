@@ -22,6 +22,7 @@ def dispose(lot, quantity, proceeds, trade) -> tuple[Lot, dict]:
         account_id=lot.account_id,
         security_id=lot.security_id,
         date=trade.date.isoformat(),
+        acquired=lot.acquired,
         quantity=quantity,
         federal_holding_start=lot.federal_holding_start.isoformat(),
         proceeds=proceeds,

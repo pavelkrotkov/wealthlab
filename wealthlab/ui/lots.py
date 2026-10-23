@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from wealthlab.portfolio.distribution_example import synthetic as distribution_example
 from wealthlab.portfolio.example import synthetic
 from wealthlab.portfolio.fee_example import synthetic as fee_example
 from wealthlab.portfolio.harvest_example import synthetic as harvest_example
@@ -28,6 +29,7 @@ def show():
     )
     examples = {
         "Basic lot accounting": synthetic,
+        "Distributions and dividend holding": distribution_example,
         "Harvesting comparison": harvest_example,
         "Harvesting with manager fees": fee_example,
     }

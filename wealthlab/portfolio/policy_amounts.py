@@ -2,6 +2,7 @@
 
 from decimal import ROUND_CEILING, ROUND_DOWN, Decimal
 
+from wealthlab.portfolio.distributions import receivable
 from wealthlab.portfolio.orders import Trade
 from wealthlab.portfolio.selection import candidates
 
@@ -17,7 +18,7 @@ def positions(book, policy):
     wealth = sum(book.cash.values()) + sum(
         lot.quantity * policy.prices[lot.security_id] for lot in book.lots.values()
     )
-    return security_value, wealth - sum(book.fee_owed.values())
+    return security_value, wealth + receivable(book) - sum(book.fee_owed.values())
 
 
 def original_lots(case, policy):

@@ -1,4 +1,8 @@
-"""Lot accounting and optional federal wash tracking, independent of tax cash funding."""
+"""Lot accounting and optional federal wash tracking, independent of tax cash funding.
+
+Closing marks value held positions while distribution receivables remain separate
+from spendable account cash. Cash fees reduce wealth when assessed, including any
+unpaid liability. An exit uses a copied ledger so it cannot mutate holding results."""
 
 from copy import deepcopy
 from decimal import Decimal
@@ -6,7 +10,10 @@ from decimal import Decimal
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.book import Book
 from wealthlab.portfolio.concentration import summarize
+from wealthlab.portfolio.distribution_tax import details as distribution_details
+from wealthlab.portfolio.distributions import receivable
 from wealthlab.portfolio.fees import summary as fee_summary
+from wealthlab.portfolio.fund_distribution_limits import validate_fund_losses
 from wealthlab.portfolio.harvest_comparison import compare, loss_summary
 from wealthlab.portfolio.nj_recognition import finish as finish_nj
 from wealthlab.portfolio.tax_reporting import report
@@ -38,6 +45,7 @@ def project(case):
 
 
 def snapshot(case, book, decisions, recognition_end):
+    validate_fund_losses(case, book)
     book.wash.finish(book, recognition_end)
     finish_nj(case, book, recognition_end)
     values = {key: Decimal(0) for key in book.securities}
@@ -45,8 +53,11 @@ def snapshot(case, book, decisions, recognition_end):
         values[lot.security_id] += lot.quantity * case.closing_prices[lot.security_id]
     cash = sum(book.cash.values(), Decimal(0))
     fees = fee_summary(book)
-    wealth = cash + money(sum(values.values(), Decimal(0))) - fees["cash_owed"]
+    due = receivable(book)
+    wealth = cash + due + money(sum(values.values(), Decimal(0))) - fees["cash_owed"]
     return dict(
+        distribution_receivable=due,
+        distributions=distribution_details(case, book, case.end),
         fee_summary=fees,
         fee_assessments=book.fee_assessments,
         fee_owed_by_account=book.fee_owed,

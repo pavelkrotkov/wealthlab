@@ -1,5 +1,11 @@
-"""Matched annual liability comparisons preserve separate scenario carryforward paths."""
+"""Matched annual liability comparisons preserve separate scenario carryforward paths.
 
+Baseline forecasts exclude modeled disposals and distributions. Each path carries
+its own prior capital results into later years; ordinary dividend income cannot
+be netted directly with capital losses. Decision-date calls pass an observation
+date so future dividend holding days cannot improve a current tax budget."""
+
+from wealthlab.portfolio.distribution_tax import include, income
 from wealthlab.portfolio.tax_recognition import gains, with_carry, with_gains
 from wealthlab.tax.annual import evaluate
 
@@ -27,7 +33,7 @@ def validate_later_carries(cases):
             )
 
 
-def report(case, book, through_year=None):
+def report(case, book, through_year=None, as_of=None):
     previous_with = previous_without = None
     results = []
     for annual in case.lot_tax_cases:
@@ -36,11 +42,18 @@ def report(case, book, through_year=None):
         federal, nj, pending = gains(book, annual.policy.year)
         baseline = with_carry(annual, previous_without)
         modeled = with_gains(with_carry(annual, previous_with), federal, nj)
+        dist_fed, dist_nj, qualification_pending = income(
+            case, book, annual.policy.year, as_of or case.end
+        )
+        modeled = include(modeled, dist_fed, dist_nj)
         previous_without = evaluate(baseline)
         previous_with = evaluate(modeled)
         results.append(
             dict(
                 year=annual.policy.year,
+                distribution_federal=dist_fed,
+                distribution_nj=dist_nj,
+                qualification_pending=qualification_pending,
                 recognized_federal=federal,
                 recognized_nj=nj,
                 pending_losses=pending,

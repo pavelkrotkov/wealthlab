@@ -4,6 +4,7 @@ import json
 
 import streamlit as st
 
+from wealthlab.ui.distribution_results import display as distribution_results
 from wealthlab.ui.fee_results import display as fee_results
 from wealthlab.ui.harvest_results import display as harvest_results
 from wealthlab.ui.lot_tax_results import display as lot_tax_results
@@ -16,6 +17,7 @@ def results(result):
     st.caption(result["scope"])
     harvest_results(result)
     fee_results(result)
+    distribution_results(result)
     sale_results(result["sale_decisions"])
     st.caption("NJ treatment: " + result["nj_wash_treatment"])
     lot_tax_results(result["annual_tax_comparison"])

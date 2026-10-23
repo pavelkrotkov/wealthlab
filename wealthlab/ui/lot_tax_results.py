@@ -10,13 +10,14 @@ def display(rows):
     table = [
         {
             "Year": row["year"],
-            "Without lot trades": row["without_lot_trades"]["total_liability"],
-            "With lot trades": row["with_lot_trades"]["total_liability"],
+            "Without portfolio events": row["without_lot_trades"]["total_liability"],
+            "With portfolio events": row["with_lot_trades"]["total_liability"],
             "Change": row["incremental_liability"],
             "Federal carry": row["with_lot_trades"]["federal"]["short_carry"]
             + row["with_lot_trades"]["federal"]["long_carry"],
             "Federal pending": row["pending_losses"]["federal"],
             "NJ pending": row["pending_losses"]["nj"],
+            "Dividend qualification pending": row["qualification_pending"],
         }
         for row in rows
     ]

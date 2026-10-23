@@ -23,8 +23,14 @@ def edit(raw):
         )
         st.caption(
             "Add lot_tax_cases in JSON for annual liability comparisons. Enter other income "
-            "and deductions excluding these lot trades; one case per calendar year. "
+            "and deductions excluding these portfolio trades/distributions; "
+            "one case per calendar year. "
             "Only the first case supplies opening capital carries."
+        )
+        st.caption(
+            "Distributions in JSON specify ex-date, payment and tax-recognition dates, "
+            "per-share amount and separate federal/NJ character. Confirm price-only marks. "
+            "Preferred-share qualification and basis-changing distributions are not modeled."
         )
         decision = sale_policy_editor.inputs()
         harvest = harvest_editor.inputs()

@@ -8,6 +8,7 @@ from wealthlab.portfolio.disposal import dispose, split_proceeds
 from wealthlab.portfolio.fees import settle
 from wealthlab.portfolio.purchase import buy
 from wealthlab.portfolio.selection import select
+from wealthlab.portfolio.share_ranges import record_sale
 from wealthlab.portfolio.wash import WashLedger
 
 
@@ -24,6 +25,7 @@ class Book:
                 case.sale_policies,
                 case.harvest_policies,
                 case.fee_schedules,
+                case.distributions,
             )
         }
         # Splitting a replacement must preserve purchase order independently of lot IDs.
@@ -33,6 +35,7 @@ class Book:
         self.fee_owed = dict.fromkeys(self.accounts, Decimal(0))
         self.fee_paid = dict.fromkeys(self.accounts, Decimal(0))
         self.fee_assessments = []
+        self.distributions = []
         self.disposals = []
         self.history = []
         self.harvest_sales = set()
@@ -62,6 +65,7 @@ class Book:
             for lot, qty, value in split_proceeds(portions, trade, proceeds)
         ]
         for remaining, row in updates:
+            record_sale(self, row, remaining)
             if remaining.quantity:
                 self.lots[remaining.id] = remaining
             else:

@@ -9,6 +9,7 @@ from copy import deepcopy
 from decimal import ROUND_DOWN, Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.portfolio.fund_distribution_limits import validate_fund_losses
 from wealthlab.portfolio.nj_recognition import finish as finish_nj
 from wealthlab.portfolio.policy_order import sale
 from wealthlab.portfolio.tax_reporting import report
@@ -18,9 +19,10 @@ UNIT = Decimal("0.000001")
 
 def impact(case, book, when):
     trial = deepcopy(book)
+    validate_fund_losses(case, trial)
     trial.wash.finish(trial, when)
     finish_nj(case, trial, when)
-    rows = report(case, trial, through_year=when.year)
+    rows = report(case, trial, through_year=when.year, as_of=when)
     return rows[-1]["incremental_liability"]
 
 
