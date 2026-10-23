@@ -3,7 +3,19 @@ name = "wealthlab"
 version = "0.0.1"
 description = "Local financial scenario workbench"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "numpy==2.5.4",
+    "pydantic==2.14.1",
+    "quantlib==1.44",
+    "streamlit==1.66.1",
+    "taxcalc==6.8.5",
+]
+
+[project.optional-dependencies]
+benchmarks = [
+    "cryptography>=50.0.0",
+    "owlplanner==2026.10.10",
+]
 
 [dependency-groups]
 dev = [
@@ -33,7 +45,7 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 branch = true
-source = ["tools"]
+source = ["tools", "wealthlab"]
 
 [tool.coverage.report]
 show_missing = true
@@ -41,3 +53,9 @@ fail_under = 85
 
 [tool.ty.environment]
 python-version = "3.12"
+
+[tool.uv]
+required-environments = [
+  "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
