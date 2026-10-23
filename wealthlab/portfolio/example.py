@@ -38,6 +38,7 @@ def synthetic() -> LotCase:
                     quantity="100",
                     federal_basis="5000",
                     nj_basis="6000",
+                    economic_basis="5000",
                 )
             ],
             trades=[

@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: gross lot-accounting foundation implemented; wash adjustments, policies and household integration in progress under #5.
+Status: lot accounting and initial federal wash tracking implemented; NJ recognition, policies and household integration in progress under #5.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
@@ -8,7 +8,15 @@ Opening positions must exist by the opening date. Trades run in supplied date or
 
 FIFO orders by acquisition date; HIFO orders by federal basis per share, with stable date/ID tie breaks. Specific identification honors the supplied ordered lot list and rejects locked or mismatched lots. HIFO is a selection policy, not a determination that the broker accepted specific identification. Selection validates total availability before mutation. Partial sales allocate basis and net proceeds while retaining exact residual totals. Purchase commissions enter basis; sale commissions reduce proceeds. Purchases must be funded by that account's cash.
 
-The UI currently reports gross realized gains, remaining lots, cash, transaction costs and marked gross wealth. Original units sold and ending market-value weights are shown separately. Exposure groups aggregate configured long-only values; they do not infer ETF look-through, beta or derivative-adjusted economic exposure. It explicitly does not report recognized harvesting benefits or after-tax wealth. Retirement holdings, gains with different jurisdiction bases and loss trades can be inspected without inventing tax consequences.
+The UI reports pre-adjustment tax-basis gains, economic P&L when cost is supplied, remaining lots, cash, transaction costs and marked gross wealth. Original units sold and ending market-value weights are shown separately. Exposure groups aggregate configured long-only values; they do not infer ETF look-through, beta or derivative-adjusted economic exposure. It explicitly does not report household harvesting benefits or after-tax wealth. Retirement holdings, gains with different jurisdiction bases and loss trades can be inspected without inventing tax consequences.
+
+## Implemented federal wash tracking
+
+Optional `federal_wash_tracking` processes each trade before observing later trades. It matches same-security retained purchases in the 30 days before a loss and subsequent purchases through day 30, across all configured taxable and IRA/Roth accounts. Same-day purchases preserve supplied order. Partial replacements split quantities, all bases and economic cost; only matched taxable shares receive the federal basis adjustment. IRA/Roth replacements deny the matched federal loss without increasing IRA basis. Future holding periods include prior holding time, excluding the gap between sale and later replacement. Original-share reporting retains lot lineage through splits.
+
+`opening_wash_context_complete` confirms all relevant retained household purchases are represented, opening bases are adjusted, and there are no unresolved pre-opening loss sales. Otherwise the case must start earlier. An unresolved forward window reports a pending loss rather than an available deduction. The closing date includes all supplied trades that day, so day 30 closes the window. Disposals remain assigned to their original sale dates.
+
+Federal disallowed, basis-deferred, permanently denied and pending losses are separate fields. Economic cost is optional and independent of tax basis: if unknown, economic P&L remains unknown; a federal deferral never becomes a new economic loss. NJ gains remain unadjusted and labeled as such. Cross-security matching/conversion ratios, controlled corporations, derivatives and full household tax attribution are not implemented here. Duplicate substantially-identical groups across different security IDs block enabled tracking rather than silently skipping the relation. This is an initial model under development, not a broker tax-reporting replacement.
 
 ## Next implementation constraints
 

@@ -22,6 +22,8 @@ def buy(book, trade):
         quantity=trade.quantity,
         federal_basis=cost,
         nj_basis=cost,
+        economic_basis=cost,
     )
     book.cash[trade.account_id] -= cost
     book.lots[lot.id] = lot
+    book.origins[lot.id] = lot.id

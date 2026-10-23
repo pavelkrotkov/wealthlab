@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.portfolio.lot_parts import split
 from wealthlab.portfolio.models import Lot
 
 
@@ -13,16 +14,8 @@ def is_long(start, sold) -> bool:
 
 
 def dispose(lot, quantity, proceeds, trade) -> tuple[Lot, dict]:
-    fraction = quantity / lot.quantity
-    federal_basis = money(lot.federal_basis * fraction)
-    nj_basis = money(lot.nj_basis * fraction)
-    remaining = lot.model_copy(
-        update=dict(
-            quantity=lot.quantity - quantity,
-            federal_basis=lot.federal_basis - federal_basis,
-            nj_basis=lot.nj_basis - nj_basis,
-        )
-    )
+    taken, remaining = split(lot, quantity)
+    federal_basis, nj_basis, economic = taken.federal_basis, taken.nj_basis, taken.economic_basis
     result = dict(
         trade_id=trade.id,
         lot_id=lot.id,
@@ -36,6 +29,7 @@ def dispose(lot, quantity, proceeds, trade) -> tuple[Lot, dict]:
         nj_basis=nj_basis,
         federal_gross_gain=proceeds - federal_basis,
         nj_gross_gain=proceeds - nj_basis,
+        economic_pnl=proceeds - economic if economic is not None else None,
         federal_character="long_term"
         if is_long(lot.federal_holding_start, trade.date)
         else "short_term",

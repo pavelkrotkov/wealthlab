@@ -33,6 +33,7 @@ class Lot(Record):
     quantity: Quantity
     federal_basis: Money
     nj_basis: Money
+    economic_basis: Money | None = None
 
     @model_validator(mode="after")
     def holding_date(self) -> Self:

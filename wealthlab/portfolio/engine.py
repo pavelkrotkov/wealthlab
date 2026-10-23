@@ -1,4 +1,4 @@
-"""Gross lot accounting only; wash adjustments and household tax integration follow."""
+"""Lot accounting and optional federal wash tracking, independent of tax cash funding."""
 
 from decimal import Decimal
 
@@ -13,6 +13,7 @@ def run(case) -> dict:
     book = Book(case)
     for trade in case.trades:
         book.trade(trade)
+    book.wash.finish(book, case.end)
     values = {key: Decimal(0) for key in book.securities}
     for lot in book.lots.values():
         values[lot.security_id] += lot.quantity * case.closing_prices[lot.security_id]
@@ -27,5 +28,10 @@ def run(case) -> dict:
         lots=[lot.model_dump(mode="json") for lot in book.lots.values()],
         disposals=book.disposals,
         transaction_costs=sum((trade.commission for trade in case.trades), Decimal(0)),
-        scope="Gross lot accounting; no wash-sale adjustment, tax benefit or tax-funded sale yet.",
+        scope=(
+            "Federal wash tracking enabled; NJ wash treatment, household tax benefit and funding "
+            "are not integrated yet."
+            if case.federal_wash_tracking
+            else "Gross lot accounting; wash adjustment and tax-funded sale modeling are disabled."
+        ),
     )

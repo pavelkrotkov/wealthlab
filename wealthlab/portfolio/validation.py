@@ -4,6 +4,7 @@ from wealthlab.portfolio.chronology import validate_dates
 
 
 def validate(case):
+    validate_wash_context(case)
     validate_dates(case)
     validate_ids(case)
     validate_references(case)
@@ -30,3 +31,20 @@ def validate_references(case):
             raise ValueError("Every lot/trade must reference a configured account and security.")
     if set(case.closing_prices) != securities:
         raise ValueError("Provide an explicit closing price for every security.")
+
+
+def validate_wash_context(case):
+    if not case.federal_wash_tracking:
+        return
+    if not case.opening_wash_context_complete:
+        raise ValueError(
+            "Federal wash tracking requires complete opening household context: "
+            "all retained purchases in the prior 30 days, adjusted bases, and no "
+            "unresolved pre-opening loss sales. Extend the case earlier when needed."
+        )
+    groups = [security.wash_group for security in case.securities]
+    if len(groups) != len(set(groups)):
+        raise ValueError(
+            "Cross-security substantially-identical matching requires conversion rules "
+            "not yet supported. Use the same security ID across household accounts."
+        )

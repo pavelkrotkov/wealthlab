@@ -10,6 +10,8 @@ from wealthlab.tax.facts import TaxModel
 
 
 class LotCase(TaxModel):
+    federal_wash_tracking: bool = False
+    opening_wash_context_complete: bool = False
     as_of: date
     end: date
     accounts: list[TradingAccount] = Field(min_length=1)

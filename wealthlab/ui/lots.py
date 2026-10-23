@@ -10,16 +10,24 @@ from wealthlab.household.storage import MAX_BYTES
 from wealthlab.portfolio.cases import LotCase
 from wealthlab.portfolio.engine import run
 from wealthlab.portfolio.example import synthetic
+from wealthlab.ui.wash_results import display as wash_results
 
 
 def show():
     st.header("Tax lots and transactions")
     st.warning(
-        "Gross lot accounting only. Wash-sale adjustments, recognized-loss attribution, "
-        "sale policies and household-tax integration are under construction. "
+        "Gross lot accounting by default; optional federal wash tracking is available. "
+        "NJ wash treatment, sale policies and household-tax integration are under construction. "
         "These results do not establish a harvesting benefit or after-tax wealth. "
         "Amounts are USD; short positions, derivatives and currency translation "
         "are not supported here."
+    )
+    st.caption(
+        "Enable federal_wash_tracking in the JSON only after confirming "
+        "opening_wash_context_complete: all retained household purchases from the prior 30 days, "
+        "adjusted opening bases and no unresolved earlier loss sales. Use one security ID across "
+        "accounts; cross-security conversion matching is not yet supported. Economic cost, "
+        "when known, is separate from tax basis. Open loss windows remain pending."
     )
     uploaded = st.file_uploader("Load lot case JSON", type="json")
     try:
@@ -53,20 +61,20 @@ def read(uploaded):
 def results(result):
     st.metric("Gross marked wealth · USD", f"${result['gross_wealth']:,.2f}")
     st.caption(result["scope"])
-    st.subheader("Gross realized gains by disposed lot")
+    wash_results(result["disposals"])
+    st.subheader("Disposed lot details")
     st.dataframe(result["disposals"], hide_index=True, width="stretch")
     st.subheader("Original shares sold and ending concentration")
     st.dataframe(result["concentration"]["securities"], hide_index=True, width="stretch")
     st.caption(result["concentration"]["meaning"])
     st.subheader("Remaining lots")
     st.dataframe(result["lots"], hide_index=True, width="stretch")
-    st.json(
-        {
-            key: value
-            for key, value in result.items()
-            if key not in {"lots", "disposals", "concentration"}
-        }
-    )
+    details = {
+        key: value
+        for key, value in result.items()
+        if key not in {"lots", "disposals", "concentration"}
+    }
+    st.json(json.loads(json.dumps(details, default=str)))
     st.download_button(
         "Export lot inputs", st.session_state["lot_input"], "lot-case.json", "application/json"
     )

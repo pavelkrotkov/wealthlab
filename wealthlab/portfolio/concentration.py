@@ -12,10 +12,12 @@ def summarize(case, book, values, wealth):
     remaining = defaultdict(Decimal)
     for lot in case.lots:
         original[lot.security_id] += lot.quantity
-        current = book.lots.get(lot.id)
-        remaining_original[lot.security_id] += current.quantity if current else 0
+
+    opening_ids = {lot.id for lot in case.lots}
     for lot in book.lots.values():
         remaining[lot.security_id] += lot.quantity
+        if book.origins[lot.id] in opening_ids:
+            remaining_original[lot.security_id] += lot.quantity
     records = []
     groups = defaultdict(Decimal)
     for security in case.securities:
