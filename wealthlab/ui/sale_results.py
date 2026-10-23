@@ -35,8 +35,8 @@ def display(decisions):
             status = "within budget" if row["budget_met"] else "already over budget"
             st.caption(
                 f"{row['policy']}: estimated annual tax change "
-                f"${row['estimated_incremental_liability']:,.2f} / "
-                f"${row['tax_budget']:,.2f} budget ({status}). "
+                f"USD {row['estimated_incremental_liability']:,.2f} / "
+                f"USD {row['tax_budget']:,.2f} budget ({status}). "
                 "Largest evaluated feasible sale; future trades and changed forecasts "
                 "can revise taxes."
             )

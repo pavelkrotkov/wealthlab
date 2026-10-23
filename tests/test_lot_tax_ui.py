@@ -18,7 +18,7 @@ def test_nj_override_and_annual_comparison_are_visible():
     assert not app.exception
     assert not app.error
     assert any(item.value == "NJ conditional wash-sale adjustments" for item in app.subheader)
-    assert app.dataframe[2].value["Change"][0] == -55
+    assert app.dataframe[0].value["Change"][0] == -55
 
 
 def test_budget_diagnostics_report_the_actual_limit():
@@ -29,4 +29,4 @@ def test_budget_diagnostics_report_the_actual_limit():
     app.button(key="FormSubmitter:lot_case-Calculate lot accounting").click().run(timeout=30)
     assert not app.exception
     assert not app.error
-    assert any("$500.00 budget (within budget)" in item.value for item in app.caption)
+    assert any("USD 500.00 budget (within budget)" in item.value for item in app.caption)

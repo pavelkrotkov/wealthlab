@@ -20,7 +20,14 @@ def display(rows):
         }
         for row in rows
     ]
-    st.dataframe(table, hide_index=True, width="stretch")
+    st.dataframe(
+        table,
+        hide_index=True,
+        width="stretch",
+        column_config={
+            key: st.column_config.NumberColumn(format="$%.2f") for key in table[0] if key != "Year"
+        },
+    )
     st.caption(
         "Negative change means lower modeled annual liability. Each comparison uses the same "
         "other income and entered deductions, with separate capital-loss carry paths. "
