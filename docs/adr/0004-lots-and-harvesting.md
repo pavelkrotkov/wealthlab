@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: lot accounting, conditional federal/NJ wash tracking, dated sale and tax-budget policies, and annual liability comparisons, matched long-only harvesting and hypothetical taxable exits and dated recurring fee assessments and ordinary distribution timing implemented; household cash integration remains in progress under #5.
+Status: #5 lot workbench implemented; CI and J-Bot review pending. Household cash integration remains a required dependency for the matched path and release slices.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
@@ -41,6 +41,14 @@ The same matching implementation serves both jurisdictions, but each has indepen
 Optional `lot_tax_cases` supplies one annual filing-unit forecast per calendar year, in order. Each baseline contains other income, deductions and pre-opening activity, excluding the disposals and distributions modeled by this lot case. Federal wash tracking and an explicit NJ treatment are required. Only the first year supplies opening capital-loss carry; later years propagate the with-trade and without-trade carries independently. NJ disposition losses follow the NJ engine's same-category rules and do not become a federal-style capital carry.
 
 Recognized short-term, long-term and collectibles gains retain their character. Pending losses receive no deduction. A January replacement revises the original December loss year, rather than creating a January loss. Results show both annual liabilities, their difference, pending amounts and remaining federal carry. Entered deductions are fixed in this comparison: it does not infer the payment-date SALT/refund feedback or subtract liability from portfolio cash. It is a conditional annual-liability comparison, not spendable terminal wealth or a household cash-flow comparison.
+
+## Current-loss attribution
+
+The annual UI separately reports current recognized portfolio losses, offsets against own gains and external net gains, ordinary-income consumption and attributed ending carry. This is an explicit reporting allocation, not a statutory identification of whose loss was used: net within short/long character first and then across characters; consume current portfolio losses before external net losses and opening carry; offset own gains before external gains. Capital-gain distributions count as own gains. External inputs are net amounts, so their unobserved gross transactions cannot be reconstructed.
+
+Ordinary consumption is the residual after the existing annual engine's character-specific carry worksheet, including unused low-income deductions. Each character's recognized current loss equals own-gain use + external-gain use + ordinary consumption + attributed ending carry. Pending and disallowed losses never enter that sum. Earlier-year carry is shown as an opening amount; its historical origins are not relabeled as current-year losses. The total carry remains in the annual comparison.
+
+An allocated offset can displace an existing carry rather than create incremental tax savings. Only the matched annual liability difference measures that conditional tax effect. Tests include full displacement with zero additional saving, mixed short/long losses, low-income unused deductions, distributions, future-year carry and unrecognized wash/retirement losses.
 
 ## Tax-budget decisions
 

@@ -6,6 +6,7 @@ be netted directly with capital losses. Decision-date calls pass an observation
 date so future dividend holding days cannot improve a current tax budget."""
 
 from wealthlab.portfolio.distribution_tax import include, income
+from wealthlab.portfolio.loss_attribution import allocate
 from wealthlab.portfolio.tax_recognition import gains, with_carry, with_gains
 from wealthlab.tax.annual import evaluate
 
@@ -41,7 +42,8 @@ def report(case, book, through_year=None, as_of=None):
             break
         federal, nj, pending = gains(book, annual.policy.year)
         baseline = with_carry(annual, previous_without)
-        modeled = with_gains(with_carry(annual, previous_with), federal, nj)
+        opening = with_carry(annual, previous_with)
+        modeled = with_gains(opening, federal, nj)
         dist_fed, dist_nj, qualification_pending = income(
             case, book, annual.policy.year, as_of or case.end
         )
@@ -51,6 +53,7 @@ def report(case, book, through_year=None, as_of=None):
         results.append(
             dict(
                 year=annual.policy.year,
+                federal_loss_use=allocate(opening, book, dist_fed, previous_with),
                 distribution_federal=dist_fed,
                 distribution_nj=dist_nj,
                 qualification_pending=qualification_pending,

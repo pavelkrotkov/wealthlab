@@ -19,6 +19,10 @@ def test_nj_override_and_annual_comparison_are_visible():
     assert not app.error
     assert any(item.value == "NJ conditional wash-sale adjustments" for item in app.subheader)
     assert app.dataframe[0].value["Change"][0] == -55
+    loss_table = app.dataframe[1].value
+    assert loss_table["Recognized loss"].sum() == 250
+    assert loss_table["Ordinary income consumed"].sum() == 250
+    assert any("not incremental tax savings" in item.value for item in app.caption)
 
 
 def test_budget_diagnostics_report_the_actual_limit():
