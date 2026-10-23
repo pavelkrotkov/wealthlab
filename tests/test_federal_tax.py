@@ -17,6 +17,11 @@ def annual(**income):
 
 
 def test_high_wages_count_additional_medicare_once():
+    """2025 joint brackets on $468,500 taxable yield $104,046.
+
+    Employee payroll is 6.2% of $176,100 plus 1.45% of $500,000,
+    plus 0.9% of wages above the joint $250,000 Medicare threshold.
+    """
     result = annual(wages_primary=Decimal(500_000))
     assert result["income_tax"] == Decimal(104_046)
     assert result["employee_payroll"] == Decimal("20418.20")
@@ -45,3 +50,20 @@ def test_invalid_policy_and_input_scope():
         TaxPolicy(year=2050, mode="package_law", annual_index=0).valuation()
     with pytest.raises(ValueError, match="included"):
         FederalIncome(dividends=Decimal(1), qualified_dividends=Decimal(2))
+
+
+def test_qualified_dividends_and_niit_are_counted_once():
+    """The added dividends remain in the 15% capital-gain bracket.
+
+    MAGI already exceeds the NIIT threshold, so all $20,000 receives the
+    3.8% surtax: $3,000 + $760, with no change to wage payroll taxes.
+    """
+    before = annual(wages_primary=Decimal(300_000))
+    after = annual(
+        wages_primary=Decimal(300_000),
+        dividends=Decimal(20_000),
+        qualified_dividends=Decimal(20_000),
+    )
+    assert after["niit"] == 760
+    assert after["total"] - before["total"] == 3760
+    assert after["employee_payroll"] == before["employee_payroll"]
