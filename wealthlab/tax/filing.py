@@ -13,6 +13,12 @@ class Dependent(TaxModel):
     earned_income_credit_eligible: bool
     care_credit_eligible: bool
 
+    @model_validator(mode="after")
+    def validate_child_credit(self) -> Self:
+        if self.child_credit_eligible and self.age >= 17:
+            raise ValueError("A child tax credit dependent must be younger than 17.")
+        return self
+
 
 class Filing(TaxModel):
     status: Literal["single", "joint", "separate", "head", "surviving"]
@@ -24,6 +30,6 @@ class Filing(TaxModel):
     def validate_ages(self) -> Self:
         if self.status == "joint" and self.age_spouse < 18:
             raise ValueError("Joint filing requires an adult spouse age.")
-        if any(item.child_credit_eligible and item.age >= 17 for item in self.dependents):
-            raise ValueError("A child tax credit dependent must be younger than 17.")
+        if self.status != "joint" and self.age_spouse != 0:
+            raise ValueError("Spouse age must be zero for a non-joint filing unit.")
         return self

@@ -62,6 +62,13 @@ def demographics(filing: Filing) -> dict:
         n24=sum(item.child_credit_eligible for item in filing.dependents),
         EIC=min(3, sum(item.earned_income_credit_eligible for item in filing.dependents)),
         f2441=sum(item.care_credit_eligible for item in filing.dependents),
-        nu18=sum(item.age < 18 for item in filing.dependents),
-        n1820=sum(18 <= item.age <= 20 for item in filing.dependents),
+        **dependent_ages(filing),
     )
+
+
+def dependent_ages(filing: Filing) -> dict:
+    bands = {"nu06": (0, 5), "nu13": (0, 12), "nu18": (0, 17), "n1820": (18, 20)}
+    return {
+        name: sum(low <= item.age <= high for item in filing.dependents)
+        for name, (low, high) in bands.items()
+    }

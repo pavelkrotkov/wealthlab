@@ -1,6 +1,6 @@
 # Tax rule mappings and validation
 
-Research date: October 23, 2026. The annual tax adapter is being implemented in issue #4; it is not yet connected to household cash flows or exposed as a complete planning interface.
+Research date: October 23, 2026. The annual tax adapter is being implemented in issue #4; the separate Annual tax UI is available, but it is not yet connected to household cash flows or a complete planning interface.
 
 ## Federal
 
@@ -18,6 +18,16 @@ The installed package's default policy horizon ends in 2036. `package_law` refus
 
 NJ amounts require their own basis and category ledgers. The [2025 NJ-1040 instructions](https://www.nj.gov/treasury/taxation/pdf/current/1040i.pdf), printed pages 11–12, require disposition gains/losses to net within that category. The [February 2026 GIT-9P](https://www.nj.gov/treasury/taxation/pdf/pubs/tgi-ee/git9p.pdf), pages 2–3, places a partnership's ordinary income, interest, dividends and gains/losses together in its partnership category. Do not copy federal carryforwards into NJ disposition income.
 
-The NJ-BUS-2 alternative business calculation is a separate adjustment with its own business-loss carryover; the 2025 instructions at printed page 24 describe a potential 20-year carry. It must not be confused with a federal capital-loss carry or a deduction of disposition losses against wages. Its detailed implementation and tests remain outstanding.
+The NJ-BUS-2 alternative business calculation is a separate adjustment with its own business-loss carryover; the 2025 instructions at printed page 24 describe a potential 20-year carry. It must not be confused with a federal capital-loss carry or a deduction of disposition losses against wages. The calculation now has dated carry buckets, oldest-first consumption and the 20-year expiration boundary. The current four NJ business categories are netted separately before the 50% adjustment; disposition losses never enter this ledger. Authority: [2025 NJ-BUS-2](https://www.nj.gov/treasury/taxation/pdf/current/resbus2.pdf).
 
 Retirement exclusions also need explicit person-level eligibility. In the 2025 instructions, printed pages 20–22, the pension exclusion and other retirement-income exclusion have different worksheet bases in the $100,001–$150,000 bands. Joint cases with only one eligible spouse cannot exclude the younger spouse's income. NJ gross-income filing thresholds use line 29 after exclusions. Medical deductions use a 2% NJ gross-income floor. Full-year, part-year, property-tax-credit/deduction and cross-jurisdiction-credit cases need separate validation before the NJ adapter is complete.
+
+The 2025 full-year NJ core now includes basic/age/dependent and explicitly qualified additional exemptions, medical and listed qualified deductions, retirement exclusions, and Worksheet H property deduction versus refundable credit. Retirement-eligible income must be allocated to the qualifying owner; a younger spouse does not inherit eligibility. Special exclusion eligibility is separately asserted and can reduce remaining pension income. See [January 2026 GIT-1 & 2](https://www.nj.gov/treasury/taxation/pdf/pubs/tgi-ee/git1%262.pdf), pages 22–28. The older standalone GIT-1/GIT-2 bulletins are dated 2018 and were not used for current thresholds.
+
+An exhaustive local cross-check covered all 2,000 $50 income bands in both 2025 NJ tax-table columns: 4,000 comparisons, zero mismatches. The $70,000–$80,000 joint/head/survivor table uses a $1,155 offset, while the printed rate schedule shows $1,154.50; applying the latter to the under-$100,000 table produces 100 one-dollar mismatches. The implementation preserves the published table values, with a regression at $70,100. Source PDF SHA-256: `fe7977419b70d0c3dcc392c328adc5f58f3b99937e0d2f79aecf6ac368872c31`.
+
+This is still an income-tax core: other-state credits, refundable child/earned-income/care credits, use tax, insurance shared-responsibility payments and special assessments are not implemented here. The result identifies these exclusions; part-year returns and non-2025 law are rejected until explicitly supported by the surrounding policy layer. It is not a complete filing engine.
+
+## Funding and payment conventions under development
+
+The annual UI reconciles federal income-tax payments, employee payroll withholding, and NJ payments separately; entered payments never reduce taxable income. The withdrawal-funding solver evaluates the additional tax created by each proposed withdrawal, spends only available liquid resources, and reports unpaid taxes and spending separately. A refund is a receivable until its receipt date, not available cash. The solver returns a feasible funding amount rather than an optimal minimum, because tax cliffs can cause conservative over-withdrawal. Its iteration cap is visible and failure cannot become invented financing. This solver is tested independently but is not yet bound to household account sales or the monthly UI.
