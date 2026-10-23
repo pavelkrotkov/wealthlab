@@ -9,6 +9,7 @@ import streamlit as st
 
 from wealthlab.household import records, schedules
 from wealthlab.household.scenario import Scenario
+from wealthlab.household.storage import MAX_BYTES
 from wealthlab.ui.settings import controls
 
 MODELS = dict(
@@ -49,7 +50,7 @@ def editor(scenario: Scenario) -> Scenario | None:
         return None
     payload["usd_per_currency"] = json.loads(payload["usd_per_currency"])
     for name, raw in uploads.items():
-        if len(raw) > 2_000_000:
+        if len(raw) > MAX_BYTES:
             raise ValueError("CSV import exceeds the 2 MB limit.")
         payload[name] = list(csv.DictReader(io.StringIO(raw.decode("utf-8-sig"))))
     return Scenario.model_validate(payload)
