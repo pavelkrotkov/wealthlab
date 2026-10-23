@@ -7,11 +7,12 @@ from wealthlab.portfolio.wash_basis import adjusted_replacement, loss_amount
 from wealthlab.portfolio.wash_keys import key
 
 
-def eligible(lot, row, book, used):
+def eligible(lot, row, used):
+    # Only unsold shares remain in book.lots. A shared import lot ID does not
+    # exclude retained shares from the same recent acquisition.
     sold = date.fromisoformat(row["date"])
     return (
         lot.id not in used
-        and lot.id != row["lot_id"]
         and sold - timedelta(days=30) <= lot.acquired <= sold + timedelta(days=30)
         and lot.security_id == row["security_id"]
     )
@@ -25,7 +26,7 @@ def match(book, row, used, jurisdiction):
         if row[key(jurisdiction, "unmatched_quantity")] == 0:
             break
         lot = book.lots.get(original.id)
-        if lot is not None and eligible(lot, row, book, used):
+        if lot is not None and eligible(lot, row, used):
             apply(book, lot, row, used, jurisdiction)
 
 
