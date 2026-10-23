@@ -28,7 +28,13 @@ def inputs():
         budget = st.number_input(
             "Cumulative annual tax budget · USD", 0.0, value=1000.0, key="sale_tax_budget"
         )
-        prices = st.text_input("Prices on decision date (JSON)", "{}", key="sale_prices")
+        prices = st.text_input(
+            "Prices on decision date for every configured security (JSON)",
+            "{}",
+            key="sale_prices",
+            help='Supply all security IDs, e.g. {"stock": 100, "fund": 50}. '
+            "Use prices known on the decision date; closing prices may be from a later date.",
+        )
         fee = st.number_input("Sale commission · USD", 0.0, value=0.0, key="sale_fee")
         selection = st.selectbox("Lot priority", ["fifo", "hifo"], key="sale_selection")
     return dict(
