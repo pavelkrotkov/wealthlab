@@ -9,9 +9,7 @@ from importlib.util import find_spec  # noqa: E402
 import streamlit as st  # noqa: E402
 
 
-def main():
-    st.set_page_config(page_title="Wealthlab", page_icon="📊", layout="wide")
-    st.title("Wealthlab")
+def checks():
     st.caption("Local financial scenario workbench · engine verification")
     st.info("The projection workbench is under construction. These are synthetic engine checks.")
     st.write("Verify the numerical foundations before entering household scenarios.")
@@ -36,6 +34,18 @@ def main():
         "https://github.com/pavelkrotkov/wealthlab/issues", label="Implementation progress"
     )
     st.caption("GPL-3.0-or-later · Public source; private scenarios remain local.")
+
+
+def main():
+    st.set_page_config(page_title="Wealthlab", page_icon="📊", layout="wide")
+    st.title("Wealthlab")
+    page = st.sidebar.radio("Workspace", ["Household", "Engine checks"])
+    if page == "Household":
+        from wealthlab.ui.household import show
+
+        show()
+    else:
+        checks()
 
 
 if __name__ == "__main__":

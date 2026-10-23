@@ -1,0 +1,32 @@
+"""Monthly cash conservation before the later household tax and market modules."""
+
+from decimal import Decimal
+
+from wealthlab.household import debts
+from wealthlab.household.calendar import money, months
+from wealthlab.household.funding import Wallet
+from wealthlab.household.monthly import month
+from wealthlab.household.scenario import Scenario
+from wealthlab.household.validation import TABLES
+
+
+def project(scenario: Scenario) -> list[dict]:
+    unresolved = [
+        record.id
+        for table in TABLES
+        for record in getattr(scenario, table)
+        if record.provenance == "unresolved"
+    ]
+    if unresolved:
+        raise ValueError("Resolve critical inputs before projecting: " + ", ".join(unresolved))
+    wallet = Wallet(scenario)
+    debt_balances = debts.opening_debts(scenario)
+    rows, fees_owed = [], Decimal(0)
+    for start, end in months(scenario.start, scenario.end):
+        row = month(scenario, wallet, debt_balances, start, end, fees_owed)
+        fees_owed = row["fees_owed"]
+        row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
+        deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
+        row["real_net_wealth"] = money(row["net_wealth"] / deflator)
+        rows.append(row)
+    return rows

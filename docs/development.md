@@ -1,6 +1,6 @@
 # Development and review
 
-The verification screen is implemented. Household projections remain on the issue backlog.
+The household cash-flow editor and verification screen are implemented. Tax, market, product and optimization modules remain on the issue backlog.
 
 Use Python 3.12 and uv. Keep local build/cache/temp artifacts inside the selected repository:
 

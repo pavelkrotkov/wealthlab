@@ -1,0 +1,55 @@
+"""Typed household tables and JSON/CSV import without loading arbitrary filesystem paths."""
+
+import csv
+import io
+import json
+
+import pandas as pd
+import streamlit as st
+
+from wealthlab.household import records, schedules
+from wealthlab.household.scenario import Scenario
+from wealthlab.ui.settings import controls
+
+MODELS = dict(
+    members=records.Member,
+    accounts=records.Account,
+    incomes=schedules.Income,
+    expenses=schedules.Expense,
+    debts=schedules.Debt,
+    contributions=schedules.Contribution,
+)
+
+
+def tables(payload: dict) -> dict:
+    uploads = {}
+    for name, model in MODELS.items():
+        with st.expander(name.title(), expanded=name in {"members", "accounts"}):
+            imported = st.file_uploader(f"Import {name} CSV", type="csv", key=f"csv_{name}")
+            rows = payload[name]
+            if imported is not None:
+                uploads[name] = imported.getvalue()
+            frame = pd.DataFrame(rows, columns=list(model.model_fields))
+            edited = st.data_editor(frame, num_rows="dynamic", key=f"table_{name}", width="stretch")
+            payload[name] = edited.to_dict(orient="records")
+    return uploads
+
+
+def editor(scenario: Scenario) -> Scenario | None:
+    payload = scenario.model_dump(mode="json")
+    with st.form("household"):
+        controls(payload)
+        st.caption(
+            "Amounts are monthly in the stated currency; annual growth is a decimal rate. "
+            "Opening balances already include year-to-date activity. End dates are exclusive."
+        )
+        uploads = tables(payload)
+        submitted = st.form_submit_button("Validate and project", type="primary")
+    if not submitted:
+        return None
+    payload["usd_per_currency"] = json.loads(payload["usd_per_currency"])
+    for name, raw in uploads.items():
+        if len(raw) > 2_000_000:
+            raise ValueError("CSV import exceeds the 2 MB limit.")
+        payload[name] = list(csv.DictReader(io.StringIO(raw.decode("utf-8-sig"))))
+    return Scenario.model_validate(payload)
