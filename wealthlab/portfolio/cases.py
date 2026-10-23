@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from wealthlab.portfolio.fee_inputs import FeeSchedule
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.models import Lot, Price, Security, TradingAccount
 from wealthlab.portfolio.orders import Trade
@@ -28,5 +29,6 @@ class LotCase(TaxModel):
     harvest_policies: list[HarvestPolicy] = Field(default_factory=list)
     compare_harvesting: bool = False
     terminal_exit: TerminalExit | None = None
+    fee_schedules: list[FeeSchedule] = Field(default_factory=list)
     sale_policies: list[SalePolicy] = Field(default_factory=list)
     closing_prices: dict[str, Price]

@@ -17,7 +17,7 @@ def positions(book, policy):
     wealth = sum(book.cash.values()) + sum(
         lot.quantity * policy.prices[lot.security_id] for lot in book.lots.values()
     )
-    return security_value, wealth
+    return security_value, wealth - sum(book.fee_owed.values())
 
 
 def original_lots(case, policy):
@@ -52,7 +52,8 @@ def requested(case, book, policy):
     """A staged fraction is cumulative, including manual sales of original shares.
 
     Concentration uses all configured accounts and cash, before taxes. Selling
-    converts stock to cash; only the commission reduces this gross denominator.
+    converts stock to cash; commissions reduce this pre-tax denominator.
+    Previously assessed unpaid fees are already liabilities in the denominator.
     """
     if policy.mode == "retain":
         return Decimal(0)

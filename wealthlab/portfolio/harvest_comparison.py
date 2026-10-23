@@ -36,6 +36,7 @@ def difference(on, off):
         annual_tax_savings=annual,
         total_tax_saving=saving,
         tax_adjusted_difference=None if saving is None else gross + saving,
+        extra_cash_fees=on["fee_summary"]["cash_assessed"] - off["fee_summary"]["cash_assessed"],
         extra_transaction_costs=on["transaction_costs"] - off["transaction_costs"],
     )
 

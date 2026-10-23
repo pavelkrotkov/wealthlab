@@ -5,6 +5,7 @@ from itertools import chain
 
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.disposal import dispose, split_proceeds
+from wealthlab.portfolio.fees import settle
 from wealthlab.portfolio.purchase import buy
 from wealthlab.portfolio.selection import select
 from wealthlab.portfolio.wash import WashLedger
@@ -17,12 +18,21 @@ class Book:
         self.lots = {item.id: item for item in case.lots}
         self.allocated_ids = {
             item.id
-            for item in chain(case.lots, case.trades, case.sale_policies, case.harvest_policies)
+            for item in chain(
+                case.lots,
+                case.trades,
+                case.sale_policies,
+                case.harvest_policies,
+                case.fee_schedules,
+            )
         }
         # Splitting a replacement must preserve purchase order independently of lot IDs.
         self.share_order = {lot.id: (index, Decimal(0)) for index, lot in enumerate(case.lots)}
         self.origins = {item.id: item.id for item in case.lots}
         self.cash = {item.id: item.cash for item in case.accounts}
+        self.fee_owed = dict.fromkeys(self.accounts, Decimal(0))
+        self.fee_paid = dict.fromkeys(self.accounts, Decimal(0))
+        self.fee_assessments = []
         self.disposals = []
         self.history = []
         self.harvest_sales = set()
@@ -37,6 +47,7 @@ class Book:
             buy(self, trade)
         else:
             self.sell(trade)
+        settle(self, trade.account_id)
         self.history.append(trade)
         self.wash.after_trade(self, first)
         self.nj_wash.after_trade(self, first)

@@ -28,6 +28,13 @@ def edit(raw):
         )
         decision = sale_policy_editor.inputs()
         harvest = harvest_editor.inputs()
+        with st.expander("Recurring portfolio fees"):
+            fees = st.text_area("Fee schedules override (JSON; blank uses case)", "")
+            st.caption(
+                "Specify advisor/manager/custody scope, annual rate, day count and dated "
+                "valuation periods. Supplied contractual bases remain explicit assumptions. "
+                "Prices must already include any fees marked embedded_in_prices."
+            )
         submitted = st.form_submit_button("Calculate lot accounting", type="primary")
     if submitted:
         payload = json.loads(edited)
@@ -37,6 +44,8 @@ def edit(raw):
             payload["nj_wash_treatment"] = nj_mode
         sale_policy_editor.append(payload, decision)
         harvest_editor.apply(payload, harvest)
+        if fees.strip():
+            payload["fee_schedules"] = json.loads(fees)
         if lots:
             payload["lots"] = list(csv.DictReader(io.StringIO(read(lots))))
         case = LotCase.model_validate(payload)

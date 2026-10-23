@@ -1,6 +1,7 @@
 """Reject ambiguous identifiers, unresolved provenance and unsupported references."""
 
 from wealthlab.portfolio.chronology import validate_dates
+from wealthlab.portfolio.fee_validation import validate_fees
 from wealthlab.portfolio.harvest_validation import validate_harvest
 from wealthlab.portfolio.policy_validation import validate_policies
 from wealthlab.portfolio.tax_reporting import validate_tax_cases
@@ -8,6 +9,7 @@ from wealthlab.portfolio.terminal_exit import validate_exit
 
 
 def validate(case):
+    validate_fees(case)
     validate_exit(case)
     validate_harvest(case)
     validate_tax_cases(case)

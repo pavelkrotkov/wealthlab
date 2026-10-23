@@ -6,11 +6,12 @@ from decimal import Decimal
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.book import Book
 from wealthlab.portfolio.concentration import summarize
+from wealthlab.portfolio.fees import summary as fee_summary
 from wealthlab.portfolio.harvest_comparison import compare, loss_summary
 from wealthlab.portfolio.nj_recognition import finish as finish_nj
-from wealthlab.portfolio.policy_execution import replay
 from wealthlab.portfolio.tax_reporting import report
 from wealthlab.portfolio.terminal_exit import liquidate
+from wealthlab.portfolio.timeline import replay
 from wealthlab.portfolio.validation import validate
 
 
@@ -43,8 +44,12 @@ def snapshot(case, book, decisions, recognition_end):
     for lot in book.lots.values():
         values[lot.security_id] += lot.quantity * case.closing_prices[lot.security_id]
     cash = sum(book.cash.values(), Decimal(0))
-    wealth = cash + money(sum(values.values(), Decimal(0)))
+    fees = fee_summary(book)
+    wealth = cash + money(sum(values.values(), Decimal(0))) - fees["cash_owed"]
     return dict(
+        fee_summary=fees,
+        fee_assessments=book.fee_assessments,
+        fee_owed_by_account=book.fee_owed,
         cash_by_account=book.cash,
         closing_cash=cash,
         security_values={key: money(value) for key, value in values.items()},

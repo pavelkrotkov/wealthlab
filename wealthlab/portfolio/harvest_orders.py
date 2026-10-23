@@ -1,4 +1,8 @@
-"""Harvest proceeds alone fund the replacement and both commissions; no new cash is assumed."""
+"""Sale proceeds fund existing fee debt, commissions, then replacement purchases.
+
+No outside cash is assumed. Paying an old fee is not a second expense; the fee
+ledger already included its obligation in pre-tax wealth before the sale.
+"""
 
 from decimal import ROUND_DOWN, Decimal
 
@@ -10,7 +14,7 @@ from wealthlab.portfolio.orders import Trade
 def pair(book, policy, lot, quantity, index):
     fee = policy.commission_per_trade
     gross = money(quantity * policy.prices[policy.security_id])
-    net = gross - 2 * fee
+    net = gross - 2 * fee - book.fee_owed[policy.account_id]
     if net <= 0:
         return None
     replacement_quantity = (net / policy.prices[policy.replacement_id]).quantize(

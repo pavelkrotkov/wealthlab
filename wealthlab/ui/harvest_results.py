@@ -44,4 +44,5 @@ def summary(label, row):
         "Annual tax saving": row["total_tax_saving"],
         "Tax-adjusted difference": row["tax_adjusted_difference"],
         "Extra trading costs": row["extra_transaction_costs"],
+        "Extra cash fees": row["extra_cash_fees"],
     }

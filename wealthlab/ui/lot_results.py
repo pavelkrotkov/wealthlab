@@ -4,6 +4,7 @@ import json
 
 import streamlit as st
 
+from wealthlab.ui.fee_results import display as fee_results
 from wealthlab.ui.harvest_results import display as harvest_results
 from wealthlab.ui.lot_tax_results import display as lot_tax_results
 from wealthlab.ui.sale_results import display as sale_results
@@ -11,9 +12,10 @@ from wealthlab.ui.wash_results import display as wash_results
 
 
 def results(result):
-    st.metric("Gross marked wealth · USD", f"${result['gross_wealth']:,.2f}")
+    st.metric("Marked wealth before tax · USD", f"${result['gross_wealth']:,.2f}")
     st.caption(result["scope"])
     harvest_results(result)
+    fee_results(result)
     sale_results(result["sale_decisions"])
     st.caption("NJ treatment: " + result["nj_wash_treatment"])
     lot_tax_results(result["annual_tax_comparison"])

@@ -3,6 +3,7 @@
 import streamlit as st
 
 from wealthlab.portfolio.example import synthetic
+from wealthlab.portfolio.fee_example import synthetic as fee_example
 from wealthlab.portfolio.harvest_example import synthetic as harvest_example
 from wealthlab.ui.lot_inputs import edit, read
 from wealthlab.ui.lot_results import results
@@ -25,10 +26,15 @@ def show():
         "accounts; cross-security conversion matching is not yet supported. Economic cost, "
         "when known, is separate from tax basis. Open loss windows remain pending."
     )
-    example = st.selectbox("Synthetic example", ["Basic lot accounting", "Harvesting comparison"])
+    examples = {
+        "Basic lot accounting": synthetic,
+        "Harvesting comparison": harvest_example,
+        "Harvesting with manager fees": fee_example,
+    }
+    example = st.selectbox("Synthetic example", list(examples))
     uploaded = st.file_uploader("Load lot case JSON", type="json")
     try:
-        demo = harvest_example() if example == "Harvesting comparison" else synthetic()
+        demo = examples[example]()
         raw = read(uploaded) if uploaded else demo.model_dump_json(indent=2)
         edit(raw)
         if "lot_result" in st.session_state:
