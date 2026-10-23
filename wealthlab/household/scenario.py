@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
 from wealthlab.household.validation import validate_dates, validate_references
+from wealthlab.tax.projection_inputs import TaxPlan
 
 
 class YearToDate(BaseModel):
@@ -36,6 +37,7 @@ class Scenario(BaseModel):
     expenses: list[Expense]
     debts: list[Debt]
     contributions: list[Contribution]
+    tax_plan: TaxPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:

@@ -7,13 +7,17 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
 
 
-def earnings(scenario: Scenario, start, end) -> Decimal:
+def earning_items(scenario: Scenario, start, end) -> dict[str, Decimal]:
     retirement = {member.id: member.retirement_date for member in scenario.members}
-    total = Decimal(0)
+    result = {}
     for income in scenario.incomes:
         cutoff = min(end, retirement[income.owner]) if income.stop_at_retirement else end
-        total += amount(income, start, cutoff, scenario)
-    return total
+        result[income.id] = amount(income, start, cutoff, scenario)
+    return result
+
+
+def earnings(scenario: Scenario, start, end) -> Decimal:
+    return sum(earning_items(scenario, start, end).values(), Decimal(0))
 
 
 def spending(scenario: Scenario, wallet: Wallet, start, end) -> dict:
@@ -50,7 +54,16 @@ def fees(scenario: Scenario, wallet: Wallet, start, end, owed: Decimal) -> dict:
     New shortfalls exclude previously reported arrears to avoid counting the same
     missed payment again in the cumulative funding-failure diagnostic.
     """
-    due = money(
+    due = fee_due(scenario, start, end)
+    paid = wallet.pay(owed + due)
+    newly_unfunded = due - max(Decimal(0), paid - owed)
+    return dict(
+        fees=paid, fees_unfunded=newly_unfunded, fees_owed=owed + due - paid, current_fees_due=due
+    )
+
+
+def fee_due(scenario: Scenario, start, end) -> Decimal:
+    return money(
         sum(
             (
                 account.monthly_fee * Decimal(str(scenario.usd_per_currency[account.currency]))
@@ -59,9 +72,4 @@ def fees(scenario: Scenario, wallet: Wallet, start, end, owed: Decimal) -> dict:
             Decimal(0),
         )
         * fraction(start, end)
-    )
-    paid = wallet.pay(owed + due)
-    newly_unfunded = due - max(Decimal(0), paid - owed)
-    return dict(
-        fees=paid, fees_unfunded=newly_unfunded, fees_owed=owed + due - paid, current_fees_due=due
     )

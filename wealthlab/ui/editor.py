@@ -11,6 +11,7 @@ from wealthlab.household import records, schedules
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import MAX_BYTES
 from wealthlab.ui.settings import controls
+from wealthlab.ui.tax_plan import controls as tax_controls
 
 MODELS = dict(
     members=records.Member,
@@ -45,9 +46,11 @@ def editor(scenario: Scenario) -> Scenario | None:
             "Opening balances already include year-to-date activity. End dates are exclusive."
         )
         uploads = tables(payload)
+        tax_plan = tax_controls(payload, scenario)
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:
         return None
+    payload["tax_plan"] = json.loads(tax_plan) if tax_plan is not None else None
     payload["usd_per_currency"] = json.loads(payload["usd_per_currency"])
     for name, raw in uploads.items():
         if len(raw) > MAX_BYTES:

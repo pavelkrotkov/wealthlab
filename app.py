@@ -39,9 +39,13 @@ def checks():
 def main():
     st.set_page_config(page_title="Wealthlab", page_icon="📊", layout="wide")
     st.title("Wealthlab")
-    page = st.sidebar.radio("Workspace", ["Household", "Engine checks"])
+    page = st.sidebar.radio("Workspace", ["Household", "Annual tax", "Engine checks"])
     if page == "Household":
         from wealthlab.ui.household import show
+
+        show()
+    elif page == "Annual tax":
+        from wealthlab.ui.tax import show
 
         show()
     else:

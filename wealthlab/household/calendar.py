@@ -1,11 +1,16 @@
 """Calendar-month accruals with exact overlap for partial months and retirement."""
 
+from __future__ import annotations
+
 from calendar import monthrange
 from datetime import date
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
-from wealthlab.household.scenario import Scenario
 from wealthlab.household.schedules import DatedAmount
+
+if TYPE_CHECKING:
+    from wealthlab.household.scenario import Scenario
 
 CENT = Decimal("0.01")
 
