@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: lot accounting, conditional federal/NJ wash tracking, dated sale and tax-budget policies, and annual liability comparisons implemented; matched harvesting strategies and household cash integration remain in progress under #5.
+Status: lot accounting, conditional federal/NJ wash tracking, dated sale and tax-budget policies, and annual liability comparisons, matched long-only harvesting and hypothetical taxable exits implemented; household cash integration remains in progress under #5.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
@@ -40,7 +40,7 @@ The same matching implementation serves both jurisdictions, but each has indepen
 
 Optional `lot_tax_cases` supplies one annual filing-unit forecast per calendar year, in order. Each baseline contains other income, deductions and pre-opening activity, excluding the disposals modeled by this lot case. Federal wash tracking and an explicit NJ treatment are required. Only the first year supplies opening capital-loss carry; later years propagate the with-trade and without-trade carries independently. NJ disposition losses follow the NJ engine's same-category rules and do not become a federal-style capital carry.
 
-Recognized short-term, long-term and collectibles gains retain their character. Pending losses receive no deduction. A January replacement revises the original December loss year, rather than creating a January loss. Results show both annual liabilities, their difference, pending amounts and remaining federal carry. Entered deductions are fixed in this comparison: it does not infer the payment-date SALT/refund feedback or subtract liability from portfolio cash. It is a conditional annual-liability comparison, not spendable terminal wealth or the final matched harvesting-strategy comparison.
+Recognized short-term, long-term and collectibles gains retain their character. Pending losses receive no deduction. A January replacement revises the original December loss year, rather than creating a January loss. Results show both annual liabilities, their difference, pending amounts and remaining federal carry. Entered deductions are fixed in this comparison: it does not infer the payment-date SALT/refund feedback or subtract liability from portfolio cash. It is a conditional annual-liability comparison, not spendable terminal wealth or a household cash-flow comparison.
 
 ## Tax-budget decisions
 
@@ -49,6 +49,18 @@ Recognized short-term, long-term and collectibles gains retain their character. 
 The budget limits the current year's modeled liability difference versus the no-modeled-lot-trades path, including each path's earlier carry consequences. It is cumulative: repeated policies cannot reuse a previously consumed annual budget. If earlier trades already exceed it and no evaluated sale repairs that, zero shares are sold and the diagnostic remains over budget. Tax liability is reported rather than paid from cash in this workbench. Subsequent manual trades or revised forecasts can invalidate the decision-date estimate.
 
 The bounded search evaluates a configurable 2–128 interval grid (default 32), then refines above the largest feasible sample to microshare resolution or 24 iterations. Because credits, loss lots and tax cliffs can make liability nonmonotone, the result is the largest evaluated feasible quantity, not a certified global optimum. All reported executed quantities satisfy the evaluated budget unless the baseline was already over it; that condition is explicit.
+
+## Matched harvesting and taxable exit
+
+Each `harvest_policies` entry supplies dated prices, a taxable account, source and replacement securities, explicit replacement eligibility, loss thresholds, selection order, optional gross-sale cap and per-trade commission. Only liquid lots with a federal loss exceeding both thresholds qualify. Fees do not manufacture threshold losses. Replacement shares are rounded down to six decimals and funded solely by sale proceeds less both commissions; residual cash remains in the account. Every sale and purchase passes through the existing basis, cash and wash ledgers.
+
+A distinct ticker is not legal proof of a permitted replacement: eligibility and distinct substantially-identical groups must be supplied. Known household loss sales of the replacement group in the prior 30 days block the replacement. Later manual purchases remain unknown at decision time and can still wash a harvested loss. Manual trades run before sale policies, then harvesting policies on the same date. Collectibles and retirement-account harvesting are rejected by this stock/securities policy.
+
+`compare_harvesting` replays the same opening portfolio, manual trades, sale policies, dated prices and commission schedule without harvest policies. Actual transaction costs differ when trades differ. It reports marked wealth difference, annual filing-unit liability saving, their sum, and extra trading costs. Without annual tax forecasts, tax saving and tax-adjusted difference remain unknown. All annual amounts are undiscounted; tax savings are not paid into or reinvested by the portfolio. Replacement underperformance remains visible rather than being attributed to tax efficiency.
+
+Optional `terminal_exit` sells liquid positions in selected taxable accounts at closing marks through the ordinary sale ledger, charging a commission per account/security. Locked positions remain visible. Retirement accounts cannot be selected. Losses whose forward wash windows are still open remain pending unless the user explicitly assumes no substantially-identical purchases for 30 days after exit. This view estimates incremental annual liability under a stated exit; it does not claim complete household spendable wealth.
+
+The synthetic UI example harvests a $250 loss and shows a $55 annual liability reduction while held. With matched price recovery and a same-year exit, that reduction reverses to zero. Checks separately cover replacement underperformance, commissions, partial sale caps, locked positions, future wash purchases, pending exit losses, missing tax forecasts and invariance of prior decisions to closing prices.
 
 ## Next implementation constraints
 

@@ -13,7 +13,7 @@ def test_nj_override_and_annual_comparison_are_visible():
     import json
 
     app.text_area[0].set_value(json.dumps(payload))
-    app.selectbox[0].select("federal_rules")
+    app.selectbox(key="nj_wash_override").select("federal_rules")
     app.button(key="FormSubmitter:lot_case-Calculate lot accounting").click().run(timeout=30)
     assert not app.exception
     assert not app.error

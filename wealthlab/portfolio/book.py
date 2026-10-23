@@ -15,13 +15,18 @@ class Book:
         self.accounts = {item.id: item for item in case.accounts}
         self.securities = {item.id: item for item in case.securities}
         self.lots = {item.id: item for item in case.lots}
-        self.allocated_ids = {item.id for item in chain(case.lots, case.trades, case.sale_policies)}
+        self.allocated_ids = {
+            item.id
+            for item in chain(case.lots, case.trades, case.sale_policies, case.harvest_policies)
+        }
         # Splitting a replacement must preserve purchase order independently of lot IDs.
         self.share_order = {lot.id: (index, Decimal(0)) for index, lot in enumerate(case.lots)}
         self.origins = {item.id: item.id for item in case.lots}
         self.cash = {item.id: item.cash for item in case.accounts}
         self.disposals = []
         self.history = []
+        self.harvest_sales = set()
+        self.harvest_decisions = []
         self.wash = WashLedger(case)
         self.nj_wash = WashLedger(case, "nj")
 

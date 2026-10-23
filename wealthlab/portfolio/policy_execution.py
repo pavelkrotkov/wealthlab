@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.concentration import ratio
+from wealthlab.portfolio.harvesting import execute as harvest
 from wealthlab.portfolio.policy_amounts import eligible_lots, positions, requested
 from wealthlab.portfolio.policy_order import sale
 from wealthlab.portfolio.tax_budget import choose, diagnostics
@@ -50,10 +51,13 @@ def replay(case, book):
     """
     events = [(trade.date, 0, index, trade) for index, trade in enumerate(case.trades)]
     events += [(item.date, 1, index, item) for index, item in enumerate(case.sale_policies)]
+    events += [(item.date, 2, index, item) for index, item in enumerate(case.harvest_policies)]
     decisions = []
     for _, kind, _, event in sorted(events, key=lambda item: item[:3]):
         if kind == 0:
             book.trade(event)
-        else:
+        elif kind == 1:
             decisions.append(execute(case, book, event))
+        else:
+            book.harvest_decisions.extend(harvest(book, event))
     return decisions
