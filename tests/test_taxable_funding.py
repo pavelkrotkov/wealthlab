@@ -65,3 +65,27 @@ def test_locked_account_cannot_fund_spending(payload):
     assert row["funding_sale_proceeds"] == 0
     assert row["funding_shortfall"] == 10000
     assert row["account_balances"]["brokerage"] == 100000
+
+
+def test_sale_includes_state_payment_itemized_deduction(payload):
+    from wealthlab.tax.annual import evaluate
+    from wealthlab.tax.facts import Deductions
+
+    household = scenario(payload)
+    plan = household.tax_plan
+    case = plan.cases[0]
+    deductions = Deductions(qualified_mortgage_interest=D(30000))
+    case = case.model_copy(update={"federal_deductions": deductions})
+    with_opening_nj = deductions.model_copy(update={"state_local_income_tax_paid": D("8570.10")})
+    opening = evaluate(case.model_copy(update={"federal_deductions": with_opening_nj}))
+    paid = case.payments.model_copy(
+        update={"federal_income_withheld": opening["federal"]["income_tax"]}
+    )
+    case = case.model_copy(update={"payments": paid})
+    plan = plan.model_copy(update={"cases": [case]})
+    row = project(household.model_copy(update={"tax_plan": plan}))[0]
+    # 15% LT plus 6.37% NJ, offset by 22% of the NJ payment deducted federally.
+    assert abs(row["funding_sale_proceeds"] - D("12495.10")) <= D(".02")
+    assert row["funding_shortfall"] == 0
+    assert row["tax_owed"] == 0
+    assert row["closing_cash"] <= D(".02")

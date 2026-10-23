@@ -2,11 +2,11 @@
 
 from decimal import Decimal
 
-from wealthlab.tax import payments, recognition
+from wealthlab.tax import payments, prior_payments, recognition, state_deduction
 from wealthlab.tax.annual import evaluate
 from wealthlab.tax.funding_accounts import AccountFunding
 from wealthlab.tax.projection_validation import validate
-from wealthlab.tax.settlement import close_year, reconcile
+from wealthlab.tax.settlement import close_year
 
 
 class TaxLedger:
@@ -26,8 +26,12 @@ class TaxLedger:
         self.result: dict = {}
         self.previous = None
         self.year = None
-        self.owed = Decimal(0)
+        self.outstanding = dict(federal=Decimal(0), new_jersey=Decimal(0))
         self.refunds = []
+
+    @property
+    def owed(self):
+        return sum(self.outstanding.values(), Decimal(0))
 
     def start_year(self, year):
         if self.year == year:
@@ -50,7 +54,9 @@ class TaxLedger:
                     "nj_income": case.nj_income.model_copy(update={"business": business}),
                 }
             )
-        self.case = case
+        self.case = state_deduction.add(
+            case, state_deduction.nj_paid(case), self.plan.state_deduction_mode
+        )
 
     def month(self, amounts, wallet, start, end, required_cash) -> dict:
         """Recognize this month's income, then pay only available cash.
@@ -60,27 +66,23 @@ class TaxLedger:
         Year-end settlement later reconciles the remaining tax balance.
         """
         self.start_year(start.year)
-        received = sum((value for due, value in self.refunds if due < end), Decimal(0))
-        self.refunds = [(due, value) for due, value in self.refunds if due >= end]
-        wallet.deposit(received)
-        prior_paid = wallet.pay(self.owed)
-        self.owed -= prior_paid
+        received, taxable_refund = prior_payments.receive(self, wallet, end)
+        prior_paid = prior_payments.pay(self, wallet)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
         event_cash = self.events(wallet, start, end)
         sold = self.funding.fund(self, wallet, required_cash, amounts, start, end)
-        paid_after_sale = wallet.pay(self.owed)
-        self.owed -= paid_after_sale
+        paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
         requested = payments.withholding_request(amounts, self.plan, result, start, end)
         before = self.case.payments
-        self.case, paid = payments.pay(self.case, wallet, requested)
+        self.case, paid = payments.pay(self.case, wallet, requested, self.plan.state_deduction_mode)
         estimates = (
             self.case.payments.federal_estimates
             - before.federal_estimates
             + self.case.payments.nj_estimates
             - before.nj_estimates
         )
-        self.result = reconcile(result, self.case)
+        self.result = evaluate(self.case)
         return dict(
             tax_withheld=paid - estimates,
             tax_estimates_paid=estimates,
@@ -88,6 +90,7 @@ class TaxLedger:
             prior_tax_paid=prior_paid + paid_after_sale,
             funding_sale_proceeds=sold,
             tax_refund_received=received,
+            taxable_state_refund=taxable_refund,
             tax_event_cash=event_cash,
         )
 

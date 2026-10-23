@@ -3,7 +3,8 @@
 from datetime import date
 from decimal import Decimal
 
-from wealthlab.tax import payments
+from wealthlab.tax import payments, state_deduction
+from wealthlab.tax.annual import evaluate
 from wealthlab.tax.liquidation import recognized
 
 
@@ -20,11 +21,19 @@ def proposal(case, source, bases, value, sold):
     return case.model_copy(update={"federal_income": federal, "nj_income": nj})
 
 
-def due(result: dict, ledger, amounts, start, end) -> Decimal:
+def due(case, ledger, amounts, start, end) -> Decimal:
+    case = state_deduction.add(
+        case, ledger.outstanding["new_jersey"], ledger.plan.state_deduction_mode
+    )
+    result = evaluate(case)
     withholding = payments.withholding_request(amounts, ledger.plan, result, start, end)
     federal_cash = withholding["employee_payroll_withheld"] + withholding["federal_income_withheld"]
     federal_cash += withholding["federal_estimates"]
     nj_cash = withholding["nj_withheld"] + withholding["nj_estimates"]
+    if end >= date(start.year + 1, 1, 1):
+        nj_cash = max(nj_cash, result["nj_balance"])
+    case = state_deduction.add(case, nj_cash, ledger.plan.state_deduction_mode)
+    result = evaluate(case)
     if end >= date(start.year + 1, 1, 1):
         balances = payments.balances(result)
         # December withholding can exceed final liability; that overpayment is

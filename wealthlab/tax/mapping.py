@@ -9,6 +9,7 @@ INCOME_FIELDS = dict(
     deferrals_primary="pencon_p",
     deferrals_spouse="pencon_s",
     interest="e00300",
+    taxable_state_refund="e00700",
     tax_exempt_interest="e00400",
     dividends="e00600",
     qualified_dividends="e00650",

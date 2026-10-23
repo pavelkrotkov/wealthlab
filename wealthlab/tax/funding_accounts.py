@@ -3,7 +3,6 @@
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
-from wealthlab.tax.annual import evaluate
 from wealthlab.tax.funding import solve
 from wealthlab.tax.funding_tax import due, proposal
 
@@ -30,7 +29,7 @@ class AccountFunding:
 
             def balance(sold, source=source, value=value):
                 case = proposal(ledger.case, source, self.basis[source.account_id], value, sold)
-                return due(evaluate(case), ledger, amounts, start, end)
+                return due(case, ledger, amounts, start, end)
 
             funding = solve(wallet.cash, spending, value, balance)
             if not funding["converged"]:

@@ -19,6 +19,7 @@ class FederalIncome(TaxModel):
     wages_spouse: Money = Decimal(0)
     deferrals_primary: Money = Decimal(0)
     deferrals_spouse: Money = Decimal(0)
+    taxable_state_refund: Money = Decimal(0)
     interest: Money = Decimal(0)
     tax_exempt_interest: Money = Decimal(0)
     dividends: Money = Decimal(0)

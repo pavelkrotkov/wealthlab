@@ -19,8 +19,10 @@ def controls(payload: dict, scenario) -> str | None:
             "Year-end balances are paid in December; refunds arrive the following April. "
             "Dated estimated payments and optional taxable funding accounts are editable below. "
             "Funding uses proportional basis, explicit gain character and allowed/denied losses. "
-            "Itemized deductions are entered assumptions; "
-            "state-payment coupling is not automatic yet. "
+            "Actual-payments mode adds NJ opening and new cash payments to the federal "
+            "state-tax deduction; the entered deduction must exclude those NJ amounts. "
+            "Other deductions remain annual assumptions. A state refund with a prior tax "
+            "benefit requires an explicit taxable-fraction assumption keyed by its source year. "
             "This is a planning convention, not a filing/payment calendar."
         )
         if not enabled:

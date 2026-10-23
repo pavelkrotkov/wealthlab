@@ -1,6 +1,6 @@
 # Wealthlab
 
-A local-first financial scenario workbench. **Early implementation: household editing, monthly cash-flow comparison, a separate annual federal/NJ tax workbench and engine checks run locally. Optional household tax cash flows and permitted taxable-account funding now run. Itemized-deduction coupling, market paths, product strategies and optimization remain in progress.**
+A local-first financial scenario workbench. **Early implementation: household editing, monthly cash-flow comparison, a separate annual federal/NJ tax workbench and engine checks run locally. Optional household tax cash flows and permitted taxable-account funding now run. State-tax payment deductions and conditional refund recognition are included. Market paths, product strategies and optimization remain in progress.**
 
 The intended workflow is to define a household, compare explicit policies under the same market paths, inspect spending shortfalls and taxes, and explore better policies within user-set bounds.
 

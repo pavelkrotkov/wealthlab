@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from typing import Literal, Self
+from typing import Annotated, Literal, Self
 
 from pydantic import Field, model_validator
 
@@ -45,6 +45,13 @@ class EstimatedPayment(TaxModel):
 
 
 class TaxPlan(TaxModel):
+    """Annual facts plus cash timing assumptions for one filing unit.
+
+    Actual-payment deductions add NJ opening and newly paid amounts to the
+    entered supplemental deduction. Refund fractions are keyed by source year;
+    they are scenario assumptions, never inferred eligibility determinations.
+    """
+
     cases: list[AnnualCase] = Field(min_length=1)
     income_rules: list[IncomeRule]
     events: list[TaxEvent] = Field(default_factory=list)
@@ -52,6 +59,10 @@ class TaxPlan(TaxModel):
     federal_wage_withholding: Decimal = Field(ge=0, le=1)
     nj_wage_withholding: Decimal = Field(ge=0, le=1)
     funding_sources: list[FundingSource] = Field(default_factory=list)
+    state_deduction_mode: Literal["actual_payments", "entered"] = "actual_payments"
+    state_refund_taxable_fractions: dict[int, Annotated[Decimal, Field(ge=0, le=1)]] = Field(
+        default_factory=dict
+    )
     refund_month: int = Field(default=4, ge=1, le=12)
 
     @model_validator(mode="after")

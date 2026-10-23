@@ -3,10 +3,12 @@
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
-from wealthlab.tax.annual import AnnualCase
+from wealthlab.tax import state_deduction
+from wealthlab.tax.annual import AnnualCase, evaluate
 
 
-def pay(case: AnnualCase, wallet, requested: dict[str, Decimal]) -> tuple[AnnualCase, Decimal]:
+def pay(case: AnnualCase, wallet, requested: dict[str, Decimal], mode="entered"):
+    """Only paid NJ amounts enter the federal deduction in actual-payments mode."""
     values = case.payments.model_dump()
     total = Decimal(0)
     for field, due in requested.items():
@@ -14,7 +16,9 @@ def pay(case: AnnualCase, wallet, requested: dict[str, Decimal]) -> tuple[Annual
         values[field] += paid
         total += paid
     updated = type(case.payments).model_validate(values)
-    return case.model_copy(update={"payments": updated}), total
+    after = case.model_copy(update={"payments": updated})
+    nj_delta = state_deduction.nj_paid(after) - state_deduction.nj_paid(case)
+    return state_deduction.add(after, nj_delta, mode), total
 
 
 def balances(result: dict) -> dict[str, Decimal]:
@@ -26,15 +30,17 @@ def balances(result: dict) -> dict[str, Decimal]:
     )
 
 
-def settle(case: AnnualCase, wallet, result: dict) -> tuple[AnnualCase, Decimal]:
+def settle(case: AnnualCase, wallet, result: dict, mode="entered"):
+    # NJ cash is paid first; federal liability then reflects the deduction of
+    # the amount actually paid, including when available cash is insufficient.
+    case, state_paid = pay(case, wallet, {"nj_estimates": result["nj_balance"]}, mode)
+    result = evaluate(case)
     federal = max(Decimal(0), balances(result)["federal"])
     payroll = min(federal, max(Decimal(0), result["payroll_balance"]))
-    requested = dict(
-        employee_payroll_withheld=payroll,
-        federal_estimates=federal - payroll,
-        nj_estimates=max(Decimal(0), result["nj_balance"]),
+    case, federal_paid = pay(
+        case, wallet, {"employee_payroll_withheld": payroll, "federal_estimates": federal - payroll}
     )
-    return pay(case, wallet, requested)
+    return case, state_paid + federal_paid
 
 
 def withholding_request(amounts: dict, plan, result: dict, start, end) -> dict:
@@ -52,8 +58,9 @@ def withholding_request(amounts: dict, plan, result: dict, start, end) -> dict:
     )
     requested = dict(
         employee_payroll_withheld=max(Decimal(0), result["payroll_balance"]),
-        federal_income_withheld=wages * plan.federal_wage_withholding,
         nj_withheld=state_wages * plan.nj_wage_withholding,
+        nj_estimates=estimated_requests(plan, start, end)["nj_estimates"],
+        federal_income_withheld=wages * plan.federal_wage_withholding,
     )
     requested.update(estimated_requests(plan, start, end))
     return requested

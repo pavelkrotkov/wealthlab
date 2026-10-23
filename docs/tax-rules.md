@@ -35,3 +35,9 @@ The annual UI reconciles federal income-tax payments, employee payroll withholdi
 ## Filing-age conventions
 
 The household template preserves separate federal and NJ filing ages. The [2025 IRS Form 1040 instructions](https://www.irs.gov/pub/irs-prior/i1040gi--2025.pdf) and [Publication 501](https://www.irs.gov/publications/p501) treat the day before the birthday as reaching age 65, including January 1 birthdays. The 2025 NJ instructions instead specify birth in 1960 or earlier for the senior exemption. An independent case for January 1, 1961 gives federal age 65 and NJ age 64 in 2025, with the corresponding standard deduction and NJ exemption. The local reference mirror was checked for both passages.
+
+## State payment deductions and refund recoveries
+
+The household ledger distinguishes actual NJ payments from accrued liability and preserves jurisdiction on unpaid balances. Opening and new NJ payments enter the federal deduction in actual-payments mode; the entered deduction is supplemental and excludes them. Entered mode keeps the total under user control. See [cash-flow conventions](adr/0003-tax-cash-flow.md) for opening timing, settlement and conditional refund semantics.
+
+The [2025 Schedule A instructions, line 5a](https://www.irs.gov/pub/irs-pdf/i1040sca.pdf) cover withholding, estimated payments and prior-year state taxes paid during the calendar year; expected/later refunds do not reduce that deduction. [Publication 525, Recoveries](https://www.irs.gov/publications/p525) requires a tax-benefit analysis before treating a later refund as federal income. Verified October 23, 2026. The suite automatically recognizes no recovery when its prior federal deduction/tax/carry comparison shows no benefit, and otherwise requires a declared taxable fraction. It does not claim a full multi-recovery worksheet or infer an allowable alternative sales-tax deduction.
