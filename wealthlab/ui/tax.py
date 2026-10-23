@@ -5,6 +5,7 @@ import json
 import streamlit as st
 
 from wealthlab.tax.annual import AnnualCase, evaluate, synthetic
+from wealthlab.ui.tax_results import display
 
 SECTIONS = {
     "Filing and policy": ["filing", "policy"],
@@ -70,17 +71,7 @@ def show():
             case = updated
         result = st.session_state.get("annual_result")
         if result is not None:
-            st.metric("Annual federal + NJ liability", f"${result['total_liability']:,.2f}")
-            st.metric(
-                "Remaining balance after entered payments", f"${result['total_balance']:,.2f}"
-            )
-            st.json(json.loads(json.dumps(result, default=str)))
-            st.download_button(
-                "Export annual inputs",
-                case.model_dump_json(indent=2),
-                file_name="annual-tax-case.json",
-                mime="application/json",
-            )
+            display(case, result)
     except (ValueError, OSError) as error:
         st.error(str(error))
 
