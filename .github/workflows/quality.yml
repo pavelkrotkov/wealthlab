@@ -33,12 +33,12 @@ jobs:
       - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
         with:
           enable-cache: false
-      - run: uv sync --frozen --dev
-      - run: uv run --frozen ruff check --output-format=github .
-      - run: uv run --frozen ruff format --check .
-      - run: uv run --frozen ty check --output-format=github .
-      - run: uv run --frozen python -m tools.quality
-      - run: uv run --frozen pytest --cov --cov-report=term-missing --basetemp=.runtime/pytest
-      - run: uv run --frozen pip-audit --cache-dir .cache/pip-audit
-      - run: uv run --frozen zizmor .github/workflows
+      - run: uv sync --frozen --dev --extra benchmarks
+      - run: uv run --no-sync ruff check --output-format=github .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync ty check --output-format=github .
+      - run: uv run --no-sync python -m tools.quality
+      - run: uv run --no-sync pytest --cov --cov-report=term-missing --basetemp=.runtime/pytest
+      - run: uv run --no-sync pip-audit --cache-dir .cache/pip-audit
+      - run: uv run --no-sync zizmor .github/workflows
       - uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2
