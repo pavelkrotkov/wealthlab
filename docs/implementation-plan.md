@@ -1,29 +1,29 @@
 # Implementation plan and draft tickets
 
-October 23, 2026. Feature scope is confirmed; this breakdown awaits review before GitHub issue publication. Every feature includes editable inputs, a callable calculation path, UI results, import/export where relevant and a reproducible acceptance case. No ticket is complete merely because a schema or placeholder exists.
+October 23, 2026. Feature scope and this breakdown were approved; all 18 tickets are published in GitHub Issues. Every feature includes editable inputs, a callable calculation path, UI results, import/export where relevant and a reproducible acceptance case. No ticket is complete merely because a schema or placeholder exists.
 
 ## Delivery order
 
 | ID | Demoable slice | Type | Depends on |
 |---|---|---|---|
-| 01 | Reuse spikes and repository quality gates | AFK, except provider secret | None |
-| 02 | Save, edit and compare a household cash-flow scenario locally | AFK | 01 |
-| 03 | Explain annual federal and NJ tax and settle it in cash | AFK | 02 |
-| 04 | Compare concentration reduction with tax-lot harvesting | AFK | 03 |
-| 05 | Plan retirement-account withdrawals, conversions and benefits | AFK | 03 |
-| 06 | Project employment, vesting and employer-fund liquidity | AFK | 03 |
-| 07 | Run matched historical, stochastic and stress comparisons | AFK | 04, 05, 06 |
-| 08 | Compare leveraged long/short and private tax-aware funds | AFK | 04, 07 |
-| 09 | Compare covered calls, collars and synthetic exposure | AFK | 04, 07 |
-| 10 | Compare a traditional exchange fund and its exit basket | AFK | 04, 07 |
-| 11 | Project opportunity-zone fund cash flows and tax dates | AFK | 03, 07 |
-| 12 | Project drilling-partnership cash flows and deduction limits | AFK | 03, 07 |
-| 13 | Compare whole-life illustrations with liquid alternatives | AFK | 03, 07 |
-| 14 | Evaluate Puerto Rico residency and incentive assumptions | AFK | 03, 04, 06 |
-| 15 | Evaluate Spanish regional income and wealth taxes | AFK | 03, 04, 05 |
-| 16 | Reconcile cross-border moves, FX and overlapping taxes | AFK | 14, 15 |
-| 17 | Search bounded policies and compare spending safety | AFK | 07–13, 16 |
-| 18 | Package and validate the complete local workbench | AFK | 17 |
+| [01](https://github.com/pavelkrotkov/wealthlab/issues/2) | Reuse spikes and repository quality gates | AFK, except provider secret | None |
+| [02](https://github.com/pavelkrotkov/wealthlab/issues/3) | Save, edit and compare a household cash-flow scenario locally | AFK | [01](https://github.com/pavelkrotkov/wealthlab/issues/2) |
+| [03](https://github.com/pavelkrotkov/wealthlab/issues/4) | Explain annual federal and NJ tax and settle it in cash | AFK | [02](https://github.com/pavelkrotkov/wealthlab/issues/3) |
+| [04](https://github.com/pavelkrotkov/wealthlab/issues/5) | Compare concentration reduction with tax-lot harvesting | AFK | [03](https://github.com/pavelkrotkov/wealthlab/issues/4) |
+| [05](https://github.com/pavelkrotkov/wealthlab/issues/6) | Plan retirement-account withdrawals, conversions and benefits | AFK | [03](https://github.com/pavelkrotkov/wealthlab/issues/4) |
+| [06](https://github.com/pavelkrotkov/wealthlab/issues/7) | Project employment, vesting and employer-fund liquidity | AFK | [03](https://github.com/pavelkrotkov/wealthlab/issues/4) |
+| [07](https://github.com/pavelkrotkov/wealthlab/issues/8) | Run matched historical, stochastic and stress comparisons | AFK | 04, 05, 06 |
+| [08](https://github.com/pavelkrotkov/wealthlab/issues/9) | Compare leveraged long/short and private tax-aware funds | AFK | 04, 07 |
+| [09](https://github.com/pavelkrotkov/wealthlab/issues/10) | Compare covered calls, collars and synthetic exposure | AFK | 04, 07 |
+| [10](https://github.com/pavelkrotkov/wealthlab/issues/11) | Compare a traditional exchange fund and its exit basket | AFK | 04, 07 |
+| [11](https://github.com/pavelkrotkov/wealthlab/issues/12) | Project opportunity-zone fund cash flows and tax dates | AFK | 03, 07 |
+| [12](https://github.com/pavelkrotkov/wealthlab/issues/13) | Project drilling-partnership cash flows and deduction limits | AFK | 03, 07 |
+| [13](https://github.com/pavelkrotkov/wealthlab/issues/14) | Compare whole-life illustrations with liquid alternatives | AFK | 03, 07 |
+| [14](https://github.com/pavelkrotkov/wealthlab/issues/15) | Evaluate Puerto Rico residency and incentive assumptions | AFK | 03, 04, 06 |
+| [15](https://github.com/pavelkrotkov/wealthlab/issues/16) | Evaluate Spanish regional income and wealth taxes | AFK | 03, 04, 05 |
+| [16](https://github.com/pavelkrotkov/wealthlab/issues/17) | Reconcile cross-border moves, FX and overlapping taxes | AFK | 14, 15 |
+| [17](https://github.com/pavelkrotkov/wealthlab/issues/18) | Search bounded policies and compare spending safety | AFK | 07–13, 16 |
+| [18](https://github.com/pavelkrotkov/wealthlab/issues/19) | Package and validate the complete local workbench | AFK | [17](https://github.com/pavelkrotkov/wealthlab/issues/18) |
 
 AFK means the feature can be implemented with synthetic cases without further personal information. It does not authorize assuming a household's legal eligibility. Missing private inputs stay unset. Actual product terms can later replace conditional assumptions without requiring a code change.
 
