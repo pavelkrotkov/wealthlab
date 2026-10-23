@@ -60,7 +60,6 @@ def withholding_request(amounts: dict, plan, result: dict, start, end) -> dict:
     requested = dict(
         employee_payroll_withheld=max(Decimal(0), result["payroll_balance"]),
         nj_withheld=state_wages * plan.nj_wage_withholding,
-        nj_estimates=estimated_requests(plan, start, end)["nj_estimates"],
         federal_income_withheld=wages * plan.federal_wage_withholding,
     )
     requested.update(estimated_requests(plan, start, end))
