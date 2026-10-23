@@ -27,6 +27,9 @@ def adjusted_replacement(book, lot, quantity, amount, loss, used, jurisdiction):
 
 
 def holding_start(lot, loss):
+    # Tacking adds the old ownership period, not the post-sale gap. For a later
+    # purchase, returning the original start would count days neither lot was
+    # held. The equivalent start shifts forward by that gap (Pub. 550).
     start = date.fromisoformat(loss["federal_holding_start"])
     sold = date.fromisoformat(loss["date"])
     prior_days = max(0, (min(sold, lot.acquired) - start).days)

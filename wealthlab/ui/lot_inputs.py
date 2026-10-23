@@ -13,6 +13,7 @@ from wealthlab.ui import harvest_editor, sale_policy_editor
 
 
 def edit(raw):
+    select_source(raw)
     with st.form("lot_case"):
         edited = st.text_area("Accounts, securities, lots and dated trades (JSON)", raw, height=400)
         lots = st.file_uploader("Replace opening lots from CSV", type="csv")
@@ -64,3 +65,11 @@ def read(uploaded):
     if len(raw) > MAX_BYTES:
         raise ValueError("Lot import exceeds the 2 MB limit.")
     return raw.decode("utf-8-sig")
+
+
+def select_source(raw):
+    """A newly selected example/import must not inherit another case's result."""
+    if st.session_state.get("lot_source") != raw:
+        st.session_state.pop("lot_result", None)
+        st.session_state.pop("lot_input", None)
+        st.session_state["lot_source"] = raw

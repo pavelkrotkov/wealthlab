@@ -54,3 +54,20 @@ def test_dated_sale_form_executes_and_displays_target():
     assert not app.error
     assert app.dataframe[0].value["Shares sold"][0] == Decimal("20.025")
     assert app.dataframe[0].value["After"][0] == 50
+
+
+def test_example_switch_loads_new_json_and_clears_previous_result():
+    # The installed Streamlit version includes the default text in widget
+    # identity. Switching examples must replace it, and the old result must
+    # disappear before a user submits the newly displayed case.
+    import json
+
+    app = workbench()
+    app.button(key="FormSubmitter:lot_case-Calculate lot accounting").click().run()
+    assert app.metric
+    app.selectbox[0].select("Harvesting comparison").run()
+    assert json.loads(app.text_area[0].value)["compare_harvesting"] is True
+    assert not app.metric
+    app.button(key="FormSubmitter:lot_case-Calculate lot accounting").click().run(timeout=30)
+    assert not app.error
+    assert app.dataframe[0].value["Annual tax saving"][0] == 55
