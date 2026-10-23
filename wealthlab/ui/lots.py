@@ -55,9 +55,18 @@ def results(result):
     st.caption(result["scope"])
     st.subheader("Gross realized gains by disposed lot")
     st.dataframe(result["disposals"], hide_index=True, width="stretch")
+    st.subheader("Original shares sold and ending concentration")
+    st.dataframe(result["concentration"]["securities"], hide_index=True, width="stretch")
+    st.caption(result["concentration"]["meaning"])
     st.subheader("Remaining lots")
     st.dataframe(result["lots"], hide_index=True, width="stretch")
-    st.json({key: value for key, value in result.items() if key not in {"lots", "disposals"}})
+    st.json(
+        {
+            key: value
+            for key, value in result.items()
+            if key not in {"lots", "disposals", "concentration"}
+        }
+    )
     st.download_button(
         "Export lot inputs", st.session_state["lot_input"], "lot-case.json", "application/json"
     )

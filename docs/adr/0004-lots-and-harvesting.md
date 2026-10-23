@@ -8,7 +8,7 @@ Opening positions must exist by the opening date. Trades run in supplied date or
 
 FIFO orders by acquisition date; HIFO orders by federal basis per share, with stable date/ID tie breaks. Specific identification honors the supplied ordered lot list and rejects locked or mismatched lots. HIFO is a selection policy, not a determination that the broker accepted specific identification. Selection validates total availability before mutation. Partial sales allocate basis and net proceeds while retaining exact residual totals. Purchase commissions enter basis; sale commissions reduce proceeds. Purchases must be funded by that account's cash.
 
-The UI currently reports gross realized gains, remaining lots, cash, transaction costs and marked gross wealth. It explicitly does not report recognized harvesting benefits or after-tax wealth. Retirement holdings, gains with different jurisdiction bases and loss trades can be inspected without inventing tax consequences.
+The UI currently reports gross realized gains, remaining lots, cash, transaction costs and marked gross wealth. Original units sold and ending market-value weights are shown separately. Exposure groups aggregate configured long-only values; they do not infer ETF look-through, beta or derivative-adjusted economic exposure. It explicitly does not report recognized harvesting benefits or after-tax wealth. Retirement holdings, gains with different jurisdiction bases and loss trades can be inspected without inventing tax consequences.
 
 ## Next implementation constraints
 

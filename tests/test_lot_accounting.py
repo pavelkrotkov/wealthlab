@@ -36,3 +36,16 @@ def test_purchase_uses_cash_and_includes_commission_in_basis():
     assert result["lots"][1]["id"] == "purchase"
     assert D(result["lots"][1]["federal_basis"]) == 505
     assert result["transaction_costs"] == 10
+
+
+def test_original_share_fraction_is_not_ending_weight():
+    """Selling 25 of 100 shares leaves 75 shares, but cash remains in total wealth.
+
+    The $5 commission reduces the denominator without changing retained units.
+    """
+    result = run(synthetic())
+    row = result["concentration"]["securities"][0]
+    assert row["original_fraction_sold"] == D(".25")
+    assert row["remaining_units"] == 75
+    assert row["wealth_fraction"] == D(7500) / D(10995)
+    assert row["wealth_fraction"] != D(".75")
