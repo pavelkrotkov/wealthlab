@@ -25,7 +25,7 @@ def close_year(ledger, wallet, start, end) -> dict:
     return dict(
         tax_settlement_paid=settled,
         tax_unfunded=unfunded,
-        tax_settlement_payment_gap=monthly_gap(ledger, year_end),
+        tax_settlement_payment_gap=settlement_gap(ledger, year_end),
         tax_owed=ledger.owed,
         tax_refund_receivable=receivable,
         tax_position=current + ledger.owed - receivable,
@@ -62,8 +62,8 @@ def finalize(ledger, start):
     return unfunded
 
 
-def monthly_gap(ledger, year_end):
-    if year_end or ledger.plan.settlement_timing != "monthly_accrued":
+def settlement_gap(ledger, year_end):
+    if not year_end and ledger.plan.settlement_timing != "monthly_accrued":
         return Decimal(0)
     return sum(max(Decimal(0), value) for value in payments.balances(ledger.result).values())
 
