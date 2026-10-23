@@ -5,14 +5,14 @@ from decimal import Decimal
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.book import Book
 from wealthlab.portfolio.concentration import summarize
+from wealthlab.portfolio.policy_execution import replay
 from wealthlab.portfolio.validation import validate
 
 
 def run(case) -> dict:
     validate(case)
     book = Book(case)
-    for trade in case.trades:
-        book.trade(trade)
+    decisions = replay(case, book)
     book.wash.finish(book, case.end)
     values = {key: Decimal(0) for key in book.securities}
     for lot in book.lots.values():
@@ -27,7 +27,9 @@ def run(case) -> dict:
         concentration=summarize(case, book, values, wealth),
         lots=[lot.model_dump(mode="json") for lot in book.lots.values()],
         disposals=book.disposals,
-        transaction_costs=sum((trade.commission for trade in case.trades), Decimal(0)),
+        sale_decisions=decisions,
+        executed_trades=[trade.model_dump(mode="json") for trade in book.history],
+        transaction_costs=sum((trade.commission for trade in book.history), Decimal(0)),
         scope=(
             "Federal wash tracking enabled; NJ wash treatment, household tax benefit and funding "
             "are not integrated yet."

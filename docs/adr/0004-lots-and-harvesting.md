@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: lot accounting and initial federal wash tracking implemented; NJ recognition, policies and household integration in progress under #5.
+Status: lot accounting, initial federal wash tracking and gross sale policies implemented; NJ recognition, tax-budget/harvesting policies and household integration in progress under #5.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
@@ -17,6 +17,16 @@ Optional `federal_wash_tracking` processes each trade before observing later tra
 `opening_wash_context_complete` confirms all relevant retained household purchases are represented, opening bases are adjusted, and there are no unresolved pre-opening loss sales. Otherwise the case must start earlier. An unresolved forward window reports a pending loss rather than an available deduction. The closing date includes all supplied trades that day, so day 30 closes the window. Disposals remain assigned to their original sale dates.
 
 Federal disallowed, basis-deferred, permanently denied and pending losses are separate fields. Economic cost is optional and independent of tax basis: if unknown, economic P&L remains unknown; a federal deferral never becomes a new economic loss. NJ gains remain unadjusted and labeled as such. Cross-security matching/conversion ratios, controlled corporations, derivatives and full household tax attribution are not implemented here. Duplicate substantially-identical groups across different security IDs block enabled tracking rather than silently skipping the relation. This is an initial model under development, not a broker tax-reporting replacement.
+
+## Implemented dated sale decisions
+
+Each optional `sale_policies` entry supplies a date, account, security, lot priority, commission and a complete price snapshot for that decision. Manual orders run before policies on the same day; ties within each input list retain their order. The engine never substitutes closing prices or later decisions into an earlier decision. The UI provides a form for one additional decision, with repeated/staged dates available in the case JSON.
+
+`retain` executes no sale. `sell_all` sells the selected account's currently liquid shares. `original_fraction` is a cumulative target against that account/security's opening shares: previous manual sales count, replacement purchases do not become original shares, and wash splits retain lineage. Repeating the same target does not sell the same fraction twice. Fractional quantities use six decimal places; original-share targets round down to avoid exceeding the requested cumulative fraction.
+
+`target_weight` limits the security's gross market-value share of all configured accounts and cash. It accounts for the proposed sale commission in the denominator and rounds the requested quantity up to six decimals. It can sell only liquid shares in the authorized account, even when other accounts hold the same security. Results show requested, sold and unfilled units plus actual before/after weights. They expose an unattainable target instead of silently selling another account or locked shares. If sale commission exceeds available proceeds, no sale or fee occurs. Taxes are not included in these gross concentration targets; tax-budget and after-tax targets remain pending.
+
+All generated orders use the ordinary lot selection, cash and wash ledger. Executed orders are exported for inspection. Tests cover cumulative staging, commissions, household account limits, locked shares, same-day order, HIFO exclusion of new purchases, and invariance to future/closing price changes.
 
 ## Next implementation constraints
 

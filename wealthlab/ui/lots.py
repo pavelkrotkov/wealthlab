@@ -10,14 +10,16 @@ from wealthlab.household.storage import MAX_BYTES
 from wealthlab.portfolio.cases import LotCase
 from wealthlab.portfolio.engine import run
 from wealthlab.portfolio.example import synthetic
-from wealthlab.ui.wash_results import display as wash_results
+from wealthlab.ui import sale_policy_editor
+from wealthlab.ui.lot_results import results
 
 
 def show():
     st.header("Tax lots and transactions")
     st.warning(
         "Gross lot accounting by default; optional federal wash tracking is available. "
-        "NJ wash treatment, sale policies and household-tax integration are under construction. "
+        "Dated sale policies use explicit price snapshots; NJ wash treatment and "
+        "household-tax integration are under construction. "
         "These results do not establish a harvesting benefit or after-tax wealth. "
         "Amounts are USD; short positions, derivatives and currency translation "
         "are not supported here."
@@ -37,9 +39,13 @@ def show():
                 "Accounts, securities, lots and dated trades (JSON)", raw, height=400
             )
             lots = st.file_uploader("Replace opening lots from CSV", type="csv")
+            decision = sale_policy_editor.inputs()
             submitted = st.form_submit_button("Calculate lot accounting", type="primary")
         if submitted:
             payload = json.loads(edited)
+            if not isinstance(payload, dict):
+                raise ValueError("Lot case JSON must be an object.")
+            sale_policy_editor.append(payload, decision)
             if lots:
                 payload["lots"] = list(csv.DictReader(io.StringIO(read(lots))))
             case = LotCase.model_validate(payload)
@@ -56,31 +62,3 @@ def read(uploaded):
     if len(raw) > MAX_BYTES:
         raise ValueError("Lot import exceeds the 2 MB limit.")
     return raw.decode("utf-8-sig")
-
-
-def results(result):
-    st.metric("Gross marked wealth · USD", f"${result['gross_wealth']:,.2f}")
-    st.caption(result["scope"])
-    wash_results(result["disposals"])
-    st.subheader("Disposed lot details")
-    st.dataframe(result["disposals"], hide_index=True, width="stretch")
-    st.subheader("Original shares sold and ending concentration")
-    st.dataframe(result["concentration"]["securities"], hide_index=True, width="stretch")
-    st.caption(result["concentration"]["meaning"])
-    st.subheader("Remaining lots")
-    st.dataframe(result["lots"], hide_index=True, width="stretch")
-    details = {
-        key: value
-        for key, value in result.items()
-        if key not in {"lots", "disposals", "concentration"}
-    }
-    st.json(json.loads(json.dumps(details, default=str)))
-    st.download_button(
-        "Export lot inputs", st.session_state["lot_input"], "lot-case.json", "application/json"
-    )
-    st.download_button(
-        "Export lot results",
-        json.dumps(result, default=str, indent=2),
-        "lot-results.json",
-        "application/json",
-    )

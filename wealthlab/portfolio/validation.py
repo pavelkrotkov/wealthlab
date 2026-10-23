@@ -1,9 +1,11 @@
 """Reject ambiguous identifiers, unresolved provenance and unsupported references."""
 
 from wealthlab.portfolio.chronology import validate_dates
+from wealthlab.portfolio.policy_validation import validate_policies
 
 
 def validate(case):
+    validate_policies(case)
     validate_wash_context(case)
     validate_dates(case)
     validate_ids(case)
