@@ -6,6 +6,8 @@ from decimal import Decimal
 from math import sqrt
 from statistics import NormalDist
 
+from wealthlab.household.funding import opening_wealth
+
 
 def summarize(scenario, rows, index):
     return dict(
@@ -52,12 +54,7 @@ def wilson(successes, count):
 
 
 def drawdown(scenario, rows):
-    peak = sum(
-        a.balance * Decimal(str(scenario.usd_per_currency[a.currency])) for a in scenario.accounts
-    )
-    peak -= sum(
-        d.balance * Decimal(str(scenario.usd_per_currency[d.currency])) for d in scenario.debts
-    )
+    peak = opening_wealth(scenario)
     result = Decimal(0)
     for row in rows:
         peak = max(peak, row["net_wealth"])
