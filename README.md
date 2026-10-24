@@ -49,3 +49,5 @@ Load the synthetic actual-lot funding household for [actual share sales, separat
 Load the synthetic January wash reconciliation household for [original-year loss recognition, dated tax positions and completed wrapper checks](docs/adr/0026-january-wash-reconciliation.md). Default pending-December blocking remains available.
 
 In Markets, select **Household funding** to run [actual taxable-lot funding on identical realized paths](docs/adr/0027-household-market-execution.md), with separate yield tax, liquidity locks, selected spending inflation and supplied-horizon outcomes. The default synthetic horizon is two years and does not establish retirement safety.
+
+Markets / Household funding can load an [adjustable synthetic discretionary guardrail](docs/adr/0028-discretionary-spending-guardrails.md). Observed wealth triggers a bounded cut/restoration; actual spending reductions stay separate from funding success.
