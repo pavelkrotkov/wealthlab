@@ -14,6 +14,7 @@ from wealthlab.portfolio.wash import WashLedger
 
 class Book:
     def __init__(self, case):
+        self.external_wealth = Decimal(0)
         self.accounts = {item.id: item for item in case.accounts}
         self.securities = {item.id: item for item in case.securities}
         self.lots = {item.id: item for item in case.lots}
