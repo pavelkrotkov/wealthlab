@@ -12,6 +12,8 @@ from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.household_hsa import display as hsa_summary
+from wealthlab.ui.household_hsa import scope_note
 from wealthlab.ui.household_ira import display as ira_summary
 from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
 from wealthlab.ui.household_medicare import display as medicare_summary
@@ -22,7 +24,8 @@ from wealthlab.ui.projected_tax import display as tax_summary
 def display(scenario: Scenario, rows: list[dict]) -> None:
     st.subheader(scenario.name)
     st.caption(
-        "Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance"
+        ("Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance")
+        + scope_note(scenario.hsa_plan)
     )
     table = pd.DataFrame(rows).drop(
         columns=[
@@ -35,6 +38,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "ira_annual_reconciliation",
             "ira_contribution_eligibility",
             "ira_contribution_audit",
+            "hsa_audit",
             "medicare_audit",
             "workplace_audit",
         ],
@@ -56,6 +60,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     compensation_summary(rows)
     ira_summary(rows)
     ira_deposit_summary(rows)
+    hsa_summary(rows)
     medicare_summary(rows)
     workplace_summary(rows)
     with st.expander("Ending accounts, debts and reproduction details"):

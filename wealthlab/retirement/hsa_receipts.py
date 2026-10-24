@@ -7,6 +7,7 @@ def available(receipt, owner, when, remaining):
     valid = (
         receipt.eligibility == "qualified_medical"
         and owner.id in receipt.eligible_owners
+        and owner.established is not None
         and receipt.incurred >= owner.established
         and receipt.paid <= when
     )

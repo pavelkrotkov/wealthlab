@@ -23,7 +23,7 @@ class HSAMonth(TaxModel):
 
 class HSAOwner(Record):
     birth_date: date
-    established: date
+    established: date | None
     disabled_since: date | None = None
     months: list[HSAMonth] = Field(min_length=12, max_length=12)
 

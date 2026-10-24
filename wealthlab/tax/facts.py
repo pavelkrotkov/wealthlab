@@ -26,6 +26,7 @@ class FederalIncome(TaxModel):
     qualified_dividends: Money = Decimal(0)
     ira_distributions: Money = Decimal(0)
     deductible_ira_contributions: Money = Decimal(0)
+    deductible_hsa_contributions: Money = Decimal(0)
     retirement_additional_tax: Money = Decimal(0)
     taxable_pension: Money = Decimal(0)
     social_security: Money = Decimal(0)
