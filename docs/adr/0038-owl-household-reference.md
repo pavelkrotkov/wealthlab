@@ -21,3 +21,7 @@ Pinned OWL 2026.10.10 and Tax-Calculator 6.8.5, checked October 24, 2026. The de
 Other checks exercise a cash-only case, a qualified Roth case with actual native required-withdrawal targets, annual spending not divisible into twelve cent amounts, and unsupported dates, federal basis, NJ basis and Roth history. More complete OWL comparisons with income, benefits, conversions, returns, couples, partial state basis and other wrappers remain required under ticket #6.
 
 Reference implementation: [official OWL repository](https://github.com/mdlacasse/Owl), pinned package `owlplanner/plan.py` and `tax_federal.py`. This is an executed software comparison; statutory coverage remains documented in the existing native IRA and tax ADRs. No private household data is used.
+
+## Local UI
+
+Retirement / **OWL household reference** accepts editable JSON or a local JSON upload. It shows annual tax differences, a marked-wealth chart and separate native funding/RMD diagnostics, with expandable full annual and monthly audits. Exports include the declared inputs and complete reference, compiled native scenario and actual results. Changing input sources or submitting invalid inputs clears an older result. The reference requires the existing optional `benchmarks` extra; without it, the UI explains how to enable the comparison.
