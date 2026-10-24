@@ -1,6 +1,6 @@
 # ADR 0004: Tax lots and harvesting
 
-Status: #5 lot workbench implemented; CI and J-Bot review pending. Household cash integration remains a required dependency for the matched path and release slices.
+Status: #5 lot workbench merged in PR #26 after current-head CI and J-Bot review passed. Household cash integration remains a required dependency for the matched path and release slices.
 
 Lots carry quantity, acquisition date, federal holding start, liquidity date and separate total federal/NJ basis. Quantities are units, basis is a total dollar amount, and trade prices are per unit. Every account has explicit ownership and wrapper. The current workbench is long-only and USD-only; it does not interpret a retirement-account lot basis as a deductible IRA contribution or tax basis in distributions.
 
