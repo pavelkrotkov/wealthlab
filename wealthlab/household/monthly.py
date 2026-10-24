@@ -83,9 +83,7 @@ def metrics(scenario, row, start, end):
     row["funding_shortfall"] = row["debt_shortfall"] + sum(
         value for key, value in row.items() if key.endswith("_unfunded")
     )
-    row["funding_failure"] = (
-        row["funding_shortfall"] > 0 or missed_schedule(row) or row.get("sleeve_failure", False)
-    )
+    row["funding_failure"] = row["funding_shortfall"] > 0 or missed_schedule(row)
     demand = (
         row["debt_payment"]
         + row["current_fees_due"]

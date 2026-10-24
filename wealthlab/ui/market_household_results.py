@@ -7,6 +7,7 @@ import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.household_sleeves import display as sleeve_results
+from wealthlab.ui.household_sleeves import feasibility
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
@@ -19,6 +20,7 @@ def display(bundle):
     a.metric("Funded paths / supplied horizon", f"{totals['successes']} / {totals['paths']}")
     b.metric("Simulated funding fraction", f"{totals['funding_fraction']:.1%}")
     c.metric("Covers entire target age", "Yes" if totals["horizon_covers_target_age"] else "No")
+    feasibility(result)
     interval = totals["monte_carlo_95_wilson"]
     if interval is not None:
         st.caption(

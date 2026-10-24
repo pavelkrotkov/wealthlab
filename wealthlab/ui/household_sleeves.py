@@ -39,18 +39,37 @@ def display(rows):
     st.subheader("Long-short household cash and recourse debt")
     a, b, c = st.columns(3)
     a.metric("Remaining negative-equity liability", f"${rows[-1]['sleeve_liability']:,.2f}")
-    b.metric("Margin-policy failure months", sum(bool(r["sleeve_failure"]) for r in rows))
+    b.metric("Unresolved margin months", sum(bool(r.get("sleeve_margin_unresolved")) for r in rows))
     c.metric("Actual redemption cash", f"${sum(r['sleeve_redemptions'] for r in rows):,.2f}")
     st.caption(
         "Positive equity is already in household account balances. Negative equity is a separate "
         "liability subtracted once; the financing loan inside positive equity "
         "is not subtracted again. "
-        "Unpaid required margin is a policy failure, separate from consumption shortfalls. "
+        "A configured liquidation can resolve a margin call. Negative equity and blocked exits "
+        "are separate constraints; cash-funding success uses actual unpaid bills/taxes. "
         "Taxes use supplied allocations, not inferred strategy tax benefits. Basis, automatic "
         "trade recognition and validated after-tax exit classification remain separate work. "
         "Factor exposures do not identify underlying issuers; missing opening and levered "
         "positions remain unknown for concentration checks."
     )
+    st.write(
+        {
+            "Negative-equity months": sum(bool(r.get("sleeve_negative_equity")) for r in rows),
+            "Blocked requested exits": sum(bool(r.get("sleeve_exit_blocked")) for r in rows),
+        }
+    )
     st.dataframe(pd.DataFrame(rows[-1]["sleeve_positions"]), hide_index=True, width="stretch")
     with st.expander("Household sleeve cash and economic audit"):
         st.json(rows[-1].get("sleeve_audit", []))
+
+
+def feasibility(result):
+    if not result["binding"].get("sleeves"):
+        return
+    totals = result["aggregate"]
+    st.caption(
+        f"Product-feasible paths: {totals['product_feasible_paths']} / {totals['paths']}; "
+        f"joint cash/product feasibility: {totals['joint_feasibility_fraction']:.1%}. "
+        "Funding fraction above concerns cash bills/taxes. Product feasibility separately "
+        "requires no unresolved margin, negative equity or blocked requested terminal exit."
+    )

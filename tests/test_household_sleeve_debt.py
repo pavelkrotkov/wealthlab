@@ -18,7 +18,12 @@ def test_margin_cash_and_recoursedebt_reconcile_to_total_economic_loss():
     assert first["sleeve_liability"] == 10000
     assert first["net_wealth"] == -10000
     assert first["funding_shortfall"] == 0
-    assert first["funding_failure"]
+    assert (
+        first["funding_failure"],
+        first["sleeve_negative_equity"],
+        first["sleeve_constraints_failed"],
+        first.get("sleeve_margin_unresolved", False),
+    ) == (False, True, True, False)
     assert rows[-1]["net_wealth"] == -10000
 
 

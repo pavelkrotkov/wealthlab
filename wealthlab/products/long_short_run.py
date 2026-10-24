@@ -64,4 +64,3 @@ def summarize(case, rows):
         remaining_loan=last["financing_loan"],
         terminal_exit_blocked=last.get("terminal_exit_blocked", False),
     )
-

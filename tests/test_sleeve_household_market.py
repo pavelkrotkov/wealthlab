@@ -17,9 +17,11 @@ def test_paired_funding_keeps_recoursedebt_and_cannot_claim_complete_issuer_inve
     other = household.model_dump(mode="json")
     other["sleeve_plan"]["sleeves"][0]["case"].update(long_multiple=1, short_multiple=0)
     right = run(Scenario.model_validate(other), batch, binding)
-    assert not left["outcomes"][0]["funded"]
+    assert left["outcomes"][0]["funded"]
+    assert not left["outcomes"][0]["product_feasible"]
+    assert not left["outcomes"][0]["joint_feasible"]
     assert left["outcomes"][0]["funding_shortfall"] == 0
-    assert left["outcomes"][0]["product_failure_months"] == 12
+    assert left["outcomes"][0]["product_negative_equity_months"] == 12
     assert not left["outcomes"][0]["issuer_concentration_complete"]
     assert paired(left, right)[0]["real_wealth_change"] == 120000
 
