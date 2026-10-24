@@ -5,8 +5,9 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import months
 from wealthlab.retirement.social_amounts import dime, dollar, own_amount, pia, reduced
-from wealthlab.retirement.social_dates import distance, full_retirement_month, shift
+from wealthlab.retirement.social_dates import alive, distance, full_retirement_month, shift
 from wealthlab.retirement.social_owl import compare
+from wealthlab.retirement.social_survivor import amount as survivor_amount
 
 
 def run(case):
@@ -32,12 +33,15 @@ def run(case):
         ),
         annual_cash=annual_cash,
         owl_comparison=compare(case, annual_cash),
+        mortality_assumptions=mortality_assumptions(case),
         claim_rule_policy=case.claim_rule_policy,
         future_cola_assumption=case.future_cola_assumption,
         sources=[
             "https://www.ssa.gov/OP_Home/cfr20/404/404-0410.htm",
             "https://www.ssa.gov/OP_Home/cfr20/404/404-0313.htm",
             "https://secure.ssa.gov/poms.nsf/links/0300615694",
+            "https://secure.ssa.gov/poms.nsf/lnx/0300615320",
+            "https://secure.ssa.gov/poms.nsf/lnx/0300615706",
         ],
     )
 
@@ -46,7 +50,8 @@ def benefit(case, person, month, members, fras):
     own_pia = pia(person, month, case.future_cola_assumption)
     own_base, own = own_amount(person, fras[person.id], month, own_pia)
     spouse = spouse_amount(case, person, month, members, fras, own_pia, own_base, own)
-    entitlement = own + spouse
+    survivor = survivor_amount(case, person, month, members, fras, own)
+    entitlement = own + spouse + survivor["survivor_excess"]
     return dict(
         member=person.id,
         entitlement_month=month,
@@ -55,6 +60,7 @@ def benefit(case, person, month, members, fras):
         own_before_delayed_credits=own_base,
         own_with_delayed_credits=own,
         spousal_excess=spouse,
+        **survivor,
         entitlement_before_offsets=entitlement,
         issued_before_offsets=dollar(entitlement),
     )
@@ -65,7 +71,7 @@ def spouse_amount(case, person, month, members, fras, own_pia, own_base, own):
         return Decimal(0)
     partner = members[person.partner]
     start = max(person.claim_month, partner.claim_month)
-    if month < start:
+    if month < start or not alive(person, month) or not alive(partner, month):
         return Decimal(0)
     partner_pia = pia(partner, month, case.future_cola_assumption)
     original = dime(partner_pia / 2)
@@ -84,3 +90,19 @@ def annual(rows):
         dict(year=year, member=member, issued_before_offsets=amount)
         for (year, member), amount in totals.items()
     ]
+
+
+def mortality_assumptions(case):
+    return dict(
+        policy=case.survival_policy,
+        members=[
+            dict(
+                id=p.id,
+                death_date=p.death_date,
+                survivor_claim_month=p.survivor_claim_month,
+                survivor_eligibility_confirmed=p.survivor_eligibility_confirmed,
+                survivor_pia_january_2026=p.survivor_pia_january_2026,
+            )
+            for p in case.members
+        ],
+    )

@@ -4,7 +4,7 @@ from datetime import date
 from decimal import ROUND_FLOOR, Decimal, localcontext
 from fractions import Fraction
 
-from wealthlab.retirement.social_dates import distance, seventieth_month
+from wealthlab.retirement.social_dates import alive, distance, seventieth_month
 
 
 def dime(amount):
@@ -21,7 +21,10 @@ def pia(person, month, cola):
     Later assumed COLAs change December entitlement, paid the following January.
     Truncate each year's PIA to a dime rather than rounding only the final power.
     """
-    amount = person.pia_january_2026
+    return project_pia(person.pia_january_2026, month, cola)
+
+
+def project_pia(amount, month, cola):
     count = max(0, month.year - 2026 + int(month.month == 12))
     for _ in range(count):
         amount = dime(amount * (1 + cola))
@@ -48,7 +51,7 @@ def delayed_amount(person, fra, month, unreduced):
 
 
 def own_amount(person, fra, month, unreduced):
-    if month < person.claim_month or not person.own_insured:
+    if month < person.claim_month or not person.own_insured or not alive(person, month):
         return Decimal(0), Decimal(0)
     early = max(0, distance(person.claim_month, fra))
     base = reduced(unreduced, early)

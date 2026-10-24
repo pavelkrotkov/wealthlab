@@ -11,38 +11,21 @@ import streamlit as st
 from wealthlab.retirement.social import run
 from wealthlab.retirement.social_example import synthetic
 from wealthlab.retirement.social_inputs import SocialCase
+from wealthlab.retirement.survivor_example import early_limit, switch_case
 from wealthlab.ui.uploads import invalid, source
 
 
 def show():
-    st.header("Social Security ordinary claims")
-    st.caption(
-        "Monthly own and ordinary spouse claims for births after January 1, 1943. "
-        "PIA inputs are January-2026 SSA dime amounts, "
-        "not rounded benefit checks. Future COLAs are explicit assumptions, applied to "
-        "December entitlement and the following January's cash. Claim dates are "
-        "fixed inputs; no optimizer changes them here. Current claim rules are held fixed "
-        "into future years, not represented as guaranteed future law."
-    )
-    st.info(
-        "Confirm no earnings-test deductions, other record auxiliaries or prior adjustments, "
-        "and survival of "
-        "all members through this projection. Partner eligibility is supplied, not inferred "
-        "from a shared household. Ordinary own/spouse claims follow the same application; "
-        "a spouse add-on cannot start before the insured partner claims. Own delayed credits "
-        "reduce the additional spouse amount."
-    )
-    st.caption(
-        "Entitlement and payment months are distinct. Before age 70, credits earned in a "
-        "claim year may not enter benefits until January entitlement of the next year. "
-        "The following-month cash convention excludes benefit/premium/tax offsets and actual "
-        "Wednesday payment dates. Survivor benefits, work-test deductions and later "
-        "recomputation, special histories, earnings-to-PIA reconstruction, Medicare withholding "
-        "and household annual-tax integration remain unfinished. Do not treat a confirmed "
-        "no-deduction assumption as valid after changing wages."
-    )
+    st.header("Social Security claims")
+    describe()
+    examples = {
+        "Ordinary spouse claims": synthetic,
+        "Survivor then own claim": switch_case,
+        "Early-worker survivor limit": early_limit,
+    }
+    selected = st.selectbox("Claim example", list(examples), key="social_example")
     uploaded = st.file_uploader("Load Social Security case JSON", type="json")
-    raw = source(uploaded, synthetic().model_dump_json(indent=2), "social")
+    raw = source(uploaded, examples[selected]().model_dump_json(indent=2), "social")
     if raw is None:
         return
     with st.form("social_case"):
@@ -89,4 +72,40 @@ def display(result):
         json.dumps(result, default=str, indent=2),
         "social-security-result.json",
         "application/json",
+    )
+
+
+def describe():
+    st.caption(
+        "Monthly own and ordinary spouse claims for births after January 1, 1943. "
+        "PIA inputs are January-2026 SSA dime amounts, "
+        "not rounded benefit checks. Future COLAs are explicit assumptions, applied to "
+        "December entitlement and the following January's cash. Claim dates are "
+        "fixed inputs; no optimizer changes them here. Current claim rules are held fixed "
+        "into future years, not represented as guaranteed future law."
+    )
+    st.info(
+        "Confirm no earnings-test deductions, other record auxiliaries or prior adjustments, "
+        "and either all-survive or dated-death assumptions. Partner eligibility is supplied, "
+        "not inferred "
+        "from a shared household. Ordinary own/spouse claims follow the same application; "
+        "a spouse add-on cannot start before the insured partner claims. Own delayed credits "
+        "reduce the additional spouse amount."
+    )
+    st.caption(
+        "Entitlement and payment months are distinct. Before age 70, credits earned in a "
+        "claim year may not enter benefits until January entitlement of the next year. "
+        "The following-month cash convention excludes benefit/premium/tax offsets and actual "
+        "Wednesday payment dates. Work-test deductions and later "
+        "recomputation, special histories, earnings-to-PIA reconstruction, Medicare withholding "
+        "and household annual-tax integration remain unfinished. Do not treat a confirmed "
+        "no-deduction assumption as valid after changing wages."
+    )
+    st.caption(
+        "A survivor uses their separate FRA and entitlement month. Inherited delayed credits "
+        "and age reduction precede any deceased-worker early-claim limit. The recipient "
+        "receives the higher own/survivor amount, not both in full. Confirm survivor "
+        "eligibility; alternate/Windex PIA is supplied conditionally. Death in/before the "
+        "worker's age-62 calendar year requires a survivor-PIA assumption. Disability, "
+        "remarriage, divorce and child/family-maximum cases remain unfinished."
     )

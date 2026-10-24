@@ -17,6 +17,10 @@ class SocialPerson(Record):
     claim_month: date
     partner: Identifier | None
     spousal_eligibility_confirmed: bool
+    death_date: date | None = None
+    survivor_claim_month: date | None = None
+    survivor_eligibility_confirmed: bool = False
+    survivor_pia_january_2026: Money | None = None
 
 
 class SocialCase(TaxModel):
@@ -27,7 +31,7 @@ class SocialCase(TaxModel):
     no_other_auxiliaries_confirmed: bool
     history_policy: Literal["no_prior_deductions_suspensions_disability_or_restricted_claims"]
     claim_rule_policy: Literal["freeze_current_claim_rules"]
-    survival_policy: Literal["all_members_survive_projection"]
+    survival_policy: Literal["all_members_survive_projection", "dated_deaths"]
     future_cola_assumption: Annotated[Decimal, Field(ge=0, le="0.10", decimal_places=6)]
     payment_policy: Literal["following_month_no_offsets"]
 
