@@ -72,6 +72,7 @@ def validate_context(scenario):
 
 def validate_benefits(scenario):
     if withholding(scenario):
+        # prepare() validates generated-claim rules/events/opening facts before this ledger.
         if scenario.social_security is None:
             raise ValueError("SSA premium collection requires generated household claims.")
         return
