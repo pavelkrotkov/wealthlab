@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
+from wealthlab.retirement.contribution_inputs import ContributionCase
 from wealthlab.tax.annual import AnnualCase
 from wealthlab.tax.facts import TaxModel
 
@@ -66,6 +67,8 @@ class DistributionCase(TaxModel):
     orders: list[WithdrawalOrder] = Field(default_factory=list)
     returns: list[AccountReturn] = Field(default_factory=list)
     annual_tax_case: AnnualCase | None = None
+    contributions: ContributionCase | None = None
+    contribution_context_confirmed: bool = False
 
     @model_validator(mode="after")
     def references(self) -> Self:

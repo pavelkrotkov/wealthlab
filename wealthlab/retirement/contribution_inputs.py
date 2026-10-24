@@ -7,7 +7,7 @@ from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
 from wealthlab.retirement.contribution_assumptions import RuleMode
-from wealthlab.tax.facts import TaxModel
+from wealthlab.tax.facts import SignedMoney, TaxModel
 
 
 class Contributor(Record):
@@ -15,8 +15,8 @@ class Contributor(Record):
     eligible_ira_compensation: Money
     ira_compensation_budget: Money
     workplace_compensation: Money
-    traditional_ira_magi: Money
-    roth_ira_magi: Money
+    traditional_ira_magi: SignedMoney
+    roth_ira_magi: SignedMoney
     covered_by_workplace_plan: bool
     prior_employer_wages: Money
     workplace_eligible: bool
