@@ -39,3 +39,10 @@ def test_claim_needs_a_dated_partner_death_and_a_living_claimant():
     data["members"][1]["death_date"] = "2031-07-15"
     with pytest.raises(ValueError, match="own death month"):
         calculate(data)
+
+
+def test_confirmed_eligible_case_needs_explicit_timing_instead_of_silent_zero_benefits():
+    data = payload()
+    data["members"][1]["survivor_claim_month"] = None
+    with pytest.raises(ValueError, match="Supply a survivor entitlement month"):
+        calculate(data)

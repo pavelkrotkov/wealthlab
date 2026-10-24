@@ -10,6 +10,7 @@ def validate_mortality(case, members):
     end = date(case.end_year, 1, 1)
     for person in case.members:
         validate_death(person, case.survival_policy, end)
+        validate_required_date(person, members.get(person.partner), end)
         validate_claim(person, members)
 
 
@@ -61,3 +62,14 @@ def validate_death_pia(worker):
 def validate_survivor_pia(person, worker):
     if person.survivor_eligibility_confirmed:
         validate_death_pia(worker)
+
+
+def validate_required_date(person, worker, end):
+    if not person.survivor_eligibility_confirmed or person.survivor_claim_month is not None:
+        return
+    if worker is None or worker.death_date is None:
+        return
+    if worker.death_date < end:
+        raise ValueError(
+            "Supply a survivor entitlement month for confirmed in-horizon eligibility."
+        )

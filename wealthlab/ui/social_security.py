@@ -105,7 +105,9 @@ def describe():
         "A survivor uses their separate FRA and entitlement month. Inherited delayed credits "
         "and age reduction precede any deceased-worker early-claim limit. The recipient "
         "receives the higher own/survivor amount, not both in full. Confirm survivor "
-        "eligibility; alternate/Windex PIA is supplied conditionally. Death in/before the "
+        "eligibility and the applicable entitlement month, including supplied automatic-conversion "
+        "timing. Missing timing blocks an eligible in-horizon case. Alternate/Windex PIA "
+        "is supplied conditionally. Death in/before the "
         "worker's age-62 calendar year requires a survivor-PIA assumption. Disability, "
         "remarriage, divorce and child/family-maximum cases remain unfinished."
     )
