@@ -76,7 +76,9 @@ def validate_work(scenario, result):
     wages = wage_totals(scenario)
     for row in result["monthly_entitlements"]:
         when, member = row["entitlement_month"], row["member"]
-        if not scenario.start <= when < scenario.end or when >= fras[member]:
+        # Include a pre-start entitlement paid inside the cash horizon. Work
+        # deductions still belong to the entitlement year, not the receipt year.
+        if not scenario.start <= row["payment_month"] < scenario.end or when >= fras[member]:
             continue
         if row["entitlement_before_offsets"] and wages.get((when.year, member), 0):
             raise ValueError(
