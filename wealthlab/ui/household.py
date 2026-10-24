@@ -9,6 +9,7 @@ from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.retirement.ira_household_example import synthetic as ira_example
+from wealthlab.retirement.medicare_household_example import synthetic as medicare_example
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.ui import editor, files, results
 
@@ -44,6 +45,7 @@ def show():
             results.comparison(scenario)
         files.save_scenario(scenario)
     except (ValueError, ValidationError, OSError) as error:
+        st.session_state.pop("projection", None)
         st.error(str(error))
 
 
@@ -62,4 +64,8 @@ def examples():
         st.rerun()
     if st.button("Load synthetic IRA household"):
         files.select_scenario(ira_example())
+        st.rerun()
+
+    if st.button("Load synthetic Medicare household"):
+        files.select_scenario(medicare_example())
         st.rerun()

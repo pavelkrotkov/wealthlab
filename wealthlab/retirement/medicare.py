@@ -16,6 +16,7 @@ def run(case):
     convention rather than an assertion about Medicare's actual billing dates.
     Later cash pays the oldest unpaid bill first and records its real payment date.
     """
+    validate_standalone(case)
     book = dict(cash=case.opening_cash, rows=[], payments=[], pending=deque())
     events = [(r.date, 0, index, r) for index, r in enumerate(case.receipts)]
     events += bills(case)
@@ -103,3 +104,8 @@ def pay(book, when):
             )
         if not row["unfunded"]:
             book["pending"].popleft()
+
+
+def validate_standalone(case):
+    if case.income_policy != "supplied_full_horizon":
+        raise ValueError("Completed-return Medicare plans must run in the household workbench.")

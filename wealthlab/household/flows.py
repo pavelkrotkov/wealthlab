@@ -5,6 +5,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import amount, fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
+from wealthlab.retirement import medicare_household
 
 
 def earning_items(scenario: Scenario, start, end) -> dict[str, Decimal]:
@@ -20,7 +21,7 @@ def earnings(scenario: Scenario, start, end) -> Decimal:
     return sum(earning_items(scenario, start, end).values(), Decimal(0))
 
 
-def spending(scenario: Scenario, wallet: Wallet, start, end) -> dict:
+def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None) -> dict:
     result = {}
     for category in ("essential", "healthcare", "mortgage", "education", "discretionary"):
         due = sum(
@@ -31,8 +32,12 @@ def spending(scenario: Scenario, wallet: Wallet, start, end) -> dict:
             ),
             Decimal(0),
         )
+        premiums = (
+            medicare_household.fund(medicare, wallet, start) if category == "healthcare" else {}
+        )
+        result.update(premiums)
         paid = wallet.pay(due)
-        result[category] = paid
+        result[category] = paid + premiums.get("medicare_paid", Decimal(0))
         result[f"{category}_unfunded"] = due - paid
     return result
 
