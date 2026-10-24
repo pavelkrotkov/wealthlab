@@ -8,6 +8,7 @@ from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
+from wealthlab.retirement.education_household_example import synthetic as education_example
 from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
 from wealthlab.retirement.ira_deposit_household_example import synthetic as ira_deposit_example
 from wealthlab.retirement.ira_household_example import synthetic as ira_example
@@ -30,7 +31,8 @@ def show():
     )
     st.caption(
         "Payments use cash accounts in listed order: confirmed employee payroll elections, "
-        "then tax withholding/settlement when enabled, "
+        "then optional HSA/529/IRA deposits after receipts and prior-tax arrears, "
+        "then current tax withholding/settlement when enabled, "
         "debts, fees, essential, healthcare, "
         "mortgage, education, discretionary, then contributions. Unpaid debt interest "
         "accrues; fees remain owed; unmet spending is a shortfall. No new borrowing is assumed."
@@ -64,6 +66,7 @@ def examples():
         ("Load synthetic IRA household", ira_example),
         ("Load synthetic IRA contribution household", ira_deposit_example),
         ("Load synthetic cash HSA household", hsa_example),
+        ("Load synthetic 529 tuition household", education_example),
         ("Load synthetic Medicare household", medicare_example),
         ("Load synthetic Social Security with Medicare withholding", withholding_example),
     )

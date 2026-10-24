@@ -36,6 +36,7 @@ class TaxEvent(TaxModel):
     cash_received: Money
     federal: FederalIncome
     new_jersey: NJIncome
+    njbest_contributions: Money = Decimal(0)
 
 
 class EstimatedPayment(TaxModel):

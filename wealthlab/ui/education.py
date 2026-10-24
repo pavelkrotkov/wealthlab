@@ -13,7 +13,8 @@ from wealthlab.ui.uploads import invalid, source
 def show():
     st.header("Education account projections")
     st.caption(
-        "Savings-type 529 accounts, 2025/2026 higher education only. Plan limits apply "
+        "Savings-type 529 higher education: published 2025/2026 or explicit frozen-2026 "
+        "forward assumptions. Plan limits apply "
         "across all configured accounts for the same plan and beneficiary. Contributions "
         "use actual cash; returns are net assumed account returns. Gift-tax limits are not "
         "contribution caps. Confirm all relevant accounts and education benefits."

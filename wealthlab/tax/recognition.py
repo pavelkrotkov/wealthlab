@@ -43,7 +43,12 @@ def event(case: AnnualCase, item: TaxEvent) -> AnnualCase:
     # These eligibility settings are annual facts, not dated amounts. Events can
     # add owner-qualified income, but cannot silently grant special eligibility.
     nj = nj.model_copy(update={"business": business, "retirement": retirement})
-    return case.model_copy(update={"federal_income": fed, "nj_income": nj})
+    deductions = case.nj_deductions.model_copy(
+        update={"njbest": case.nj_deductions.njbest + item.njbest_contributions}
+    )
+    return case.model_copy(
+        update={"federal_income": fed, "nj_income": nj, "nj_deductions": deductions}
+    )
 
 
 def social_cash(amounts, rules):

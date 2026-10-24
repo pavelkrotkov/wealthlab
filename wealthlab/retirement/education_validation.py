@@ -8,10 +8,12 @@ in effect on January first. Dates after the case year are never used early.
 
 from datetime import date
 
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.education_expenses import validate_allocations, validate_expenses
 
 
 def validate(case):
+    rule_year(case)
     if not case.complete_context:
         raise ValueError(
             "Confirm all relevant program accounts, contributions and expense benefits."
