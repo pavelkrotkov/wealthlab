@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
+from wealthlab.retirement.contribution_assumptions import RuleMode
 from wealthlab.retirement.contribution_inputs import CashReceipt
 from wealthlab.tax.facts import TaxModel
 
@@ -66,7 +67,8 @@ class HSAInterest(Record):
 
 
 class HSACase(TaxModel):
-    year: Literal[2025, 2026]
+    year: int = Field(ge=2025, le=2200)
+    rule_mode: RuleMode = "published"
     opening_cash: Money
     married: bool
     complete_context: bool

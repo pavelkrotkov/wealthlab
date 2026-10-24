@@ -3,6 +3,7 @@
 from datetime import date
 from decimal import Decimal
 
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.contribution_capacity import allowed
 from wealthlab.retirement.contribution_inputs import (
     CashReceipt,
@@ -46,6 +47,8 @@ def run(case: ContributionCase):
     owners = [summary(case, person, used[person.id]) for person in people.values()]
     return dict(
         year=case.year,
+        rule_base_year=rule_year(case),
+        rule_mode=case.rule_mode,
         orders=rows,
         owners=owners,
         cash=cash,

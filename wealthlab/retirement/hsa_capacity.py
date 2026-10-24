@@ -2,6 +2,8 @@
 
 from decimal import ROUND_FLOOR, Decimal
 
+from wealthlab.retirement.contribution_assumptions import rule_year
+
 LIMITS = {2025: dict(self=4300, family=8550), 2026: dict(self=4400, family=8750)}
 
 
@@ -28,8 +30,8 @@ def monthly_base(case, person, month, coverage):
     family = case.married and any(value.coverage == "family" for value in covered)
     if family:
         share = own.family_share if own.family_share is not None else Decimal(1) / len(covered)
-        return Decimal(LIMITS[case.year]["family"]) * share
-    return Decimal(LIMITS[case.year][own.coverage])
+        return Decimal(LIMITS[rule_year(case)]["family"]) * share
+    return Decimal(LIMITS[rule_year(case)][own.coverage])
 
 
 def budgets(case):

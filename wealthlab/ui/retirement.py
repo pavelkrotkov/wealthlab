@@ -14,7 +14,8 @@ def show():
     st.header("Retirement contributions")
     st.caption(
         "Synthetic annual allocation. Published 2025/2026 traditional/Roth IRA and employee "
-        "401(k) limits only. Contributions are requests; only eligible, cash-funded amounts "
+        "401(k) limits, or an explicit frozen-2026 forward assumption. "
+        "Contributions are requests; only eligible, cash-funded amounts "
         "reach accounts. All amounts are USD."
     )
     st.info(
@@ -60,6 +61,10 @@ def show():
 
 
 def display(result):
+    st.caption(
+        f"Contribution rule base: {result['rule_base_year']} · {result['rule_mode']}. "
+        "Calendar-year ages and dated cash still apply."
+    )
     st.metric("Unallocated cash", f"${result['cash']:,.2f}")
     st.subheader("Requested, eligible and funded contributions")
     st.dataframe(result["orders"], hide_index=True, width="stretch")
