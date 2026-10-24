@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.portfolio import household_recognition as recognition
+from wealthlab.portfolio import household_wash
 from wealthlab.portfolio.book import Book
 from wealthlab.portfolio.household_validation import validate
 from wealthlab.portfolio.household_values import account_value
@@ -21,6 +22,7 @@ ZERO = Decimal(0)
 class Ledger:
     def __init__(self, scenario):
         validate(scenario)
+        self.scenario = scenario
         self.plan = scenario.lot_plan
         self.case = self.plan.case
         self.book = Book(self.case)
@@ -31,6 +33,7 @@ class Ledger:
         self.counter = 0
         self.monthly = {}
         self.funding_orders = []
+        self.reconciliations = []
 
     def after_receipts(self, wallet, start, end):
         self.when = end - timedelta(days=1)
@@ -44,9 +47,22 @@ class Ledger:
         self.monthly = dict(
             lot_purchase_cash_supplied=supplied, lot_cash_swept=swept, lot_funding_proceeds=ZERO
         )
-        return (recognition.event(self.case, self.book, self.when, self.reported),)
+        household_wash.observe(self)
+        return (
+            recognition.event(
+                self.case,
+                self.book,
+                self.when,
+                self.reported,
+                allow_pending=self.plan.year_end_wash_policy == "january_reconcile",
+            ),
+        )
+
+    def pending(self, year):
+        return household_wash.pending(self, year)
 
     def finish(self, rows):
+        household_wash.finish(self, rows)
         rows[-1]["lot_audit"] = dict(
             account_values={a: rows[-1]["account_balances"][a] for a in self.book.accounts},
             lots=[lot.model_dump(mode="json") for lot in self.book.lots.values()],
@@ -56,6 +72,7 @@ class Ledger:
             closing_prices=dict(self.prices),
             recognized_by_year=dict(self.reported),
             nj_wash_treatment=self.case.nj_wash_treatment,
+            return_reconciliations=self.reconciliations,
         )
 
 

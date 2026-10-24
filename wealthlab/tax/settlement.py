@@ -3,7 +3,7 @@
 from datetime import date
 from decimal import Decimal
 
-from wealthlab.tax import payments, state_deduction
+from wealthlab.tax import payments, return_positions, state_deduction
 from wealthlab.tax.annual import evaluate
 
 
@@ -52,12 +52,15 @@ def finalize(ledger, start):
     ledger.refunds.append(
         dict(
             date=date(start.year + 1, ledger.plan.refund_month, 1),
+            source_year=start.year,
+            components={j: max(Decimal(0), -value) for j, value in due.items()},
             cash=refund,
             taxable=taxable,
             treatment=label,
         )
     )
     ledger.result = dict(ledger.result, state_refund_taxable=taxable, state_refund_treatment=label)
+    ledger.closed_returns[start.year] = return_positions.capture(ledger.case, ledger.result)
     ledger.previous = ledger.result
     return unfunded
 

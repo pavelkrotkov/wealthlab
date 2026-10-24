@@ -28,7 +28,7 @@ def check(case, rows, additions, annual):
     )
 
 
-def check_completed(plan, rows, additions, income, federal):
+def check_completed(plan, rows, additions, income, federal, allow_underclaim=False):
     if income.social_security:
         raise ValueError(
             "Combined IRA contribution/benefit deduction worksheets are not yet supported."
@@ -48,7 +48,7 @@ def check_completed(plan, rows, additions, income, federal):
         person = people[added["owner"]].model_copy(
             update=dict(traditional_ira_magi=magi, roth_ira_magi=roth_magi)
         )
-        check_owner(plan, person, added)
+        check_owner(plan, person, added, allow_underclaim)
     return dict(
         status="checked_supported_annual_w2_case",
         traditional_ira_magi=magi,
@@ -67,8 +67,10 @@ def completed_magi(rows, additions, federal):
     return magi, roth_magi
 
 
-def check_owner(plan, person, added):
-    if deductible(plan, person, added["traditional_ira"]) != added["federal_ira_deduction"]:
+def check_owner(plan, person, added, allow_underclaim=False):
+    maximum = deductible(plan, person, added["traditional_ira"])
+    claimed = added["federal_ira_deduction"]
+    if claimed > maximum or (claimed != maximum and not allow_underclaim):
         raise ValueError(
             "Completed annual IRA MAGI changes the maximum deduction; update its supplied forecast."
         )

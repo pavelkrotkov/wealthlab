@@ -24,6 +24,8 @@ class LotFundingSource(TaxModel):
 
 
 class HouseholdLots(TaxModel):
+    year_end_wash_policy: Literal["block", "january_reconcile"] = "block"
+    post_horizon_purchases: Literal["unconfirmed", "none_for_30_days"] = "unconfirmed"
     case: LotCase
     opening_prices: dict[str, Price]
     monthly_marks: list[HouseholdMarks] = Field(min_length=1)

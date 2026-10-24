@@ -7,6 +7,7 @@ from decimal import Decimal
 import streamlit as st
 
 from wealthlab.household.calendar import months
+from wealthlab.ui.lot_return_results import display as return_results
 
 
 def controls(payload, scenario):
@@ -24,7 +25,11 @@ def controls(payload, scenario):
             "proportional seller for every linked account. Confirm complete outside purchases. "
             "NJ recognition is an explicit scenario assumption. This initial profile excludes "
             "dividends, manager fees, automatic sale/harvest policies and wrapper lots. Unresolved "
-            "year-end wash windows require a later January/prior-return reconciliation adapter."
+            "year-end wash windows default to blocking. Select january_reconcile to observe the "
+            "following January and revise the original return. Posted IRA deduction/basis "
+            "elections are preserved, even if a larger deduction later becomes permitted. "
+            "An unresolved terminal window requires explicit none_for_30_days post-horizon "
+            "purchases; it creates no refund cash before receipt. Complete calendar years only."
         )
         if not enabled:
             return None
@@ -54,6 +59,8 @@ def template(scenario):
             dict(date=(end - timedelta(days=1)).isoformat(), prices={})
             for _, end in months(scenario.start, scenario.end)
         ],
+        year_end_wash_policy="block",
+        post_horizon_purchases="unconfirmed",
         funding_sources=[],
         complete_ownership_and_outside_purchases_confirmed=False,
         monthly_settlement_and_cash_sweep_confirmed=False,
@@ -77,6 +84,7 @@ def display(rows):
         "Remaining assets include unrealized gains. Funding is feasible under the specified "
         "selection order, not globally optimized. Review the explicit NJ wash assumption."
     )
+    return_results(rows, audit)
     with st.expander("Actual lots, disposals, funding orders and recognized annual gains"):
         st.json(json.dumps(audit, default=str))
 
