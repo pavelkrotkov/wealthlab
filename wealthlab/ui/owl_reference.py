@@ -21,6 +21,7 @@ def show():
     uploaded = st.file_uploader("Load OWL household reference JSON", type="json")
     if source(uploaded, synthetic().model_dump_json(indent=2), "owl_reference") is None:
         return
+    st.caption("Declare synthetic=true for invented cases, or synthetic=false for personal inputs.")
     with st.form("owl_reference_case"):
         edited = st.text_area(
             "Reference balances, spending and scope (JSON)", key="owl_reference_editor", height=400
@@ -39,7 +40,9 @@ def show():
 
 
 def display(result):
-    st.caption("Synthetic inputs" if result["case"]["synthetic"] else "User-entered local inputs")
+    st.caption(
+        "Declared synthetic inputs" if result["case"]["synthetic"] else "Personal local inputs"
+    )
     left, right = st.columns(2)
     left.metric(
         "Maximum wealth/tax residual · USD", f"${result['max_absolute_wealth_residual']:,.2f}"
