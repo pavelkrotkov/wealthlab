@@ -48,6 +48,9 @@ class MedicareCase(TaxModel):
     start_year: int = Field(ge=2026, le=2200)
     end_year: int = Field(ge=2027, le=2201)
     opening_cash: Money
+    income_policy: Literal["supplied_full_horizon", "household_completed_returns"] = (
+        "supplied_full_horizon"
+    )
     complete_context: bool
     future_policy: Literal["freeze_2026", "index_2026_assumption"]
     premium_growth: Growth
@@ -63,5 +66,5 @@ class MedicareCase(TaxModel):
     def references(self) -> Self:
         from wealthlab.retirement.medicare_validation import validate
 
-        validate(self)
+        validate(self, require_income=self.income_policy == "supplied_full_horizon")
         return self

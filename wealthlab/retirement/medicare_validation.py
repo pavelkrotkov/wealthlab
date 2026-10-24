@@ -17,20 +17,16 @@ from wealthlab.retirement.medicare_enrollment import (
 from wealthlab.retirement.medicare_history import validate_determination
 
 
-def validate(case):
-    if not case.complete_context:
-        raise ValueError("Confirm Medicare coverage, return history and premium assumptions.")
-    if not 0 < case.end_year - case.start_year <= 120:
-        raise ValueError("Medicare projection must span one to 120 whole calendar years.")
-    if case.future_policy == "freeze_2026" and (case.premium_growth or case.threshold_growth):
-        raise ValueError("Frozen Medicare policy requires zero premium and threshold growth.")
+def validate(case, *, require_income=True):
+    validate_context(case)
     validate_records(case)
     members = {m.id for m in case.members}
     for coverage in case.coverage:
         validate_coverage(case, coverage, members)
     validate_overlaps(case)
     validate_history(case, members)
-    validate_income_coverage(case)
+    if require_income:
+        validate_income_coverage(case)
 
 
 def validate_records(case):
@@ -64,3 +60,12 @@ def validate_determinations(case):
     incomes = {i.id: i for i in case.income_history}
     for item in case.determinations:
         validate_determination(case, item, incomes)
+
+
+def validate_context(case):
+    if not case.complete_context:
+        raise ValueError("Confirm Medicare coverage, return history and premium assumptions.")
+    if not 0 < case.end_year - case.start_year <= 120:
+        raise ValueError("Medicare projection must span one to 120 whole calendar years.")
+    if case.future_policy == "freeze_2026" and (case.premium_growth or case.threshold_growth):
+        raise ValueError("Frozen Medicare policy requires zero premium and threshold growth.")
