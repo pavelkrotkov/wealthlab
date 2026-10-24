@@ -1,6 +1,6 @@
 # ADR 0005: Retirement funding
 
-Status: contribution and ordinary-IRA workbenches merged under #6. HSA cash and savings-type 529 higher-education layers are implemented separately; Medicare income-lookback and premium funding are implemented separately; broader withdrawal/education rules, Social Security and household integration remain open.
+Status: contribution and ordinary-IRA workbenches merged under #6. HSA cash and savings-type 529 higher-education layers are implemented separately; Medicare income-lookback and premium funding are implemented separately; ordinary own/spouse Social Security claims are implemented separately; broader withdrawal/education rules, survivor/work-test behavior and household integration remain open.
 
 The Retirement workspace begins with an annual, dated contribution allocation. It accepts published 2025/2026 cases only. Each owner supplies eligible compensation, separate traditional/Roth IRA MAGI, workplace coverage, plan permission and prior-year wages from the sponsoring employer. These are forecasts requiring confirmation. All current-year contributions must be orders; opening balances represent prior-year history. Existing excess contributions and their correction are outside this layer.
 
