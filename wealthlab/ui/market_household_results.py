@@ -5,6 +5,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.ui.lot_policy_results import display as policy_results
+
 
 def display(bundle):
     result = bundle["baseline"]
@@ -45,6 +47,7 @@ def display(bundle):
         hide_index=True,
         width="stretch",
     )
+    policy_results(rows[-1].get("lot_audit", {}))
     with st.expander("Actual tax, lot and wrapper ledger"):
         st.json(rows)
     if bundle["comparison"]:
