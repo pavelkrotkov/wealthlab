@@ -29,6 +29,9 @@ def validate(case):
     for person in case.members:
         validate_person(person, case)
         validate_partner(person, members)
+    from wealthlab.retirement.survivor_validation import validate_mortality
+
+    validate_mortality(case, members)
 
 
 def validate_person(person, case):

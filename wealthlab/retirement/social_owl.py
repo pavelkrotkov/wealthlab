@@ -1,4 +1,9 @@
-"""Owl remains a limited reference, never an authority that overrides SSA-backed arithmetic."""
+"""Owl remains a limited reference, never an authority that overrides SSA-backed arithmetic.
+
+A dated-death case requires exact entitlement and cash timing, whereas Owl's
+annual stream uses a full-death-year convention. Exclude that scope explicitly
+rather than forcing incompatible mortality inputs into the ordinary reference.
+"""
 
 import numpy as np
 
@@ -43,11 +48,13 @@ def compare(case, annual):
 
 
 def exclusion(case):
+    if has_mortality(case):
+        return "Dated-death and survivor histories are outside this limited Owl reference."
     if unsupported_claim(case):
         return (
             "Owl reference excludes after-70 claims and PIA beyond its signed-32-bit input range."
         )
-    if case.future_cola_assumption or any(p.pia_january_2026 % 1 for p in case.members):
+    if incompatible_pia(case):
         return "Owl's reference needs zero COLA and whole-dollar PIA; do not truncate supplied PIA."
     if len(case.members) == 2 and not all(p.spousal_eligibility_confirmed for p in case.members):
         return "Owl's two-person stream assumes both partner relationships; eligibility differs."
@@ -69,3 +76,11 @@ def unsupported_claim(case):
         p.claim_month > seventieth_month(p.birth_date) or p.pia_january_2026 >= 2**31
         for p in case.members
     )
+
+
+def has_mortality(case):
+    return any(p.death_date is not None or p.survivor_claim_month is not None for p in case.members)
+
+
+def incompatible_pia(case):
+    return case.future_cola_assumption or any(p.pia_january_2026 % 1 for p in case.members)
