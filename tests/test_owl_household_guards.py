@@ -29,3 +29,12 @@ def test_conditional_1959_age_is_preserved():
     data = synthetic().model_dump()
     data.update(age=date.today().year - 1959, birth_1959_start_age=73)
     assert OwlHouseholdCase.model_validate(data).birth_1959_start_age == 73
+
+
+def test_imported_case_requires_explicit_provenance():
+    data = synthetic().model_dump()
+    data.pop("synthetic")
+    with pytest.raises(ValueError, match="synthetic"):
+        OwlHouseholdCase.model_validate(data)
+    private = OwlHouseholdCase.model_validate(dict(data, synthetic=False))
+    assert private.synthetic is False

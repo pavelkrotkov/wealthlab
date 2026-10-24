@@ -29,7 +29,7 @@ class OwlHouseholdCase(TaxModel):
     annual_spending: Money = Field(default=Decimal(30000), gt=0)
     heirs_tax_rate: Decimal = Field(default=Decimal("0.30"), ge=0, le=1)
     birth_1959_start_age: Literal[73] | None = None
-    synthetic: bool = True
+    synthetic: bool
 
     @model_validator(mode="after")
     def scope(self) -> Self:
@@ -63,4 +63,4 @@ def validate_basis(case):
 
 
 def synthetic():
-    return OwlHouseholdCase(start_year=date.today().year)
+    return OwlHouseholdCase(start_year=date.today().year, synthetic=True)
