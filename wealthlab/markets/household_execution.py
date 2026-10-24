@@ -9,12 +9,16 @@ convention, not an issuer ex-date calendar or qualified-dividend determination.
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.markets.guardrails import Guardrail
 from wealthlab.tax.projection_inputs import TaxEvent
 
 
 class Execution:
     def __init__(self, scenario, batch, binding, index):
         self.scenario, self.batch, self.binding, self.index = scenario, batch, binding, index
+        self.guardrail = (
+            Guardrail(scenario, binding.spending_guardrail) if binding.spending_guardrail else None
+        )
         self.month = 0
         self.cpi = Decimal(1)
         self.factors = {b.security_id: batch.assets.index(b.factor) for b in binding.securities}
@@ -37,7 +41,10 @@ class Execution:
         ]
         self.cpi *= Decimal(str(1 + self.batch.inflation[self.index, month]))
         self.month += 1
-        return scenario.model_copy(update=dict(expenses=expenses)), (event,)
+        live = scenario.model_copy(update=dict(expenses=expenses))
+        if self.guardrail:
+            live = self.guardrail.apply(live, start)
+        return live, (event,)
 
     def yield_event(self, lots, start):
         fed, nj, cash = {}, {}, Decimal(0)
@@ -96,6 +103,9 @@ class Execution:
             else Decimal(0),
         )
         row["real_net_wealth"] = money(row["net_wealth"] / self.cpi)
+
+        if self.guardrail:
+            self.guardrail.observe(row)
 
     def finish(self, rows):
         rows[-1]["real_net_wealth"] = money(rows[-1]["net_wealth"] / self.cpi)

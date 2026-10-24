@@ -1,10 +1,17 @@
-"""Edit and run actual household policies on a reproducible realized batch."""
+"""Edit and run household policies on a reproducible realized batch.
+
+The optional synthetic guardrail demonstrates an observed-wealth spending
+policy. Its cuts remain visible separately from unmet spending and taxes.
+The paired alternative receives the same realized batch and selected indices;
+changing a household policy never regenerates a different set of returns.
+"""
 
 import json
 
 import streamlit as st
 
 from wealthlab.household.scenario import Scenario
+from wealthlab.markets.guardrail_example import enable
 from wealthlab.markets.household_example import synthetic
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.household_run import paired, run
@@ -22,13 +29,17 @@ def show():
         "Opening holdings receive separately taxed cash yield; selected expenses use prior "
         "realized CPI. Other accounts retain their explicit entered schedules. The synthetic "
         "two-year horizon does not cover retirement through age 100. Automatic rebalancing, "
-        "harvesting, spending guardrails and employer-factor binding remain unfinished."
+        "harvesting and employer-factor binding remain unfinished. "
+        "Optional discretionary guardrails use observed real wealth; "
+        "their cuts are reported separately."
     )
     mode = st.selectbox(
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
     )
     stress = st.selectbox("Household named stress", NAMES)
     household, market, binding = synthetic(mode, stress)
+    if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
+        household, binding = enable(household, binding)
     default = json.dumps(
         dict(
             household=household.model_dump(mode="json"),

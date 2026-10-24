@@ -8,6 +8,7 @@ basis events, so that convention requires a separate adapter.
 """
 
 from wealthlab.household.calendar import months
+from wealthlab.markets.guardrails import validate as validate_guardrail
 from wealthlab.portfolio.household_validation import validate as validate_lots
 
 
@@ -18,6 +19,8 @@ def validate(scenario, batch, binding, index):
     validate_path(scenario, batch, index)
     validate_bindings(scenario, batch, binding)
     validate_inflation(scenario, binding)
+    if binding.spending_guardrail is not None:
+        validate_guardrail(scenario, binding.spending_guardrail)
 
 
 def validate_path(scenario, batch, index):

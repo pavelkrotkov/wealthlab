@@ -72,6 +72,9 @@ def funding(rows):
     failures = [r for r in rows if r["funding_failure"]]
     return dict(
         funded=not failures,
+        discretionary_spending_reduction=sum(
+            (r.get("guardrail_discretionary_reduction", 0) for r in rows), Decimal(0)
+        ),
         first_failure=failures[0]["date"] if failures else None,
         funding_shortfall=sum((r["funding_shortfall"] for r in rows), Decimal(0)),
         missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
