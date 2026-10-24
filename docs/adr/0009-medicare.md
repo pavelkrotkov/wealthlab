@@ -1,6 +1,6 @@
 # ADR 0009: Medicare income lookback and premium funding
 
-Status: Medicare cash layer of retirement ticket #6. [Direct-billed household integration](0017-household-medicare.md) now uses completed tax history and shared healthcare funding. Benefit withholding, SMI rounding and other documented gaps remain open.
+Status: Medicare cash layer of retirement ticket #6. [Direct-billed household integration](0017-household-medicare.md) now uses completed tax history and shared healthcare funding. [A bounded benefit-withholding and SMI-rounding bridge](0018-household-benefit-premiums.md) now runs; other documented gaps remain open.
 
 The workbench accepts confirmed whole-month enrollment with exclusive end dates. Enrollment is never inferred from age or retirement. Part A premiums, drug-plan premiums and other health costs are supplied in 2026 dollars. Full Part B and Part D income-related amounts use the published 2026 schedules. A user must confirm standard full Part B applicability; hold-harmless and immunosuppressive-only coverage are not silently charged the standard rate. Plan premiums cannot be charged for parts without enrollment. Coverage periods cannot overlap for one person; adjacent periods can change costs.
 

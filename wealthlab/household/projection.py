@@ -33,7 +33,7 @@ def project(scenario: Scenario) -> list[dict]:
     ira = ira_household.make(scenario)
     medicare = medicare_household.make(scenario)
     for start, end in months(scenario.start, scenario.end):
-        medicare_household.start(medicare, start)
+        medical_events = medicare_household.start(medicare, start)
         events = compensation.month(wallet, start, end) if compensation else ()
         ira_events, ira_summary = ira_household.month(ira, wallet, start, end)
         row = month(
@@ -44,11 +44,11 @@ def project(scenario: Scenario) -> list[dict]:
             end,
             fees_owed,
             tax_ledger,
-            [*events, *ira_events],
+            [*events, *ira_events, *medical_events],
             medicare,
         )
         row.update(ira_summary)
-        medicare_household.observe(medicare, tax_ledger, end)
+        row.update(medicare_household.observe(medicare, tax_ledger, end))
         if compensation:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]

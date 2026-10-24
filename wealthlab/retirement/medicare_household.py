@@ -10,8 +10,10 @@ from datetime import date
 from decimal import Decimal
 
 from wealthlab.retirement.medicare import pay, quote
+from wealthlab.retirement.medicare_household_inputs import withholding
 from wealthlab.retirement.medicare_household_validation import validate
 from wealthlab.retirement.medicare_inputs import MedicareIncome
+from wealthlab.retirement.social_medicare_ledger import Benefits
 
 
 class Ledger:
@@ -21,6 +23,9 @@ class Ledger:
         self.book: dict = dict(cash=Decimal(0), pending=deque(), rows=[], payments=[])
         self.owed = Decimal(0)
         self.current = []
+        self.benefits = Benefits(scenario) if withholding(scenario) else None
+        self.benefit_summary = {}
+        self.withheld = Decimal(0)
 
     def start(self, when):
         self.opening_owed = self.owed
@@ -31,6 +36,17 @@ class Ledger:
         self.owed += self.due
         self.book["rows"].extend(self.current)
         self.book["pending"].extend(self.current)
+        self.withheld = Decimal(0)
+        self.benefit_summary = {}
+        events = ()
+        if self.benefits is not None:
+            events, self.benefit_summary = self.benefits.month(when, self.current, self.book)
+            self.withheld = (
+                self.benefit_summary["social_security_part_b_withheld"]
+                + self.benefit_summary["social_security_part_d_irmaa_withheld"]
+            )
+            self.owed -= self.withheld
+        return events
 
     def fund(self, wallet, when):
         before = wallet.cash
@@ -39,12 +55,14 @@ class Ledger:
         paid = wallet.pay(before - self.book["cash"])
         self.owed -= paid
         arrears = min(paid, self.opening_owed)
-        newly_unfunded = self.due - max(Decimal(0), paid - self.opening_owed)
+        newly_unfunded = self.due - self.withheld - max(Decimal(0), paid - self.opening_owed)
         for row in self.current:
             row["unfunded_at_due"] = row["unfunded"]
         return dict(
             medicare_due=self.due,
-            medicare_paid=paid,
+            medicare_paid=paid + self.withheld,
+            medicare_cash_paid=paid,
+            medicare_benefit_withheld=self.withheld,
             medicare_owed=self.owed,
             medicare_arrears_paid=arrears,
             medicare_unfunded=newly_unfunded,
@@ -70,6 +88,7 @@ class Ledger:
     def audit(self):
         return dict(
             bills=self.book["rows"],
+            benefit_payments=[] if self.benefits is None else self.benefits.log,
             payments=self.book["payments"],
             income_history=[i.model_dump() for i in self.case.income_history],
         )
@@ -81,12 +100,15 @@ def make(scenario):
 
 def start(ledger, when):
     if ledger is not None:
-        ledger.start(when)
+        return ledger.start(when)
+    return ()
 
 
 def observe(ledger, taxes, end):
     if ledger is not None:
         ledger.observe(taxes, end)
+        return ledger.benefit_summary
+    return {}
 
 
 def required(ledger):

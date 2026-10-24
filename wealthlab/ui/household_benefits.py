@@ -14,7 +14,7 @@ def controls(payload, scenario):
             value=payload.get("social_security") is not None,
         )
         st.caption(
-            "Claim amounts enter household cash and federal benefit income once, with no NJ "
+            "Generated benefits enter cash and the federal benefit calculation once, with no NJ "
             "income or payroll tax. They are not reduced by the household retirement date. "
             "Supply the annual tax plan, matching member IDs/birth dates "
             "and verified PIA/eligibility. "
@@ -22,8 +22,10 @@ def controls(payload, scenario):
             "Whole calendar months and survival through the horizon are required here. "
             "Any annual wages with pre-FRA entitlement block this bridge pending the work-test "
             "layer; changing wages cannot silently keep a no-deduction confirmation valid. "
-            "Payments have no premium/tax withholding. Medicare and wrapper funding remain "
-            "separate workbenches; do not treat the standalone balances as extra household cash."
+            "Without a Medicare collection plan, payments are before premium offsets. "
+            "Select SSA collection in the Medicare plan for supported gross/net accounting. "
+            "Income-tax withholding is not generated. Standalone workbench balances "
+            "are not additional household cash."
         )
         if not enabled:
             return None

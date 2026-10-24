@@ -8,21 +8,25 @@ from wealthlab.retirement.medicare_household_template import template
 
 
 def controls(payload, scenario):
-    with st.expander("Direct-billed Medicare healthcare"):
+    with st.expander("Medicare healthcare and benefit premiums"):
         enabled = st.checkbox(
             "Project Medicare bills from completed household tax history",
             value=payload.get("medicare_plan") is not None,
         )
         st.caption(
-            "Use complete calendar years and confirmed direct billing, "
-            "without benefit withholding. "
-            "Social Security cash/withholding combinations require a later adapter. "
-            "Supply pre-projection return history; subsequent MAGI comes from completed household "
-            "AGI plus tax-exempt interest two years earlier. Zero starter history, coverage and "
-            "premiums are assumptions to replace or confirm. Frozen/indexed future premiums are "
-            "conditional. Remove these costs from other expense entries. Payments use the monthly "
-            "cash budget; unpaid bills remain liabilities. HSA reimbursement, medical deductions, "
-            "actual billing dates and conditional current-income appeals are not inferred."
+            "Use complete calendar years. Choose direct_bill_only without benefit checks, or "
+            "ssa_current_premiums with generated household claims. The SSA profile requires "
+            "one combined payment per recipient, no Part A premium, standard full Part B, "
+            "no third-party payer, "
+            "prior credits/arrears or other benefit "
+            "deductions, and a sufficient active benefit record. Low-benefit Part B "
+            "collection remains unsupported. Part D plan costs stay cash-paid; IRMAA-D is "
+            "withheld when supported and fully available. Supply prior return history; later "
+            "MAGI comes from completed household AGI plus exempt interest two years earlier. "
+            "Zero starter history and enrollment are unconfirmed. Future premiums are "
+            "conditional. Remove these costs from other expenses. Unpaid bills remain "
+            "liabilities. HSA reimbursement, medical deductions "
+            "and actual billing are not inferred."
         )
         if not enabled:
             return None
@@ -50,5 +54,28 @@ def display(rows):
         "Coverage continues as supplied during this cash stress. Later IRMAA uses completed "
         "household scenario returns; this is not an SSA determination or actual billing forecast."
     )
+    benefit_summary(rows)
     with st.expander("Medicare bills, dated payments and income lookback audit"):
         st.json(rows[-1]["medicare_audit"])
+
+
+def benefit_summary(rows):
+    if "social_security_gross_credited" not in rows[-1]:
+        return
+    gross, net, held = st.columns(3)
+    gross.metric(
+        "Gross Social Security credited",
+        f"${sum(r['social_security_gross_credited'] for r in rows):,.2f}",
+    )
+    net.metric(
+        "Social Security cash received", f"${sum(r['social_security_cash'] for r in rows):,.2f}"
+    )
+    held.metric(
+        "Medicare withheld from benefits",
+        f"${sum(r['medicare_benefit_withheld'] for r in rows):,.2f}",
+    )
+    st.caption(
+        "Taxes use gross credited benefits. Healthcare spending includes withheld "
+        "and cash-paid premiums once. Part B changes per-record rounding; "
+        "Part D IRMAA is collected afterwards."
+    )
