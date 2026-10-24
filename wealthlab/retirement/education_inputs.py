@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
+from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.retirement.contribution_assumptions import RuleMode
 from wealthlab.retirement.contribution_inputs import CashReceipt
 from wealthlab.retirement.distribution_inputs import AccountReturn
@@ -103,6 +104,7 @@ class EducationCase(TaxModel):
     contributions: list[EducationContribution] = Field(default_factory=list)
     withdrawals: list[EducationWithdrawal] = Field(default_factory=list)
     returns: list[AccountReturn] = Field(default_factory=list)
+    liquidity_locks: list[AccountLock] = Field(default_factory=list)
     expenses: list[EducationExpense] = Field(default_factory=list)
     allocations: list[EducationAllocation] = Field(default_factory=list)
 

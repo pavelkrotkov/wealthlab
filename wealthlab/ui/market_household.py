@@ -11,6 +11,7 @@ import json
 import streamlit as st
 
 from wealthlab.household.scenario import Scenario
+from wealthlab.markets.employer_example import synthetic as employer_example
 from wealthlab.markets.guardrail_example import enable
 from wealthlab.markets.household_example import synthetic
 from wealthlab.markets.household_inputs import HouseholdBinding
@@ -20,6 +21,7 @@ from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
 from wealthlab.markets.stresses import NAMES
+from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.uploads import invalid, source
 
@@ -31,8 +33,9 @@ def show():
         "Opening holdings receive separately taxed cash yield; selected expenses use prior "
         "realized CPI. Other accounts retain their explicit entered schedules. The synthetic "
         "two-year horizon does not cover retirement through age 100. Dated staged/target sales "
-        "and conditional harvesting use current marks. Broader rebalancing and employer-factor "
-        "binding remain unfinished. "
+        "and conditional harvesting use current marks. Explicit IRA/529 proxies and employer "
+        "net factors reuse their ledgers; linked employment reacts next month. "
+        "Broader rebalancing remains unfinished. "
         "Optional discretionary guardrails use observed real wealth; "
         "their cuts are reported separately."
     )
@@ -40,11 +43,12 @@ def show():
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
     )
     stress = st.selectbox("Household named stress", NAMES)
-    household, market, binding = synthetic(mode, stress)
+    household, market, binding = account_example(mode, stress)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
-    choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
-    household, binding = policy_example(household, binding, choice)
+    if household.lot_plan is not None:
+        choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
+        household, binding = policy_example(household, binding, choice)
     default = json.dumps(
         dict(
             household=household.model_dump(mode="json"),
@@ -67,6 +71,10 @@ def show():
             "Full tax-ledger execution can take seconds per path; use a small run to check inputs."
         )
         alternative = st.text_area("Optional paired household policy (JSON)", value="", height=120)
+        st.caption(
+            "The alternative accepts household JSON or {household, binding} to compare "
+            "employment triggers or other binding policies on the same realized market batch."
+        )
         submitted = st.form_submit_button("Project actual household paths", type="primary")
     if submitted:
         calculate(edited, count, alternative)
@@ -92,7 +100,8 @@ def calculate(edited, count, alternative):
         )
         comparison = None
         if alternative.strip():
-            other = run(Scenario.model_validate_json(alternative), batch, binding, indices)
+            other_household, other_binding = paired_inputs(alternative, binding)
+            other = run(other_household, batch, other_binding, indices)
             comparison = dict(result=other, differences=paired(result, other))
         st.session_state.update(
             market_household_result=dict(
@@ -102,3 +111,29 @@ def calculate(edited, count, alternative):
         )
     except (ValueError, KeyError, TypeError) as error:
         invalid(error, "market_household")
+
+
+def paired_inputs(text, binding):
+    data = json.loads(text)
+    if "household" in data:
+        if set(data) - {"household", "binding"}:
+            raise ValueError(
+                "Paired policies accept household/binding only; the batch stays shared."
+            )
+        binding = HouseholdBinding.model_validate(data.get("binding", binding.model_dump()))
+        data = data["household"]
+    return Scenario.model_validate(data), binding
+
+
+def account_example(mode, stress):
+    scope = st.selectbox(
+        "Synthetic account scope",
+        ["Taxable lots", "IRA and education proxies", "Employer and employment"],
+        key="market_account_scope",
+    )
+    starter = {
+        "Taxable lots": synthetic,
+        "IRA and education proxies": wrapper_example,
+        "Employer and employment": employer_example,
+    }[scope]
+    return starter(mode, stress)

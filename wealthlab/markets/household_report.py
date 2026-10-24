@@ -15,7 +15,8 @@ def summarize(scenario, rows, index):
         **funding(rows),
         path=index,
         net_wealth_drawdown=drawdown(scenario, rows),
-        max_security_weight=max(r["market_max_security_weight"] for r in rows),
+        max_security_weight=known_weight(rows),
+        issuer_concentration_complete=all(r["market_issuer_concentration_complete"] for r in rows),
         ending_nominal_wealth=rows[-1]["net_wealth"],
         ending_real_wealth=rows[-1]["real_net_wealth"],
         terminal_tax_position=rows[-1].get("tax_position", Decimal(0)),
@@ -76,3 +77,10 @@ def funding(rows):
         missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
         cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
     )
+
+
+def known_weight(rows):
+    known = [
+        r["market_max_security_weight"] for r in rows if r["market_max_security_weight"] is not None
+    ]
+    return max(known) if known else None

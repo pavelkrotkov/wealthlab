@@ -7,6 +7,7 @@ from the IRA need their own supported adapters rather than inferred treatment.
 
 from types import SimpleNamespace
 
+from wealthlab.retirement.account_liquidity import validate as validate_liquidity
 from wealthlab.retirement.distribution_owner_validation import validate_tax_ages
 from wealthlab.tax.projection_validation import validate as validate_tax
 
@@ -50,7 +51,8 @@ def validate_people(scenario):
 
 def validate_records(scenario):
     plan = scenario.ira_plan
-    records = [*plan.owners, *plan.orders, *plan.returns]
+    records = [*plan.owners, *plan.orders, *plan.returns, *plan.liquidity_locks]
+    validate_liquidity(plan.liquidity_locks, plan.products, scenario.start, scenario.end)
     ids = [r.id for r in records]
     if len(ids) != len(set(ids)) or any(r.provenance == "unresolved" for r in records):
         raise ValueError("IRA plan records need unique IDs and resolved assumptions.")

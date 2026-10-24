@@ -5,7 +5,9 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.lot_policy_results import display as policy_results
+from wealthlab.ui.market_employer_results import display as employment_results
 
 
 def display(bundle):
@@ -37,6 +39,9 @@ def display(bundle):
     st.dataframe(pd.DataFrame(result["outcomes"]), hide_index=True, width="stretch")
     index = st.selectbox("Household path detail", result["indices"])
     rows = next(d["rows"] for d in result["details"] if d["path"] == index)
+    wrapper_scope(result, rows)
+    employer_results(rows)
+    employment_results(result, index)
     st.line_chart(
         pd.DataFrame(rows)
         .set_index("date")[["closing_cash", "net_wealth", "real_net_wealth"]]
@@ -58,4 +63,29 @@ def display(bundle):
         json.dumps(bundle, default=str),
         "household-market-run.json",
         "application/json",
+    )
+
+
+def wrapper_scope(result, rows):
+    if not result["binding"].get("wrappers"):
+        return
+    st.subheader("Wrapper market proxies and concentration coverage")
+    st.caption(
+        "Each bound account is explicitly a full-account factor proxy. The full monthly "
+        "price return plus cash yield applies to its balance at month end and stays invested "
+        "inside the wrapper. Earlier dated withdrawals cannot spend that later gain. "
+        "Market locks block outgoing withdrawals/conversions; qualified tuition can use "
+        "actual household cash fallback. "
+        "Account-factor exposure does not identify underlying issuers."
+    )
+    st.write(
+        {
+            "Issuer inventory complete": all(
+                r["market_issuer_concentration_complete"] for r in rows
+            ),
+            "Known factor values at horizon": {
+                factor: str(value) for factor, value in rows[-1]["market_factor_values"].items()
+            },
+            "Unmeasured issuer accounts": rows[-1]["market_unmeasured_issuer_accounts"],
+        }
     )

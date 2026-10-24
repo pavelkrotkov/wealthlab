@@ -21,6 +21,7 @@ from wealthlab.retirement.ira_contribution_tax import check as check_contributio
 
 def run(case: DistributionCase):
     book: dict = dict(
+        liquidity_locks=case.liquidity_locks,
         accounts={a.id: a for a in case.accounts},
         balances={a.id: a.balance for a in case.accounts},
         cash=case.opening_cash,

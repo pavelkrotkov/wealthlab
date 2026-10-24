@@ -53,3 +53,7 @@ In Markets, select **Household funding** to run [actual taxable-lot funding on i
 Markets / Household funding can load an [adjustable synthetic discretionary guardrail](docs/adr/0028-discretionary-spending-guardrails.md). Observed wealth triggers a bounded cut/restoration; actual spending reductions stay separate from funding success.
 
 Markets / Household funding offers [actual staged/concentration sales and conditional replacement harvesting](docs/adr/0029-household-sale-harvest-policies.md). Policies use current monthly marks, actual household cash/taxes and existing lot selection; tax-budget forecasts and broader rebalancing remain separate work.
+
+Markets / Household funding also offers [ordinary IRA and 529 return proxies](docs/adr/0030-wrapper-market-paths.md), including wrapper-only runs, actual dated withdrawal/tuition consequences, outgoing liquidity restrictions and explicit issuer-concentration coverage.
+
+Markets / Household funding offers [employer net factors with conditional employment linkage](docs/adr/0031-employer-market-employment.md). Observed drawdowns can trigger next-month job loss, explicit rehiring and supplied forfeiture, while independent tax allocations and payout rights remain in the existing tranche ledger.

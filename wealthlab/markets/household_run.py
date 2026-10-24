@@ -1,6 +1,7 @@
 """Run policies on the same realized batch; never optimize with future path knowledge."""
 
 from wealthlab.household.projection import project
+from wealthlab.markets.employment_compile import audit
 from wealthlab.markets.household_compile import compile_marks
 from wealthlab.markets.household_execution import Execution
 from wealthlab.markets.household_report import aggregate, summarize
@@ -19,7 +20,7 @@ def run(scenario, batch, binding, indices=None, progress=None):
         case = compile_marks(scenario, batch, binding, index)
         rows = project(case, market=Execution(case, batch, binding, index))
         outcomes.append(summarize(case, rows, index))
-        details.append(dict(path=index, rows=rows))
+        details.append(dict(path=index, rows=rows, employment_changes=audit(case, binding)))
         if progress is not None:
             progress(len(outcomes), len(indices))
     return dict(

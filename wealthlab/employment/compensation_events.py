@@ -31,7 +31,7 @@ class Grant(Event):
 
 class NetReturn(Event):
     kind: Literal["net_return"]
-    rate: Annotated[Decimal, Field(ge=-1, le=10, max_digits=10, decimal_places=6)]
+    rate: Annotated[Decimal, Field(ge=-1, le=10, max_digits=18, decimal_places=12)]
 
 
 class Vest(Event):

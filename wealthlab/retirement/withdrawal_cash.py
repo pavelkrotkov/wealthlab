@@ -1,6 +1,7 @@
 """Move funded amounts exactly once; revaluations are explicit market gains or losses."""
 
 from wealthlab.household.calendar import money
+from wealthlab.retirement.account_liquidity import blocked as liquidity_blocked
 from wealthlab.retirement.contribution_inputs import CashReceipt, ContributionOrder
 from wealthlab.retirement.distribution_inputs import AccountReturn
 from wealthlab.retirement.ira_contributions import fund
@@ -28,10 +29,15 @@ def apply(book, item, case=None):
         book["balances"][item.account_id] += delta
         book["market_change"] += delta
         return
+    withdraw(book, item)
+
+
+def withdraw(book, item):
     account = book["accounts"][item.source]
     rmd = book["rmd"][account.owner]
     blocked = item.kind == "conversion" and rmd["withdrawn"] < rmd["required"]
-    paid = min(item.amount, book["balances"][item.source]) if not blocked else 0
+    locked = liquidity_blocked(book["liquidity_locks"], item.source, item.date)
+    paid = min(item.amount, book["balances"][item.source]) if not (blocked or locked) else 0
     book["balances"][item.source] -= paid
     if item.kind == "conversion":
         book["balances"][item.destination] += paid
@@ -52,6 +58,7 @@ def apply(book, item, case=None):
             paid=paid,
             unfilled=item.amount - paid,
             blocked_by_rmd=bool(blocked),
+            blocked_by_liquidity=locked,
             early_penalty_exception=item.early_penalty_exception,
         )
     )

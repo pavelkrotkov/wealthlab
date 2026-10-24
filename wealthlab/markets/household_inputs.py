@@ -5,7 +5,9 @@ from typing import Literal
 from pydantic import Field
 
 from wealthlab.household.records import Identifier
+from wealthlab.markets.employer_inputs import EmployerBinding
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
+from wealthlab.markets.wrapper_inputs import WrapperBinding
 from wealthlab.tax.facts import TaxModel
 
 
@@ -18,7 +20,9 @@ class SecurityBinding(TaxModel):
 
 class HouseholdBinding(TaxModel):
     spending_guardrail: SpendingGuardrail | None = None
-    securities: list[SecurityBinding] = Field(min_length=1)
+    securities: list[SecurityBinding] = Field(default_factory=list)
+    wrappers: list[WrapperBinding] = Field(default_factory=list)
+    employers: list[EmployerBinding] = Field(default_factory=list)
     inflation_expenses: list[Identifier] = Field(default_factory=list)
     cash_yield_timing: Literal["opening_value_received_before_month_end_sales"]
     ordinary_cash_character_confirmed: bool
