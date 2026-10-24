@@ -69,15 +69,15 @@ def display(result):
     st.subheader("Dated IRA cash and annual recognition")
     st.dataframe(result["orders"], hide_index=True, width="stretch")
     st.subheader("Remaining owner basis and conversion buckets")
-    st.json(result["owners"])
+    st.json(json.dumps(result["owners"], default=str))
     st.subheader("Required withdrawal targets")
-    st.json(result["rmd"])
+    st.json(json.dumps(result["rmd"], default=str))
     st.caption("Unmet December targets are visible; shortfall excise tax is not calculated.")
     if result["annual_tax"] is not None:
         annual = result["annual_tax"]
         st.metric("Additional annual tax liability", f"${annual['additional_liability']:,.2f}")
         with st.expander("Matched annual tax details"):
-            st.json(annual)
+            st.json(json.dumps(annual, default=str))
     else:
         st.info("Add annual_tax_case to calculate matched federal/NJ liabilities.")
     st.download_button(
