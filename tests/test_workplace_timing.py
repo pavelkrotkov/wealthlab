@@ -53,3 +53,24 @@ def test_reloading_export_preserves_elections_and_exact_results():
     rows = project(s)
     assert s.model_dump_json() == before
     assert project(Scenario.model_validate_json(before)) == rows
+
+
+def test_spouses_gross_pay_cannot_replace_the_owners_missing_payroll():
+    s = synthetic()
+    own = s.incomes[0].model_copy(update=dict(monthly_amount=Decimal(0)))
+    spouse = own.model_copy(
+        update=dict(id="spouse_salary", owner="person_b", monthly_amount=Decimal(50000))
+    )
+    from wealthlab.tax.projection_inputs import IncomeRule
+
+    taxes = s.tax_plan.model_copy(
+        update=dict(
+            income_rules=[
+                *s.tax_plan.income_rules,
+                IncomeRule(income_id="spouse_salary", federal="wages_spouse", new_jersey="wages"),
+            ]
+        )
+    )
+    rows = project(s.model_copy(update=dict(incomes=[own, spouse], tax_plan=taxes)))
+    assert sum(r["workplace_contributions"] for r in rows) == 0
+    assert rows[-1]["workplace_audit"][-1]["blocked_by_current_wages"] == 2000
