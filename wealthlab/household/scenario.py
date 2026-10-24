@@ -1,10 +1,16 @@
-"""Versioned scenario validation and explicit first-year opening context."""
+"""Versioned scenario validation and explicit first-year opening context.
+
+Nested rule plans remain immutable source inputs. Projection adapters produce
+dated salary and benefit flows in a copy; exports keep the original plans so
+reloading cannot count generated income as a second independent cash source.
+"""
 
 from datetime import date
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from wealthlab.employment.inputs import EmploymentPlan
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
 from wealthlab.household.validation import validate_dates, validate_references
@@ -40,6 +46,7 @@ class Scenario(BaseModel):
     contributions: list[Contribution]
     tax_plan: TaxPlan | None = None
     social_security: SocialCase | None = None
+    employment_plan: EmploymentPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:

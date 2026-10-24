@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+from wealthlab.employment.wages import prepare as prepare_employment
 from wealthlab.household import debts
 from wealthlab.household.calendar import money, months
 from wealthlab.household.funding import Wallet
@@ -13,7 +14,7 @@ from wealthlab.tax.projection_ledger import TaxLedger
 
 
 def project(scenario: Scenario) -> list[dict]:
-    scenario = prepare(scenario)
+    scenario = prepare(prepare_employment(scenario))
     unresolved = [
         record.id
         for table in TABLES
