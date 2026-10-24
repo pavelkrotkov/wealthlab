@@ -14,7 +14,7 @@ The household cash engine budgets monthly. Economic events are date/sequence ord
 
 ## Reproducible synthetic cases
 
-The baseline starts with $100,000 cash, $100,000 retirement assets and $20,000 vested employer value plus $80,000 contingent value. A $10,000 grant and 10% net growth create $111,000 total employer value. A supplied $20,000 taxable allocation is independent of a $20,000 unvested tax-cash election. Vesting changes the pocket split; a locked December request pays nothing. A later $10,000 vested distribution produces total cash receipts of $30,000 and leaves $91,000 vested employer assets.
+The baseline starts with $100,000 cash, $100,000 retirement assets and $20,000 vested employer value plus $80,000 contingent value. A $10,000 grant and 10% net growth create $121,000 total employer value. A supplied $20,000 taxable allocation is independent of a $20,000 unvested tax-cash election. Vesting changes the pocket split; a locked December request pays nothing. A later $10,000 vested distribution produces total cash receipts of $30,000 and leaves $91,000 vested employer assets.
 
 Wages total $90,000; frozen-2025 federal/NJ assumptions produce $19,020 tax including employee payroll. After $96,000 two-year spending and receipt of refunds, cash is $104,980 and ordinary net wealth $295,980. Counting the original contingent $80,000 only in the economic reconciliation: $300,000 opening gross-plus-contingent value + $10,000 grant + $11,000 growth + $90,000 wages - $96,000 spending - $19,020 taxes = $295,980. Retaining the tax-cash election moves $20,000 from cash to employer exposure without changing taxes or total ending wealth in this baseline.
 
