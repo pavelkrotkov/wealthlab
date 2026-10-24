@@ -17,8 +17,10 @@ def run(case: DistributionCase):
         market_change=Decimal(0),
         rmd=rmd.requirements(case),
     )
-    for _, _, _, item in withdrawal_cash.timeline(case):
+    balance_events = []
+    for when, _, _, item in withdrawal_cash.timeline(case):
         withdrawal_cash.apply(book, item)
+        balance_events.append(dict(date=when, balances=dict(book["balances"])))
     owners = []
     for person in case.owners:
         traditional = ira_reconciliation.traditional(case, book, person)
@@ -33,6 +35,7 @@ def run(case: DistributionCase):
         owners=owners,
         cash=book["cash"],
         account_balances=book["balances"],
+        balance_events=balance_events,
         market_change=book["market_change"],
         rmd=book["rmd"],
         annual_tax=compare(case, book["rows"]),
