@@ -74,5 +74,11 @@ def breakdown(values: dict, income: FederalIncome, label: str) -> dict:
         amt=values["c09600"],
         short_carry=carried["short_term"],
         long_carry=carried["long_term"],
+        ordinary_noninvestment_income=income.ordinary_noninvestment_income,
+        ordinary_noninvestment_adapter=(
+            "Explicit e00800 numerical carrier with inclusion=1; no statutory alimony input"
+            if income.ordinary_noninvestment_income
+            else None
+        ),
         policy=label,
     )

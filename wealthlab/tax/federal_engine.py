@@ -18,7 +18,11 @@ def records(data: dict, year: int) -> Records:
 
 @lru_cache(maxsize=12)
 def engine(year: int) -> Calculator:
-    calc = Calculator(policy=Policy(), records=records({"RECID": 1, "MARS": 1}, year))
+    # e00800 is a numerical ordinary/noninvestment carrier, not an alimony fact.
+    # No alimony input is supported; explicit inclusion avoids the statutory zero.
+    policy = Policy()
+    policy.implement_reform({"AlimonyReceived_frac_in_AGI": {year: 1.0}}, print_warnings=False)
+    calc = Calculator(policy=policy, records=records({"RECID": 1, "MARS": 1}, year))
     calc.advance_to_year(year)
     return calc
 

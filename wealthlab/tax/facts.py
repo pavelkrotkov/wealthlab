@@ -30,6 +30,7 @@ class FederalIncome(TaxModel):
     retirement_additional_tax: Money = Decimal(0)
     taxable_pension: Money = Decimal(0)
     social_security: Money = Decimal(0)
+    ordinary_noninvestment_income: Money = Decimal(0)
     allowed_passive_income: SignedMoney = Decimal(0)
     short_term: SignedMoney = Decimal(0)
     long_term: SignedMoney = Decimal(0)

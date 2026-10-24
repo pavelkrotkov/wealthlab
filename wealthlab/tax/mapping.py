@@ -19,6 +19,7 @@ INCOME_FIELDS = dict(
     retirement_additional_tax="e09900",
     taxable_pension="e01700",
     social_security="e02400",
+    ordinary_noninvestment_income="e00800",
     allowed_passive_income="e02000",
 )
 DEDUCTION_FIELDS = dict(
