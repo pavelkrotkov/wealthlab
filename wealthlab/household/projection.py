@@ -86,6 +86,7 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market)
         rows[-1]["employer_event_log"] = compensation.log
     if employee:
         rows[-1]["workplace_audit"] = employee.log
+        rows[-1]["workplace_market_audit"] = employee.market_log
     household_book.finish(lots, rows)
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)

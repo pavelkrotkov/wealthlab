@@ -47,6 +47,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "lot_audit",
             "medicare_audit",
             "workplace_audit",
+            "workplace_market_audit",
         ],
         errors="ignore",
     )

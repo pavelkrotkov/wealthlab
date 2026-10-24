@@ -57,3 +57,5 @@ Markets / Household funding offers [actual staged/concentration sales and condit
 Markets / Household funding also offers [ordinary IRA and 529 return proxies](docs/adr/0030-wrapper-market-paths.md), including wrapper-only runs, actual dated withdrawal/tuition consequences, outgoing liquidity restrictions and explicit issuer-concentration coverage.
 
 Markets / Household funding offers [employer net factors with conditional employment linkage](docs/adr/0031-employer-market-employment.md). Observed drawdowns can trigger next-month job loss, explicit rehiring and supplied forfeiture, while independent tax allocations and payout rights remain in the existing tranche ledger.
+
+Markets / Household funding also offers [employee 401(k) investment proxies](docs/adr/0032-workplace-investment-returns.md). Actual payroll-funded pretax/Roth deposits earn explicit month-end returns inside the plan, with unchanged wage/payroll recognition and separate investment audits; broader workplace withdrawal adapters remain unfinished.

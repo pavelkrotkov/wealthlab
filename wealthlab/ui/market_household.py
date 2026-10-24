@@ -21,6 +21,7 @@ from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
 from wealthlab.markets.stresses import NAMES
+from wealthlab.markets.workplace_example import synthetic as workplace_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.uploads import invalid, source
@@ -128,12 +129,13 @@ def paired_inputs(text, binding):
 def account_example(mode, stress):
     scope = st.selectbox(
         "Synthetic account scope",
-        ["Taxable lots", "IRA and education proxies", "Employer and employment"],
+        ["Taxable lots", "IRA and education proxies", "Employer and employment", "Employee 401(k)"],
         key="market_account_scope",
     )
     starter = {
         "Taxable lots": synthetic,
         "IRA and education proxies": wrapper_example,
         "Employer and employment": employer_example,
+        "Employee 401(k)": workplace_example,
     }[scope]
     return starter(mode, stress)

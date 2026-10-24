@@ -49,5 +49,13 @@ def display(rows):
         "Income tax withholding uses post-pretax wages; payroll includes elected wages. "
         "No employer match is inferred."
     )
+    change = sum(r.get("workplace_market_change", 0) for r in rows)
+    st.caption(
+        f"Entered or market-bound investment change: ${change:,.2f}. Month-end returns follow "
+        "actual funded employee elections and stay inside the plan. Locked plan balances "
+        "remain unavailable for general spending; broader withdrawals are unfinished."
+    )
+    with st.expander("Employee investment-return audit"):
+        st.json(rows[-1].get("workplace_market_audit", []))
     with st.expander("Employee election limits, current-wage blocks and cash audit"):
         st.json(rows[-1]["workplace_audit"])

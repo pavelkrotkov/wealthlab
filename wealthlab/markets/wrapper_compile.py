@@ -53,8 +53,10 @@ def plan_kind(scenario, identity):
         a.account_id for a in scenario.education_plan.accounts
     }:
         return "education_plan"
+    if scenario.workplace_plan and identity in scenario.workplace_plan.products:
+        return "workplace_plan"
     raise ValueError(
-        "Market wrapper bindings require a supported ordinary IRA or household 529 plan."
+        "Market wrapper bindings require a supported IRA, 529 or employee 401(k) plan."
     )
 
 

@@ -6,8 +6,10 @@ from typing import Literal
 from pydantic import Field
 
 from wealthlab.household.records import Identifier, Money, Record
+from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.retirement.contribution_assumptions import RuleMode
 from wealthlab.retirement.contribution_inputs import ContributionOrder
+from wealthlab.retirement.distribution_inputs import AccountReturn
 from wealthlab.tax.facts import TaxModel
 
 
@@ -33,6 +35,8 @@ class WorkplacePlan(TaxModel):
     years: list[WorkplaceYear] = Field(min_length=1)
     products: dict[Identifier, Literal["pretax_401k", "roth_401k"]]
     orders: list[WorkplaceOrder]
+    returns: list[AccountReturn] = Field(default_factory=list)
+    liquidity_locks: list[AccountLock] = Field(default_factory=list)
     complete_single_employer_elections_confirmed: bool
     gross_wages_before_deferrals_confirmed: bool
     timing: Literal["monthly_payroll_before_tax_and_spending"]
