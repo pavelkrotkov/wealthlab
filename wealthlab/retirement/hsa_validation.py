@@ -2,11 +2,13 @@
 
 from datetime import date
 
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.hsa_receipts import validate_receipt
 from wealthlab.retirement.hsa_shares import validate_shares
 
 
 def validate(case):
+    rule_year(case)
     if not case.complete_context:
         raise ValueError("Confirm complete HSA contributions, coverage and receipt history.")
     owners = {owner.id: owner for owner in case.owners}

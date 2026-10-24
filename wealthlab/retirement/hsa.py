@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.retirement import hsa_receipts
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.contribution_inputs import CashReceipt
 from wealthlab.retirement.hsa_capacity import budgets
 from wealthlab.retirement.hsa_inputs import HSACase, HSAContribution, HSAInterest
@@ -30,6 +31,8 @@ def run(case: HSACase):
         )
     return dict(
         year=case.year,
+        rule_base_year=rule_year(case),
+        rule_mode=case.rule_mode,
         cash=book["cash"],
         account_balances=book["balances"],
         contribution_limits=book["limits"],

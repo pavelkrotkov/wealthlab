@@ -2,8 +2,11 @@
 
 from datetime import date
 
+from wealthlab.retirement.contribution_assumptions import rule_year
+
 
 def validate(case):
+    rule_year(case)
     people = {item.id: item for item in case.contributors}
     accounts = {item.id: item for item in case.accounts}
     validate_records(case)

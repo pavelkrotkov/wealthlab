@@ -13,7 +13,8 @@ from wealthlab.ui.uploads import invalid, source
 def show():
     st.header("Health savings account cash flows")
     st.caption(
-        "Synthetic 2025/2026 cash-only HSAs. Monthly eligibility is an explicit forecast; "
+        "Cash-only HSAs: published 2025/2026 or explicit frozen-2026 forward assumptions. "
+        "Monthly eligibility is an explicit forecast; "
         "one row for each owner and month. Married family coverage shares one base limit "
         "when both spouses are eligible; catch-up contributions stay with each owner. "
         "No last-month-rule or testing-period benefit is assumed."
@@ -59,6 +60,10 @@ def display(result):
     A qualified-only request can remain partly unfilled; allowing nonqualified
     cash can produce tax even when the account has sufficient assets.
     """
+    st.caption(
+        f"Contribution rule base: {result['rule_base_year']} · {result['rule_mode']}. "
+        "Calendar-year ages and coverage still apply."
+    )
     st.metric("Cash before tax payments", f"${result['cash']:,.2f}")
     st.subheader("Dated HSA allocation and withdrawals")
     st.dataframe(result["orders"], hide_index=True, width="stretch")

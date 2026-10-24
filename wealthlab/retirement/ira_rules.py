@@ -2,6 +2,7 @@
 
 from decimal import ROUND_CEILING, Decimal
 
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.contribution_rules import LIMITS, age
 
 
@@ -22,17 +23,17 @@ def phaseout(case, person, roth):
 
 def roth_range(case):
     if case.filing in {"joint", "surviving"}:
-        return (236000, 246000) if case.year == 2025 else (242000, 252000)
-    return (150000, 165000) if case.year == 2025 else (153000, 168000)
+        return (236000, 246000) if rule_year(case) == 2025 else (242000, 252000)
+    return (150000, 165000) if rule_year(case) == 2025 else (153000, 168000)
 
 
 def deduction_range(case, person):
     if person.covered_by_workplace_plan:
         if case.filing in {"joint", "surviving"}:
-            return (126000, 146000) if case.year == 2025 else (129000, 149000)
-        return (79000, 89000) if case.year == 2025 else (81000, 91000)
+            return (126000, 146000) if rule_year(case) == 2025 else (129000, 149000)
+        return (79000, 89000) if rule_year(case) == 2025 else (81000, 91000)
     if case.filing == "joint" and spouse_covered(case, person):
-        return (236000, 246000) if case.year == 2025 else (242000, 252000)
+        return (236000, 246000) if rule_year(case) == 2025 else (242000, 252000)
     return None
 
 
@@ -54,8 +55,8 @@ def reduced(limit, magi, bounds):
 
 
 def deductible(case, person, paid):
-    limit = LIMITS[case.year]["ira"]
+    limit = LIMITS[rule_year(case)]["ira"]
     if age(person, case.year) >= 50:
-        limit += LIMITS[case.year]["ira_catchup"]
+        limit += LIMITS[rule_year(case)]["ira_catchup"]
     cap = reduced(Decimal(limit), person.traditional_ira_magi, phaseout(case, person, False))
     return min(paid, person.ira_compensation_budget, cap)
