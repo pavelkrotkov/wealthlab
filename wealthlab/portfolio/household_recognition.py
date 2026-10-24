@@ -25,9 +25,9 @@ def delta(case, book, when, previous):
     return change, nj - before[1], (federal, nj), pending
 
 
-def event(case, book, when, previous):
+def event(case, book, when, previous, allow_pending=False):
     federal, nj, current, pending = delta(case, book, when, previous)
-    guard_year_end(when, pending)
+    guard_year_end(when, pending, allow_pending)
     previous[when.year] = current
     return TaxEvent(
         date=when,
@@ -38,12 +38,12 @@ def event(case, book, when, previous):
     )
 
 
-def apply(annual, case, book, when, previous):
+def apply(annual, case, book, when, previous, allow_pending=False):
     federal, nj, current, pending = delta(case, book, when, previous)
-    guard_year_end(when, pending)
+    guard_year_end(when, pending, allow_pending)
     return with_gains(annual, federal, nj), current
 
 
-def guard_year_end(when, pending):
-    if when == date(when.year, 12, 31) and any(pending.values()):
+def guard_year_end(when, pending, allow_pending=False):
+    if when == date(when.year, 12, 31) and any(pending.values()) and not allow_pending:
         raise ValueError("Year-end pending wash losses need January/prior-return reconciliation.")

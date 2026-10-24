@@ -22,6 +22,11 @@ class TaxLedger:
     def __init__(self, plan, scenario, lots=None):
         validate(plan, scenario)
         self.plan = plan
+        self.lots = lots
+        self.provisional_returns = set()
+        self.preserve_ira_elections = (
+            lots is not None and lots.plan.year_end_wash_policy == "january_reconcile"
+        )
         self.funding = AccountFunding(plan, scenario)
         if lots is not None:
             from wealthlab.portfolio.household_funding import Funding
@@ -33,6 +38,8 @@ class TaxLedger:
         self.year = None
         self.outstanding = dict(federal=Decimal(0), new_jersey=Decimal(0))
         self.refunds = []
+        self.refund_receipts = []
+        self.closed_returns = {}
 
     @property
     def owed(self):
@@ -131,4 +138,11 @@ class TaxLedger:
         return cash
 
     def close(self, wallet, start, end) -> dict:
-        return dict(close_year(self, wallet, start, end), funding_basis=dict(self.funding.basis))
+        provisional = self.lots is not None and self.lots.pending(start.year)
+        if end.year > start.year and provisional:
+            self.provisional_returns.add(start.year)
+        return dict(
+            close_year(self, wallet, start, end),
+            funding_basis=dict(self.funding.basis),
+            tax_return_provisional=bool(provisional),
+        )

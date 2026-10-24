@@ -9,6 +9,7 @@ from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.portfolio.household_example import synthetic as lot_example
+from wealthlab.portfolio.january_example import synthetic as january_example
 from wealthlab.retirement.education_household_example import synthetic as education_example
 from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
 from wealthlab.retirement.ira_deposit_household_example import synthetic as ira_deposit_example
@@ -69,6 +70,7 @@ def examples():
         ("Load synthetic cash HSA household", hsa_example),
         ("Load synthetic 529 tuition household", education_example),
         ("Load synthetic actual-lot funding household", lot_example),
+        ("Load synthetic January wash reconciliation", january_example),
         ("Load synthetic Medicare household", medicare_example),
         ("Load synthetic Social Security with Medicare withholding", withholding_example),
     )

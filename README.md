@@ -45,3 +45,5 @@ Load the synthetic 529 tuition household for [qualified institution payments, ca
 The Markets workspace generates and exports [realized market batches](docs/adr/0024-paired-market-paths.md); its factor charts do not yet measure household spending safety.
 
 Load the synthetic actual-lot funding household for [actual share sales, separate basis and household tax cash](docs/adr/0025-household-lot-funding.md). This bounded profile replaces proportional-basis selling for linked accounts; remaining harvesting/year-end/distribution adapters are unfinished.
+
+Load the synthetic January wash reconciliation household for [original-year loss recognition, dated tax positions and completed wrapper checks](docs/adr/0026-january-wash-reconciliation.md). Default pending-December blocking remains available.

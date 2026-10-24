@@ -35,6 +35,7 @@ class Ledger:
         self.funding = Funding(self.plan.contributions)
         self.summary = {}
         self.year = scenario.start.year
+        self.closed_years = {}
         self.cache_key: tuple[int, int] | None = None
 
     def refresh(self, year):
@@ -76,13 +77,12 @@ class Ledger:
     def completed(self, taxes, end):
         if end != date(self.year + 1, 1, 1):
             return self.summary
-        checked = check_completed(
+        self.closed_years[self.year] = (
             self.context,
             self.result["orders"],
             self.result["contribution_owners"],
-            taxes.case.federal_income,
-            taxes.result["federal"],
         )
+        checked = self.check_year(taxes)
         self.result["contribution_eligibility"] = checked
         self.summary.update(
             ira_annual_reconciliation=self.result,
@@ -95,3 +95,15 @@ class Ledger:
             for a in self.accounts
         ]
         return self.summary
+
+    def check_year(self, taxes):
+        if self.year in taxes.provisional_returns:
+            return dict(status="pending_january_wash_reconciliation", year=self.year)
+        return check_completed(
+            self.context,
+            self.result["orders"],
+            self.result["contribution_owners"],
+            taxes.case.federal_income,
+            taxes.result["federal"],
+            allow_underclaim=taxes.preserve_ira_elections,
+        )

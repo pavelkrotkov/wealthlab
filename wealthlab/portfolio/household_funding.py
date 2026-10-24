@@ -53,7 +53,14 @@ def fund_source(lots, source, index, ledger, wallet, spending, amounts, start, e
         trial = deepcopy(lots.book)
         trade = sale(lots, source, index, sold, available, trial)
         trial.trade(trade)
-        case, _ = recognition.apply(ledger.case, lots.case, trial, lots.when, lots.reported)
+        case, _ = recognition.apply(
+            ledger.case,
+            lots.case,
+            trial,
+            lots.when,
+            lots.reported,
+            allow_pending=lots.plan.year_end_wash_policy == "january_reconcile",
+        )
         return due(case, ledger, amounts, start, end)
 
     result = solve(wallet.cash, spending, maximum, tax)
@@ -64,7 +71,12 @@ def fund_source(lots, source, index, ledger, wallet, spending, amounts, start, e
     trade = sale(lots, source, index, result["withdrawal"], available, lots.book)
     lots.book.trade(trade)
     ledger.case, current = recognition.apply(
-        ledger.case, lots.case, lots.book, lots.when, lots.reported
+        ledger.case,
+        lots.case,
+        lots.book,
+        lots.when,
+        lots.reported,
+        allow_pending=lots.plan.year_end_wash_policy == "january_reconcile",
     )
     lots.reported[lots.when.year] = current
     paid = sweep(lots.book, wallet)

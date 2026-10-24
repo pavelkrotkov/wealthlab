@@ -4,6 +4,9 @@ The initial profile links ordinary taxable trading accounts with manual trades.
 It reuses both wash books, but year-end unresolved loss windows require a later
 prior-return reconciliation adapter. Rejecting that profile avoids quietly
 moving a December deduction into the next year's tax return.
+The optional January profile uses complete calendar years so the original
+return closes before its next observation period. A post-horizon assertion
+is valid only in that profile and must be explicitly selected.
 """
 
 from datetime import timedelta
@@ -25,6 +28,7 @@ def validate(scenario):
         raise ValueError("Confirm complete lot ownership/purchases and monthly cash sweep timing.")
     case = plan.case
     validate_lots(case)
+    validate_january(plan, scenario)
     validate_scope(case)
     if (case.as_of, case.end) != (scenario.start, scenario.end - timedelta(days=1)):
         raise ValueError("Linked lot dates must match the household's inclusive/exclusive horizon.")
@@ -114,3 +118,17 @@ def validate_funding_permissions(plan, accounts):
         raise ValueError("Each linked account/security funding source must appear once.")
     if any(a not in accounts or s not in securities for a, s in keys):
         raise ValueError("Unknown linked account or security in funding permission.")
+
+
+def validate_january(plan, scenario):
+    if plan.year_end_wash_policy != "january_reconcile":
+        if plan.post_horizon_purchases != "unconfirmed":
+            raise ValueError("Post-horizon wash assumptions require January reconciliation mode.")
+        return
+    if (scenario.start.month, scenario.start.day, scenario.end.month, scenario.end.day) != (
+        1,
+        1,
+        1,
+        1,
+    ):
+        raise ValueError("January return reconciliation requires complete calendar years.")

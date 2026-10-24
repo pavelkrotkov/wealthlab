@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from wealthlab.tax import state_deduction
+from wealthlab.tax import return_positions, state_deduction
 
 
 def pay(ledger, wallet) -> Decimal:
@@ -10,6 +10,7 @@ def pay(ledger, wallet) -> Decimal:
     for jurisdiction in ("new_jersey", "federal"):
         amount = wallet.pay(ledger.outstanding[jurisdiction])
         ledger.outstanding[jurisdiction] -= amount
+        return_positions.record_arrears(ledger, jurisdiction, amount)
         total += amount
         if jurisdiction == "new_jersey":
             ledger.case = state_deduction.add(ledger.case, amount, ledger.plan.state_deduction_mode)
@@ -19,6 +20,7 @@ def pay(ledger, wallet) -> Decimal:
 def receive(ledger, wallet, end) -> tuple[Decimal, Decimal]:
     due = [item for item in ledger.refunds if item["date"] < end]
     ledger.refunds = [item for item in ledger.refunds if item["date"] >= end]
+    return_positions.record_refunds(ledger, due)
     cash = sum((item["cash"] for item in due), Decimal(0))
     taxable = sum((item["taxable"] for item in due), Decimal(0))
     wallet.deposit(cash)
