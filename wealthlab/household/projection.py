@@ -29,7 +29,7 @@ from wealthlab.retirement.social_household import prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
-def project(scenario: Scenario) -> list[dict]:
+def project(scenario: Scenario, market=None) -> list[dict]:
     scenario = prepare(prepare_compensation(prepare_employment(scenario)))
     validate_resolved(scenario)
     wallet = Wallet(scenario)
@@ -45,18 +45,19 @@ def project(scenario: Scenario) -> list[dict]:
     education = education_household.make(scenario)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
+        live, market_events = market.start(scenario, lots, start) if market else (scenario, ())
         medical_events = medicare_household.start(medicare, start)
         events = compensation.month(wallet, start, end) if compensation else ()
         ira_events, ira_summary = ira_household.month(ira, wallet, start, end)
         row = month(
-            scenario,
+            live,
             wallet,
             debt_balances,
             start,
             end,
             fees_owed,
             tax_ledger,
-            [*events, *ira_events, *medical_events],
+            [*events, *ira_events, *medical_events, *market_events],
             medicare,
             employee,
             ira,
@@ -74,7 +75,13 @@ def project(scenario: Scenario) -> list[dict]:
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
+        observe_market(market, lots, row)
         rows.append(row)
+    finish(rows, compensation, employee, lots, medicare, hsa, education, market)
+    return rows
+
+
+def finish(rows, compensation, employee, lots, medicare, hsa, education, market):
     if compensation:
         rows[-1]["employer_event_log"] = compensation.log
     if employee:
@@ -83,4 +90,10 @@ def project(scenario: Scenario) -> list[dict]:
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)
     education_household.finish(education, rows)
-    return rows
+    if market:
+        market.finish(rows)
+
+
+def observe_market(market, lots, row):
+    if market:
+        market.observe(lots, row)

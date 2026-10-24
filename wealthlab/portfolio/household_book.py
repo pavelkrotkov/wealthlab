@@ -32,6 +32,7 @@ class Ledger:
         self.when = self.case.as_of
         self.counter = 0
         self.monthly = {}
+        self.locked = set()
         self.funding_orders = []
         self.reconciliations = []
 

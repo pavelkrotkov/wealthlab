@@ -41,6 +41,8 @@ class Funding:
 
 
 def fund_source(lots, source, index, ledger, wallet, spending, amounts, start, end):
+    if source.security_id in lots.locked:
+        return ZERO
     template = order(lots, source, index, Decimal(1), lots.book)
     available = sum((lot.quantity for lot in candidates(lots.book.lots, template)), ZERO)
     maximum = max(ZERO, money(available * template.price) - source.commission)

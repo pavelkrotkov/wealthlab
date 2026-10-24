@@ -26,7 +26,8 @@ def show():
     st.warning(
         "Enable household tax assumptions to include federal/NJ taxes. "
         "Without a tax plan, income is gross and taxes are omitted. "
-        "Market paths are not yet linked to household funding; employer returns use dated events. "
+        "Use Markets / Household funding for supported realized market execution; "
+        "employer returns use dated events. "
         "Only explicitly permitted taxable accounts can be sold, "
         "using actual linked lots or entered proportional-basis assumptions. "
         "This screen does not yet establish retirement safety."
