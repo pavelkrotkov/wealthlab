@@ -10,8 +10,8 @@ from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.portfolio import household_policies, household_wash
 from wealthlab.portfolio import household_recognition as recognition
-from wealthlab.portfolio import household_wash
 from wealthlab.portfolio.book import Book
 from wealthlab.portfolio.household_validation import validate
 from wealthlab.portfolio.household_values import account_value
@@ -34,6 +34,7 @@ class Ledger:
         self.monthly = {}
         self.locked = set()
         self.funding_orders = []
+        self.sale_decisions = []
         self.reconciliations = []
 
     def after_receipts(self, wallet, start, end):
@@ -43,6 +44,7 @@ class Ledger:
         for trade in self.case.trades:
             if start <= trade.date < end:
                 supplied += manual(self.book, wallet, trade)
+        household_policies.execute(self, wallet, start, end)
         swept = sweep(self.book, wallet)
         sync(self.book, wallet, self.prices)
         self.monthly = dict(
@@ -70,6 +72,8 @@ class Ledger:
             disposals=self.book.disposals,
             trades=[t.model_dump(mode="json") for t in self.book.history],
             funding_orders=self.funding_orders,
+            sale_decisions=self.sale_decisions,
+            harvest_decisions=self.book.harvest_decisions,
             closing_prices=dict(self.prices),
             recognized_by_year=dict(self.reported),
             nj_wash_treatment=self.case.nj_wash_treatment,

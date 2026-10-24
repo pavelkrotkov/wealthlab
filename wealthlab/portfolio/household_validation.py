@@ -1,9 +1,9 @@
 """No second account value, duplicate seller or invented cash finances linked lots.
 
-The initial profile links ordinary taxable trading accounts with manual trades.
-It reuses both wash books, but year-end unresolved loss windows require a later
-prior-return reconciliation adapter. Rejecting that profile avoids quietly
-moving a December deduction into the next year's tax return.
+The supported profile shares manual trades, month-end sale rules, replacement
+harvesting and funding sales with the actual household cash/tax ledger. Scope
+guards prevent standalone tax forecasts, distributions and fees from being
+silently treated as completed household integrations.
 The optional January profile uses complete calendar years so the original
 return closes before its next observation period. A post-horizon assertion
 is valid only in that profile and must be explicitly selected.
@@ -13,6 +13,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.household.calendar import months
+from wealthlab.portfolio.household_policies import validate as validate_policies
 from wealthlab.portfolio.household_values import account_value
 from wealthlab.portfolio.validation import validate as validate_lots
 
@@ -27,9 +28,9 @@ def validate(scenario):
     ):
         raise ValueError("Confirm complete lot ownership/purchases and monthly cash sweep timing.")
     case = plan.case
+    validate_scope(case)
     validate_lots(case)
     validate_january(plan, scenario)
-    validate_scope(case)
     if (case.as_of, case.end) != (scenario.start, scenario.end - timedelta(days=1)):
         raise ValueError("Linked lot dates must match the household's inclusive/exclusive horizon.")
     validate_marks(plan, scenario)
@@ -40,16 +41,15 @@ def validate(scenario):
 def validate_scope(case):
     unsupported = (
         case.lot_tax_cases,
-        case.sale_policies,
-        case.harvest_policies,
         case.fee_schedules,
         case.distributions,
         case.compare_harvesting,
         case.terminal_exit,
     )
+    validate_policies(case)
     if any(unsupported):
         raise ValueError(
-            "This household lot profile supports manual trades and funding sales only."
+            "Household lot distributions, fees and terminal exits require their own adapters."
         )
     if not case.federal_wash_tracking or case.nj_wash_treatment == "unconfirmed":
         raise ValueError("Linked lots require federal wash tracking and explicit NJ treatment.")

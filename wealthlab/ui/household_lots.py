@@ -7,6 +7,7 @@ from decimal import Decimal
 import streamlit as st
 
 from wealthlab.household.calendar import months
+from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.lot_return_results import display as return_results
 
 
@@ -24,7 +25,11 @@ def controls(payload, scenario):
             "commission, holding periods, separate bases and wash adjustments. Remove the old "
             "proportional seller for every linked account. Confirm complete outside purchases. "
             "NJ recognition is an explicit scenario assumption. This initial profile excludes "
-            "dividends, manager fees, automatic sale/harvest policies and wrapper lots. Unresolved "
+            "issuer distributions, manager fees and wrapper lots. "
+            "Dated month-end staged/target sales "
+            "and conditional long-only harvesting use actual current marks and household tax. "
+            "Targets use gross pre-tax household assets; later tax/spending can change weights. "
+            "Tax-budget policies require a separate annual-forecast adapter. Unresolved "
             "year-end wash windows default to blocking. Select january_reconcile to observe the "
             "following January and revise the original return. Posted IRA deduction/basis "
             "elections are preserved, even if a larger deduction later becomes permitted. "
@@ -85,6 +90,7 @@ def display(rows):
         "selection order, not globally optimized. Review the explicit NJ wash assumption."
     )
     return_results(rows, audit)
+    policy_results(audit)
     with st.expander("Actual lots, disposals, funding orders and recognized annual gains"):
         st.json(json.dumps(audit, default=str))
 

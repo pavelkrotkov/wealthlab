@@ -17,6 +17,8 @@ from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.household_run import paired, run
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
+from wealthlab.markets.policy_example import CHOICES
+from wealthlab.markets.policy_example import enable as policy_example
 from wealthlab.markets.stresses import NAMES
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.uploads import invalid, source
@@ -28,8 +30,9 @@ def show():
         "Month-end prices fund spending through actual taxable lots and the same tax return. "
         "Opening holdings receive separately taxed cash yield; selected expenses use prior "
         "realized CPI. Other accounts retain their explicit entered schedules. The synthetic "
-        "two-year horizon does not cover retirement through age 100. Automatic rebalancing, "
-        "harvesting and employer-factor binding remain unfinished. "
+        "two-year horizon does not cover retirement through age 100. Dated staged/target sales "
+        "and conditional harvesting use current marks. Broader rebalancing and employer-factor "
+        "binding remain unfinished. "
         "Optional discretionary guardrails use observed real wealth; "
         "their cuts are reported separately."
     )
@@ -40,6 +43,8 @@ def show():
     household, market, binding = synthetic(mode, stress)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
+    choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
+    household, binding = policy_example(household, binding, choice)
     default = json.dumps(
         dict(
             household=household.model_dump(mode="json"),
