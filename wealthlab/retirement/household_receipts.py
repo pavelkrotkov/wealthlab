@@ -15,3 +15,7 @@ def receipt_hook(ira, hsa, education=None, products=None):
             yield from hook(wallet, start, end)
 
     return apply
+
+
+def required(education, hsa):
+    return (education.cash_need if education else 0) + (hsa.medical.owed if hsa else 0)

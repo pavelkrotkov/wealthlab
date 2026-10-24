@@ -67,7 +67,7 @@ def annual_case(plan, context, accounts):
             contribution_policy="monthly_only",
             nj_treatment=plan.nj_treatment,
             accounts=accounts,
-            medical_receipts=plan.medical_receipts,
+            medical_receipts=[*plan.medical_receipts, *(b.receipt() for b in plan.medical_bills)],
             contributions=events(plan.contributions),
             withdrawals=events(plan.withdrawals),
             interest=events(plan.interest),

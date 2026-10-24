@@ -17,7 +17,7 @@ def test_nonqualified_cash_hsa_example_discloses_actual_taxable_cash_and_additio
     assert not app.error
     metrics = {m.label: m.value for m in app.metric}
     assert (
-        metrics["Qualified HSA reimbursements"],
+        metrics["Qualified HSA distributions"],
         metrics["Nonqualified federal taxable cash"],
         metrics["HSA federal additional tax"],
         metrics["Conditional NJ withdrawal income"],

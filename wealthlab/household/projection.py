@@ -76,6 +76,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
         row["net_wealth"] -= row.get("tax_position", Decimal(0))
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
+        row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("sleeve_liability", Decimal(0))
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)

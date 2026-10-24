@@ -17,7 +17,7 @@ def test_cash_hsa_household_ui_runs_and_discloses_conditional_nj():
     assert app.metric[0].value == "$155,243.00"
     assert (
         metrics["Personal HSA deposits"],
-        metrics["Qualified HSA reimbursements"],
+        metrics["Qualified HSA distributions"],
         metrics["Unfilled HSA requests"],
     ) == ("$8,000.00", "$3,000.00", "$1,000.00")
     assert_conditional_caption(app)
