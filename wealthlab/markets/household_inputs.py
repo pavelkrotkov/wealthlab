@@ -7,6 +7,7 @@ from pydantic import Field
 from wealthlab.household.records import Identifier
 from wealthlab.markets.employer_inputs import EmployerBinding
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
+from wealthlab.markets.medical_inflation import MedicalBillIndexing
 from wealthlab.markets.wrapper_inputs import WrapperBinding
 from wealthlab.tax.facts import TaxModel
 
@@ -26,6 +27,7 @@ class HouseholdBinding(TaxModel):
     sleeves: list[Identifier] = Field(default_factory=list)
     replace_sleeve_observations_confirmed: bool = False
     inflation_expenses: list[Identifier] = Field(default_factory=list)
+    medical_bill_inflation: list[MedicalBillIndexing] = Field(default_factory=list)
     cash_yield_timing: Literal["opening_value_received_before_month_end_sales"]
     ordinary_cash_character_confirmed: bool
     other_accounts_unmodeled_returns_confirmed: bool

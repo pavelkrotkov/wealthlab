@@ -17,6 +17,7 @@ from wealthlab.markets.household_example import synthetic
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.household_run import paired, run
 from wealthlab.markets.inputs import MarketCase
+from wealthlab.markets.medical_example import synthetic as medical_example
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
@@ -32,15 +33,12 @@ from wealthlab.ui.uploads import invalid, source
 def show():
     st.subheader("Actual household market funding")
     st.caption(
-        "Month-end prices fund spending through actual taxable lots and the same tax return. "
-        "Opening holdings receive separately taxed cash yield; selected expenses use prior "
-        "realized CPI. Other accounts retain their explicit entered schedules. The synthetic "
-        "two-year horizon does not cover retirement through age 100. Dated staged/target sales "
-        "and conditional harvesting use current marks. Explicit IRA/529 proxies and employer "
-        "net factors reuse their ledgers; linked employment reacts next month. "
-        "Sleeve taxes use supplied allocations; broader rebalancing remains unfinished. "
-        "Optional discretionary guardrails use observed real wealth; "
-        "their cuts are reported separately."
+        "Realized paths fund spending through the same household tax/cash ledger. Selected budgets "
+        "and medical bills use prior CPI; HSA election bounds remain explicit. Other accounts keep "
+        "entered schedules. The two-year synthetic horizon does not cover retirement to age 100. "
+        "Dated sales and harvesting use current marks. IRA/529 proxies and employer factors reuse "
+        "their ledgers; employment responds next month. Sleeve taxes use supplied allocations. "
+        "Discretionary guardrail cuts are shown separately; broader rebalancing remains unfinished."
     )
     mode = st.selectbox(
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
@@ -143,6 +141,7 @@ def account_example(mode, stress):
             "Employer and employment",
             "Employee 401(k)",
             "Long-short household",
+            "Medical bill inflation",
         ],
         key="market_account_scope",
     )
@@ -152,5 +151,6 @@ def account_example(mode, stress):
         "Employer and employment": employer_example,
         "Employee 401(k)": workplace_example,
         "Long-short household": sleeve_example,
+        "Medical bill inflation": medical_example,
     }[scope]
     return starter(mode, stress)

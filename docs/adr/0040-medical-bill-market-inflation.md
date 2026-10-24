@@ -1,0 +1,23 @@
+# ADR 0040: Dated medical costs on the same realized inflation paths
+
+Status: a consumer of the current-bill layer in open retirement/market tickets #6/#8. It connects selected dated bills to actual household funding in deterministic, invented historical, correlated Monte Carlo and named-stress runs. It does not complete invested HSAs, medical deductions, insurance recovery, rebalancing or the personal optimizer.
+
+## Explicit price basis and election policy
+
+A household binding may select `medical_bill_inflation` entries by unique existing bill ID. Each must explicitly declare `amount_basis: projection_start_prices`; the selected bill's input amount is a start-price estimate, not an already-inflated nominal invoice. Known fixed nominal charges stay unselected. This avoids silently inflating every current bill or treating a nominal forecast as a real-price input. Missing/unknown/duplicate selections, a missing HSA/bill ledger or a selected bill outside the realized horizon block execution.
+
+CPI is the same realized inflation series used for indexed household budgets. A bill uses cumulative CPI observed **before its due month**. A January-start bill due the following January includes the preceding twelve observations and excludes its own month's inflation. No later observation affects an earlier bill. The adapter compiles a copy of fixed forecasts; the actual ledger only issues/pays a bill on its date and never grants reimbursement capacity from its forecast. Original household inputs and realized batch/binding remain exported, along with each path's original/realized cost and HSA cap. This is a scenario assumption, not a healthcare-specific inflation forecast.
+
+Each bill independently keeps either its nominal direct-HSA upper bound (`keep_nominal_cap`) or its original share of the bill (`keep_bill_share`). The latter scales the elected cap with the same CPI. Both cap it at the actual indexed bill. Deflation therefore cannot make a nominal election exceed the obligation. A cost that rounds to zero cents is explicitly unsupported rather than silently becoming a free bill. Source dates, ownership, eligibility, tax treatment and funding priority remain unchanged. Actual HSA assets, qualified expense rules and ordinary cash—not the requested cap—determine payments.
+
+A bill-only binding is a valid market household run even without a security/wrapper factor binding. Cash-HSA assets retain their entered bank assumptions; an unbound equity factor cannot manufacture HSA investment earnings. Existing unmeasured account/issuer diagnostics remain visible. Existing profiles with no selected bill retain their original costs. Other monetary events, historical reimbursements, prior arrears and supplied tax facts are not indexed by this adapter.
+
+## Actual safety versus marked wealth
+
+The synthetic two-year case starts with USD2,000 ordinary cash and USD6,000 cash-HSA assets, no other cash income and a USD6,000 start-price bill due January2027. The deterministic example assumes20% annual general inflation. Its actual bill is USD7,200. A fixed USD5,000 HSA cap pays that amount plus all USD2,000 cash, leaving a real USD200 provider liability despite USD1,000 HSA assets. Preserving the original five-sixths bill share allows USD6,000 HSA plus USD1,200 cash; the bill is fully funded and cash ends at USD800.
+
+Both policies have USD800 marked net wealth: assets minus the unpaid bill liability reconcile in the first, while the second has no bill liability. Their paired real-wealth difference is zero; funding success changes from false to true and the shortfall falls USD200. This demonstrates the approved spending-safety-first objective without claiming a tax saving or a retirement-safety result. The two-year horizon does not cover age100, and liquid reserve diagnostics remain separate.
+
+Checks execute that matched comparison, original-input immutability, cap/audit reproduction, due-month versus preceding-month shocks, deflation caps, invalid selectors/price basis, all four realization methods and the actual Markets form. Indexed bill forecasts never enter the paid receipt ledger directly; the current-bill tests retain paid-only, spouse/year and provider-versus-cash accounting.
+
+Markets / Household funding / **Medical bill inflation** supplies editable household, batch and binding JSON. The selected-path panel shows entered/realized costs and elected caps alongside actual provider/cash payments and unpaid liabilities. A paired household/binding can change the election policy while retaining the identical realized batch and indices. Financial tax eligibility remains the explicit current-bill/HSA assumptions in [ADR0039](0039-current-medical-bills.md); no new statutory tax rule is introduced.

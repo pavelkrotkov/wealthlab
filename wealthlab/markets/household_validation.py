@@ -10,6 +10,7 @@ basis events, so that convention requires a separate adapter.
 from wealthlab.household.calendar import months
 from wealthlab.markets.employer_validation import validate as validate_employers
 from wealthlab.markets.guardrails import validate as validate_guardrail
+from wealthlab.markets.medical_inflation import validate as validate_medical
 from wealthlab.markets.sleeve_compile import validate as validate_sleeves
 from wealthlab.markets.wrapper_compile import validate as validate_wrappers
 from wealthlab.portfolio.household_validation import validate as validate_lots
@@ -26,6 +27,7 @@ def validate(scenario, batch, binding, index):
     validate_path(scenario, batch, index)
     validate_bindings(scenario, batch, binding)
     validate_inflation(scenario, binding)
+    validate_medical(scenario, binding)
     if binding.spending_guardrail is not None:
         validate_guardrail(scenario, binding.spending_guardrail)
 
@@ -50,8 +52,18 @@ def validate_bindings(scenario, batch, binding):
     confirm_scope(binding)
     identities = [b.security_id for b in binding.securities]
     actual = actual_securities(scenario)
-    if not any((actual, binding.wrappers, binding.employers, binding.sleeves)):
-        raise ValueError("Bind taxable securities, supported wrappers or employer accounts.")
+    if not any(
+        (
+            actual,
+            binding.wrappers,
+            binding.employers,
+            binding.sleeves,
+            binding.medical_bill_inflation,
+        )
+    ):
+        raise ValueError(
+            "Bind securities, supported wrappers, employer accounts or medical bill inflation."
+        )
     if len(identities) != len(set(identities)) or set(identities) != actual:
         raise ValueError("Bind every linked security exactly once.")
     if any(b.factor not in batch.assets for b in binding.securities):
