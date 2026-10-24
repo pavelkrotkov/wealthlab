@@ -17,6 +17,8 @@ from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
 from wealthlab.ui.household_ira import display as ira_summary
 from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
+from wealthlab.ui.household_lots import display as lot_summary
+from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
 from wealthlab.ui.projected_tax import display as tax_summary
@@ -27,6 +29,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.caption(
         ("Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance")
         + scope_note(scenario.hsa_plan)
+        + lot_scope_note(scenario.lot_plan)
     )
     table = pd.DataFrame(rows).drop(
         columns=[
@@ -41,6 +44,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "ira_contribution_audit",
             "hsa_audit",
             "education_audit",
+            "lot_audit",
             "medicare_audit",
             "workplace_audit",
         ],
@@ -60,12 +64,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.dataframe(table, hide_index=True, width="stretch")
     tax_summary(rows)
     compensation_summary(rows)
-    ira_summary(rows)
-    ira_deposit_summary(rows)
-    hsa_summary(rows)
-    education_summary(rows)
-    medicare_summary(rows)
-    workplace_summary(rows)
+    account_summaries(rows)
     with st.expander("Ending accounts, debts and reproduction details"):
         st.caption(
             "All reported account and debt balances are converted to USD at the stated fixed rates."
@@ -99,3 +98,13 @@ def comparison(scenario: Scenario) -> None:
         "Ending wealth change versus baseline · nominal USD",
         f"${after['net_wealth'] - before['net_wealth']:,.2f}",
     )
+
+
+def account_summaries(rows):
+    ira_summary(rows)
+    ira_deposit_summary(rows)
+    hsa_summary(rows)
+    education_summary(rows)
+    lot_summary(rows)
+    medicare_summary(rows)
+    workplace_summary(rows)
