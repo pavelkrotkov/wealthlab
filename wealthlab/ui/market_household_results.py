@@ -11,8 +11,7 @@ from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
 from wealthlab.ui.market_funding_results import display as funding_results
-
-HIDDEN = ("annual_tax", "lot_audit", "sleeve_positions", "sleeve_audit", "sleeve_tax_assumptions")
+from wealthlab.ui.results import HIDDEN
 
 
 def display(bundle):
@@ -45,7 +44,7 @@ def display(bundle):
         .astype(float)
     )
     st.dataframe(
-        pd.DataFrame(rows).drop(columns=list(HIDDEN), errors="ignore"),
+        pd.DataFrame(rows).drop(columns=HIDDEN, errors="ignore"),
         hide_index=True,
         width="stretch",
     )
