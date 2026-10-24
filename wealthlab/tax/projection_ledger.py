@@ -1,6 +1,7 @@
 """Monthly tax accrual with real withholding, year-end settlement and delayed refunds."""
 
 from decimal import Decimal
+from itertools import chain
 
 from wealthlab.tax import payments, prior_payments, recognition, state_deduction
 from wealthlab.tax.annual import evaluate
@@ -58,7 +59,7 @@ class TaxLedger:
             case, state_deduction.nj_paid(case), self.plan.state_deduction_mode
         )
 
-    def month(self, amounts, wallet, start, end, required_cash) -> dict:
+    def month(self, amounts, wallet, start, end, required_cash, extra_events=()) -> dict:
         """Recognize this month's income, then pay only available cash.
 
         Payroll withholding follows cumulative calculated employee liability;
@@ -69,7 +70,7 @@ class TaxLedger:
         received, taxable_refund = prior_payments.receive(self, wallet, end)
         prior_paid = prior_payments.pay(self, wallet)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
-        event_cash = self.events(wallet, start, end)
+        event_cash = self.events(wallet, start, end, extra_events)
         sold = self.funding.fund(self, wallet, required_cash, amounts, start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
@@ -95,9 +96,9 @@ class TaxLedger:
             tax_event_cash=event_cash,
         )
 
-    def events(self, wallet, start, end) -> Decimal:
+    def events(self, wallet, start, end, extra_events=()) -> Decimal:
         cash = Decimal(0)
-        for item in self.plan.events:
+        for item in chain(self.plan.events, extra_events):
             if start <= item.date < end:
                 self.case = recognition.event(self.case, item)
                 wallet.deposit(item.cash_received)

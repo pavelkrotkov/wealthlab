@@ -1,4 +1,9 @@
-"""Nominal/real cash-flow results with limitations placed beside the outputs."""
+"""Nominal/real cash-flow results with limitations placed beside the outputs.
+
+Nested account/tranche audit records stay outside the numeric plotting frame.
+Contingent employer marks have their own summary and do not become cash or
+ordinary ending wealth merely because they appear in the reproduction details.
+"""
 
 import pandas as pd
 import streamlit as st
@@ -6,6 +11,7 @@ import streamlit as st
 from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
+from wealthlab.ui.compensation_results import display as compensation_summary
 from wealthlab.ui.projected_tax import display as tax_summary
 
 
@@ -15,7 +21,14 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
         "Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance"
     )
     table = pd.DataFrame(rows).drop(
-        columns=["account_balances", "debt_balances", "annual_tax", "funding_basis"],
+        columns=[
+            "account_balances",
+            "debt_balances",
+            "annual_tax",
+            "funding_basis",
+            "employer_tranches",
+            "employer_event_log",
+        ],
         errors="ignore",
     )
     numeric = table.drop(columns=["date", "period_end"]).astype(float)
@@ -31,6 +44,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
     tax_summary(rows)
+    compensation_summary(rows)
     with st.expander("Ending accounts, debts and reproduction details"):
         st.caption(
             "All reported account and debt balances are converted to USD at the stated fixed rates."
@@ -43,6 +57,8 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 input_sha256=fingerprint(scenario),
                 schema_version=scenario.schema_version,
                 ytd=scenario.ytd.model_dump(mode="json"),
+                employer_tranches=rows[-1].get("employer_tranches", []),
+                employer_events=rows[-1].get("employer_event_log", []),
             )
         )
 
