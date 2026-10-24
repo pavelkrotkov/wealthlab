@@ -53,6 +53,7 @@ def display(result):
     st.caption(
         "An owner's own delayed credits do not increase their spouse's base benefit. "
         "A recipient's own delayed credits reduce their additional spouse benefit. "
+        "Each payable record rounds separately; positive sub-dollar benefits are preserved. "
         "No earnings or household tax benefit is calculated on this screen."
     )
     st.subheader("Limited Owl reference comparison")

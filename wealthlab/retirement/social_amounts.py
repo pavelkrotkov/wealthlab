@@ -12,7 +12,8 @@ def dime(amount):
 
 
 def dollar(amount):
-    return amount.to_integral_value(rounding=ROUND_FLOOR)
+    # POMS RS00601.020D.3: positive benefits under $1 are paid, not erased.
+    return amount if amount < 1 else amount.to_integral_value(rounding=ROUND_FLOOR)
 
 
 def pia(person, month, cola):
