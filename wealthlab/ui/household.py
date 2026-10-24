@@ -8,6 +8,7 @@ from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
+from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
 from wealthlab.retirement.ira_deposit_household_example import synthetic as ira_deposit_example
 from wealthlab.retirement.ira_household_example import synthetic as ira_example
 from wealthlab.retirement.medicare_household_example import synthetic as medicare_example
@@ -62,6 +63,7 @@ def examples():
         ("Load synthetic linked employment and asset shock", linked_shock),
         ("Load synthetic IRA household", ira_example),
         ("Load synthetic IRA contribution household", ira_deposit_example),
+        ("Load synthetic cash HSA household", hsa_example),
         ("Load synthetic Medicare household", medicare_example),
         ("Load synthetic Social Security with Medicare withholding", withholding_example),
     )

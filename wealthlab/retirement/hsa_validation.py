@@ -50,7 +50,10 @@ def validate_account(case, account, owners):
         raise ValueError("Use HSA accounts with known owners.")
     if account.currency != "USD" or account.monthly_fee:
         raise ValueError("The HSA cash layer requires USD accounts without monthly fees.")
-    if account.balance and owners[account.owner].established.year > case.year - 1:
+    established = owners[account.owner].established
+    if established is None:
+        raise ValueError("HSA account holders require a known establishment date.")
+    if account.balance and established.year > case.year - 1:
         raise ValueError("A positive opening HSA balance must be established before the year.")
 
 
@@ -87,7 +90,8 @@ def validate_withdrawals(case, accounts, owners):
 def validate_destination(identity, when, accounts, owners):
     if identity not in accounts:
         raise ValueError("Unknown HSA account in cash event.")
-    if when < owners[accounts[identity].owner].established:
+    established = owners[accounts[identity].owner].established
+    if established is None or when < established:
         raise ValueError("HSA cash events cannot precede establishment.")
 
 
@@ -99,9 +103,16 @@ def validate_owners(case):
 
 
 def validate_owner_dates(owner, year):
-    if owner.birth_date > date(year, 1, 1) or owner.established < owner.birth_date:
+    if owner.birth_date > date(year, 1, 1):
+        raise ValueError("HSA birth/establishment dates contradict the modeled year.")
+    if owner.established is not None:
+        validate_established(owner, year)
+    if owner.disabled_since is not None and owner.disabled_since < owner.birth_date:
+        raise ValueError("Disability cannot precede the owner's birth.")
+
+
+def validate_established(owner, year):
+    if owner.established < owner.birth_date:
         raise ValueError("HSA birth/establishment dates contradict the modeled year.")
     if owner.established > date(year, 12, 31):
         raise ValueError("An HSA cannot be established after this modeled year.")
-    if owner.disabled_since is not None and owner.disabled_since < owner.birth_date:
-        raise ValueError("Disability cannot precede the owner's birth.")
