@@ -24,6 +24,8 @@ def controls(payload, scenario):
         if not enabled:
             return None
         plan = payload.get("employment_plan") or template(scenario)
+        if not plan["paths"]:
+            st.info("Add a supported federal/NJ wage schedule before configuring a work path.")
         return st.text_area(
             "Dated employment choices (JSON)", json.dumps(plan, indent=2), height=300
         )

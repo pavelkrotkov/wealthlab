@@ -44,7 +44,11 @@ def synthetic():
 
 def template(scenario):
     plan = scenario.tax_plan or tax_template(scenario)
-    wages = {r.income_id for r in plan.income_rules if r.federal.startswith("wages_")}
+    wages = {
+        r.income_id
+        for r in plan.income_rules
+        if r.federal.startswith("wages_") and r.new_jersey == "wages"
+    }
     return dict(
         paths=[
             dict(
