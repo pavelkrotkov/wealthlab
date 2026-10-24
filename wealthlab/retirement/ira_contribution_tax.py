@@ -19,7 +19,22 @@ def check(case, rows, additions, annual):
         return None
     if annual is None:
         return dict(status="supplied_annual_forecasts_only")
-    income = case.annual_tax_case.federal_income
+    return check_completed(
+        case.contributions,
+        rows,
+        additions,
+        case.annual_tax_case.federal_income,
+        annual["with_distributions"]["federal"],
+    )
+
+
+def check_completed(plan, rows, additions, income, federal):
+    if income.social_security:
+        raise ValueError(
+            "Combined IRA contribution/benefit deduction worksheets are not yet supported."
+        )
+    if income.allowed_passive_income < 0:
+        raise ValueError("AGI-dependent passive losses require another IRA MAGI adapter.")
     compensation = income.wages_primary + income.wages_spouse
     funded = sum((p["traditional_ira"] + p["roth_ira"] for p in additions), ZERO)
     if funded > compensation:
@@ -27,13 +42,13 @@ def check(case, rows, additions, annual):
             "Annual IRA funding exceeds supported W-2 compensation; "
             "other compensation needs another adapter."
         )
-    magi, roth_magi = completed_magi(rows, additions, annual)
-    people = {p.id: p for p in case.contributions.contributors}
+    magi, roth_magi = completed_magi(rows, additions, federal)
+    people = {p.id: p for p in plan.contributors}
     for added in additions:
         person = people[added["owner"]].model_copy(
             update=dict(traditional_ira_magi=magi, roth_ira_magi=roth_magi)
         )
-        check_owner(case.contributions, person, added)
+        check_owner(plan, person, added)
     return dict(
         status="checked_supported_annual_w2_case",
         traditional_ira_magi=magi,
@@ -42,9 +57,9 @@ def check(case, rows, additions, annual):
     )
 
 
-def completed_magi(rows, additions, annual):
+def completed_magi(rows, additions, federal):
     deduction = sum((p["federal_ira_deduction"] for p in additions), ZERO)
-    magi = annual["with_distributions"]["federal"]["agi"] + deduction
+    magi = federal["agi"] + deduction
     conversions = sum((r["federal_taxable"] for r in rows if r["kind"] == "conversion"), ZERO)
     # IRS 590-A Worksheet 2-1 subtracts conversion income (line 2) and adds
     # the traditional IRA deduction (line 4): AGI + deduction - conversion.

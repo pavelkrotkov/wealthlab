@@ -59,7 +59,9 @@ class TaxLedger:
             case, state_deduction.nj_paid(case), self.plan.state_deduction_mode
         )
 
-    def month(self, amounts, wallet, start, end, required_cash, extra_events=()) -> dict:
+    def month(
+        self, amounts, wallet, start, end, required_cash, extra_events=(), receipt_hook=None
+    ) -> dict:
         """Recognize this month's income, then pay only available cash.
 
         Payroll withholding follows cumulative calculated employee liability;
@@ -71,6 +73,8 @@ class TaxLedger:
         prior_paid = prior_payments.pay(self, wallet)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
         event_cash = self.events(wallet, start, end, extra_events)
+        if receipt_hook is not None:
+            event_cash += self.apply_events(wallet, start, end, receipt_hook(wallet, start, end))
         sold = self.funding.fund(self, wallet, required_cash, amounts, start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
@@ -97,8 +101,11 @@ class TaxLedger:
         )
 
     def events(self, wallet, start, end, extra_events=()) -> Decimal:
+        return self.apply_events(wallet, start, end, chain(self.plan.events, extra_events))
+
+    def apply_events(self, wallet, start, end, items) -> Decimal:
         cash = Decimal(0)
-        for item in chain(self.plan.events, extra_events):
+        for item in items:
             if start <= item.date < end:
                 self.case = recognition.event(self.case, item)
                 wallet.deposit(item.cash_received)

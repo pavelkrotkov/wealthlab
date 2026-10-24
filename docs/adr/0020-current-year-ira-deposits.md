@@ -1,6 +1,6 @@
 # ADR 0020: Current-year deposits share the ordinary IRA cash and basis ledger
 
-Status: combined annual IRA contribution/withdrawal layer of open retirement ticket #6. The household withdrawal bridge still excludes these deposits until its dynamic funding adapter is implemented. This workbench does not establish household spending safety or pay income taxes.
+Status: combined annual IRA contribution/withdrawal layer of open retirement ticket #6. [The household adapter](0021-household-ira-deposits.md) now funds confirmed deposits from actual cash and carries completed basis forward. This workbench does not establish household spending safety or pay income taxes.
 
 The existing contribution case is an optional nested input to the ordinary IRA case. Its year, opening cash, owners, births and account book must match; this is one opening cash amount, not two sources. Only ordinary traditional/Roth IRA contributions belong here. All current-year deposits and external cash receipts must be listed, with confirmed compensation, MAGI, workplace coverage and complete elections. Prior-year deposits after year end, excess corrections, recharacterization, workplace and inherited products remain unsupported.
 

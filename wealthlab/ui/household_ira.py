@@ -24,8 +24,13 @@ def controls(payload, scenario):
             "omit "
             "unfinalized IRA tax. Enter estimated payments separately; this is not a safe-harbor "
             "check. "
-            "Contributions, workplace/inherited accounts, IRA withholding and automatic withdrawal "
-            "selection are not supported by this bridge. RMD targets use the existing December "
+            "Confirmed optional annual contribution contexts now use actual household cash. "
+            "Deposits settle after monthly IRA movements, before current tax/spending; "
+            "only funded deposits add basis. Completed supported W-2/MAGI checks run after "
+            "December tax funding. Social Security deduction worksheets and passive-loss "
+            "refiguring still block that combined profile. Workplace/inherited withdrawals, "
+            "IRA withholding and automatic withdrawal selection remain unsupported. "
+            "RMD targets use the existing December "
             "policy."
         )
         if not enabled:

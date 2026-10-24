@@ -60,6 +60,9 @@ def tax_event(result, owners):
         federal=FederalIncome(
             ira_distributions=total("federal_taxable"),
             retirement_additional_tax=total("additional_tax"),
+            deductible_ira_contributions=sum(
+                (p["federal_ira_deduction"] for p in result["contribution_owners"]), Decimal(0)
+            ),
         ),
         new_jersey=NJIncome(
             pension=total("nj_taxable"),
@@ -84,7 +87,13 @@ def summarize(orders, reconciled):
 
 
 def make(scenario):
-    return Ledger(scenario) if scenario.ira_plan else None
+    if scenario.ira_plan is None:
+        return None
+    if scenario.ira_plan.contributions is not None:
+        from wealthlab.retirement.ira_household_dynamic import Ledger as DynamicLedger
+
+        return DynamicLedger(scenario)
+    return Ledger(scenario)
 
 
 def month(ledger, wallet, start, end):
@@ -97,3 +106,13 @@ def paid_kind(orders, kind):
 
 def withdrawal_events(orders):
     return [cash_event(r) for r in orders if r["kind"] == "withdrawal"]
+
+
+def receipt_hook(ledger):
+    return getattr(ledger, "after_receipts", None)
+
+
+def completed(ledger, taxes, end):
+    if receipt_hook(ledger) is not None:
+        return ledger.completed(taxes, end)
+    return {}

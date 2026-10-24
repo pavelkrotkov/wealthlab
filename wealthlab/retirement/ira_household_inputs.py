@@ -9,6 +9,7 @@ from wealthlab.retirement.distribution_inputs import (
     DistributionOwner,
     WithdrawalOrder,
 )
+from wealthlab.retirement.ira_household_contribution_inputs import IRAHouseholdContributions
 from wealthlab.tax.facts import TaxModel
 
 
@@ -20,3 +21,4 @@ class IRAPlan(TaxModel):
     complete_ordinary_ira_pools_confirmed: bool
     other_tax_inputs_exclude_ira_events_confirmed: bool
     reconciliation: Literal["year_end_fixed_schedule"]
+    contributions: IRAHouseholdContributions | None = None

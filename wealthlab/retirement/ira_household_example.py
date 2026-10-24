@@ -41,6 +41,7 @@ def synthetic():
 
 
 def template(scenario, orders=None):
+    workplace = set(scenario.workplace_plan.products) if scenario.workplace_plan else set()
     owners = [
         DistributionOwner(
             id=p.id,
@@ -60,7 +61,7 @@ def template(scenario, orders=None):
         products={
             a.id: ("traditional_ira" if a.wrapper == "traditional" else "roth_ira")
             for a in scenario.accounts
-            if a.wrapper in {"traditional", "roth"}
+            if a.wrapper in {"traditional", "roth"} and a.id not in workplace
         },
         orders=[] if orders is None else orders,
         returns=[],

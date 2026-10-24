@@ -23,3 +23,5 @@ The first year has $30,000 NJ pension income, $28,000 taxable after personal exe
 Other checks cover basis differences and carryover, December returns changing annual recovery without creating earlier cash, a conversion blocked before the year's required withdrawal, a later Roth withdrawal retaining its conversion clock/NJ basis, rejected duplicate recognition, missing pools/context, serialization, source immutability and the runnable UI. Reducing cash demonstrates a spending failure despite remaining IRA assets. No personal balances, eligibility or legal exceptions are inferred.
 
 Separately classified employee 401(k) balances can coexist through [ADR 0019](0019-household-employee-deferrals.md). They remain outside ordinary IRA pools and cannot be used as an IRA source.
+
+[ADR 0021](0021-household-ira-deposits.md) adds confirmed current-year deposits using actual household cash, dynamic annual books and completed-tax eligibility. It qualifies the earlier contribution exclusion; the fixed profile remains available unchanged when no deposit plan is selected.
