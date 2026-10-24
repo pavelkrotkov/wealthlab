@@ -84,6 +84,7 @@ class TaxLedger:
         )
         self.result = evaluate(self.case)
         return dict(
+            social_security_cash=recognition.social_cash(amounts, self.plan.income_rules),
             tax_withheld=paid - estimates,
             tax_estimates_paid=estimates,
             tax_payment_gap=max(Decimal(0), sum(requested.values()) - paid),

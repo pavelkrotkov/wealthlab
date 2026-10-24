@@ -8,10 +8,12 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import TABLES
+from wealthlab.retirement.social_household import prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
 def project(scenario: Scenario) -> list[dict]:
+    scenario = prepare(scenario)
     unresolved = [
         record.id
         for table in TABLES

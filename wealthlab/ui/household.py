@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
+from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.ui import editor, files, results
 
 
@@ -25,6 +26,9 @@ def show():
     )
     try:
         files.import_scenario()
+        if st.button("Load synthetic Social Security household"):
+            files.select_scenario(benefit_example())
+            st.rerun()
         scenario = st.session_state.setdefault("scenario", synthetic())
         updated = editor.editor(scenario)
         if updated is not None:
