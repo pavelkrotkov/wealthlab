@@ -65,7 +65,7 @@ def display(result):
     b.metric("Months per path", len(batch.dates))
     c.metric("Market factors", len(batch.assets))
     st.caption(f"Realized batch: {batch.metadata['batch_id']}")
-    st.dataframe(terminal_table(batch, report), hide_index=True, width="stretch")
+    factor_table(batch, report)
     identity = st.selectbox("Factor to inspect", batch.assets)
     index = batch.assets.index(identity)
     quantiles = np.quantile(report["mark_indices"][:, :, index], [0.05, 0.50, 0.95], axis=0)
@@ -94,3 +94,20 @@ def display(result):
         "market-paths.json",
         "application/json",
     )
+
+
+def factor_table(batch, report):
+    table = pd.DataFrame(terminal_table(batch, report)).rename(
+        columns={
+            "asset": "Factor",
+            "mark_p05": "5th percentile mark",
+            "mark_p50": "Median mark",
+            "mark_p95": "95th percentile mark",
+            "separate_cash_p50": "Median separate cash",
+            "real_value_p50": "Median real value",
+            "worst_mark_drawdown": "Worst mark drawdown",
+            "locked_months": "Locked months",
+        }
+    )
+    table["Worst mark drawdown"] = table["Worst mark drawdown"].map(lambda value: f"{value:.1%}")
+    st.dataframe(table.round(2), hide_index=True, width="stretch")
