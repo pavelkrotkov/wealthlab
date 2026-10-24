@@ -40,7 +40,8 @@ def main():
     st.set_page_config(page_title="Wealthlab", page_icon="📊", layout="wide")
     st.title("Wealthlab")
     page = st.sidebar.radio(
-        "Workspace", ["Household", "Annual tax", "Tax lots", "Retirement", "Engine checks"]
+        "Workspace",
+        ["Household", "Annual tax", "Tax lots", "Retirement", "Markets", "Engine checks"],
     )
     if page == "Household":
         from wealthlab.ui.household import show
@@ -56,6 +57,10 @@ def main():
         show()
     elif page == "Retirement":
         from wealthlab.ui.retirement_workspace import show
+
+        show()
+    elif page == "Markets":
+        from wealthlab.ui.markets import show
 
         show()
     else:

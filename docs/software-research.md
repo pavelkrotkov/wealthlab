@@ -27,3 +27,7 @@ The [IRS territorial guide, Publication 570](https://www.irs.gov/publications/p5
 [AEAT residency guidance](https://sede.agenciatributaria.gob.es/Sede/en_gb/no-residentes/residencia-personas-fisicas-juridicas/persona-fisica-residente-espana.html) and [wealth-tax guidance](https://sede.agenciatributaria.gob.es/Sede/en_gb/Ayuda/23Presentacion/714_3_1.html) establish areas requiring specific rules. Spain must include regional rules, currency translation and applicable US interactions. These discovery references do not establish personal eligibility or certify a complete tax engine.
 
 The NJ [February 2026 partnership bulletin](https://www.nj.gov/treasury/taxation/pdf/pubs/tgi-ee/git9p.pdf), pp. 2–5, and [2025 NJ-1040 instructions](https://www.nj.gov/treasury/taxation/pdf/current/1040i.pdf), printed pp. 11–12, require separate income-category treatment. A federal net loss cannot simply be multiplied by a combined federal/state rate. The local reference index was also consulted; its older snapshots are not current-law proof.
+
+## October 24 — market-path implementation reuse
+
+The path workbench reuses the installed pinned NumPy dependency for validated joint normal sampling and numerical summaries. No finance package or new dependency is needed for these explicitly assumed lognormal factors. Historical input, return conventions, provenance and stress overlays remain application responsibilities; neither a Gaussian sampler nor a factor chart establishes household funding success. See [the model and executed checks](adr/0024-paired-market-paths.md).
