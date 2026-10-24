@@ -5,14 +5,22 @@ value. It does not convert a locked balance into a spendable resource, and it
 is not a ratio to after-tax exit wealth.
 """
 
+from datetime import timedelta
 from decimal import Decimal
+
+from wealthlab.retirement.account_liquidity import blocked
 
 
 def snapshot(ledger, wallet, end):
     unvested = sum((s["unvested"] for s in ledger.states.values()), Decimal(0))
     vested = sum((s["vested"] for s in ledger.states.values()), Decimal(0))
     redeemable = sum(
-        (ledger.states[t.id]["vested"] for t in ledger.plan.tranches if t.liquid_from < end),
+        (
+            ledger.states[t.id]["vested"]
+            for t in ledger.plan.tranches
+            if t.liquid_from < end
+            and not blocked(ledger.plan.liquidity_locks, t.account, end - timedelta(days=1))
+        ),
         Decimal(0),
     )
     exposure = vested + unvested

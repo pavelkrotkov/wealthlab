@@ -5,7 +5,9 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.lot_policy_results import display as policy_results
+from wealthlab.ui.market_employer_results import display as employment_results
 
 
 def display(bundle):
@@ -38,6 +40,8 @@ def display(bundle):
     index = st.selectbox("Household path detail", result["indices"])
     rows = next(d["rows"] for d in result["details"] if d["path"] == index)
     wrapper_scope(result, rows)
+    employer_results(rows)
+    employment_results(result, index)
     st.line_chart(
         pd.DataFrame(rows)
         .set_index("date")[["closing_cash", "net_wealth", "real_net_wealth"]]

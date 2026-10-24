@@ -7,6 +7,7 @@ wages from silently entering the other spouse's payroll record.
 
 from wealthlab.employment.compensation_accounts import validate as validate_accounts
 from wealthlab.employment.compensation_events import Allocation
+from wealthlab.retirement.account_liquidity import validate as validate_locks
 from wealthlab.tax.projection_inputs import TaxEvent
 from wealthlab.tax.projection_validation import validate as validate_tax
 from wealthlab.tax.projection_validation import validate_event
@@ -28,6 +29,9 @@ def validate(scenario):
     accounts = {a.id: a for a in scenario.accounts}
     tranches = {t.id: t for t in plan.tranches}
     validate_accounts(scenario, accounts)
+    validate_locks(
+        plan.liquidity_locks, {t.account for t in plan.tranches}, scenario.start, scenario.end
+    )
     validate_events(plan, scenario, accounts, tranches)
 
 
@@ -42,7 +46,7 @@ def validate_events(plan, scenario, accounts, tranches):
 
 
 def validate_records(plan, scenario):
-    records = [*plan.tranches, *plan.events]
+    records = [*plan.tranches, *plan.events, *plan.liquidity_locks]
     identifiers = [r.id for r in records]
     if len(identifiers) != len(set(identifiers)):
         raise ValueError("Compensation tranche/event IDs must be unique.")

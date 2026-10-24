@@ -33,13 +33,14 @@ def report(scenario, binding, lots, row):
     unmapped_issuers = missing(scenario, row, known)
     assets = sum(row["account_balances"].values(), ZERO)
     factors = factor_values(binding, values, row)
-    mapped = known | {w.account_id for w in binding.wrappers}
+    mapped = known | {w.account_id for w in [*binding.wrappers, *binding.employers]}
     return dict(
         market_security_values=values,
         market_max_security_weight=issuer_weight(values, assets, unmapped_issuers),
         market_issuer_concentration_complete=not unmapped_issuers,
         market_unmeasured_issuer_accounts=unmapped_issuers,
         market_factor_values=factors,
+        market_contingent_factor_values=contingent_factors(binding, row),
         market_unmapped_factor_accounts=missing(scenario, row, mapped),
     )
 
@@ -62,8 +63,17 @@ def factor_values(binding, values, row):
     factors = {}
     for security in binding.securities:
         factors[security.factor] = factors.get(security.factor, ZERO) + values[security.security_id]
-    for wrapper in binding.wrappers:
+    for wrapper in [*binding.wrappers, *binding.employers]:
         factors[wrapper.factor] = (
             factors.get(wrapper.factor, ZERO) + row["account_balances"][wrapper.account_id]
         )
     return factors
+
+
+def contingent_factors(binding, row):
+    tranches = row.get("employer_tranches", [])
+    result = {}
+    for item in binding.employers:
+        amount = sum((t["unvested"] for t in tranches if t["account"] == item.account_id), ZERO)
+        result[item.factor] = result.get(item.factor, ZERO) + amount
+    return result

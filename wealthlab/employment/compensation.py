@@ -10,6 +10,7 @@ from decimal import Decimal
 from wealthlab.employment.compensation_events import Allocation, Distribution
 from wealthlab.employment.compensation_operations import OPERATIONS
 from wealthlab.employment.compensation_validation import validate
+from wealthlab.retirement.account_liquidity import blocked
 from wealthlab.tax.facts import FederalIncome
 from wealthlab.tax.nj_facts import NJIncome
 from wealthlab.tax.projection_inputs import TaxEvent
@@ -39,7 +40,7 @@ class Ledger:
                 continue
             state = self.states[event.tranche]
             before = dict(state)
-            paid = OPERATIONS[event.kind](state, event, tranche)
+            paid, locked = operate(self.plan, state, event, tranche)
             wallet.balances[tranche.account] += state["vested"] - before["vested"]
             if isinstance(event, Distribution):
                 self.requested += event.amount if event.election == "cash" else Decimal(0)
@@ -53,6 +54,7 @@ class Ledger:
                     before=before,
                     after=dict(state),
                     cash=paid,
+                    blocked_by_liquidity=locked,
                     requested_amount=getattr(event, "amount", None),
                 )
             )
@@ -67,3 +69,10 @@ class Ledger:
                     )
                 )
         return taxes
+
+
+def operate(plan, state, event, tranche):
+    locked = isinstance(event, Distribution) and blocked(
+        plan.liquidity_locks, tranche.account, event.date
+    )
+    return (Decimal(0) if locked else OPERATIONS[event.kind](state, event, tranche)), locked
