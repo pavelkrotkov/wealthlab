@@ -62,7 +62,10 @@ def benefit(case, person, month, members, fras):
         spousal_excess=spouse,
         **survivor,
         entitlement_before_offsets=entitlement,
-        issued_before_offsets=dollar(entitlement),
+        # Dollar-round each record after its own dual-entitlement reduction.
+        issued_before_offsets=sum(
+            (dollar(value) for value in (own, spouse, survivor["survivor_excess"])), Decimal(0)
+        ),
     )
 
 

@@ -12,7 +12,7 @@ The regular death PIA is distinct from the worker's hypothetical life benefit an
 
 For a worker actually entitled to reduced retirement benefits before death, age-reduce the survivor amount first, then cap it at the greater of 82.5% of regular death PIA and the hypothetical reduced worker benefit. Applying the cap before age reduction would underpay; treating 82.5% as the universal survivor rate would also be wrong. A planned worker claim in the death month creates no own entitlement and no early-worker cap.
 
-The survivor component offsets the recipient's own benefit; cash pays the larger supported amount rather than both in full. Survivor claiming is independent of ordinary own-benefit claiming. For the supported birth cohorts, claiming reduced survivor benefits before 62 does not carry that reduction into a later own retirement benefit. This supports survivor-first, own-at-70 comparisons without an invented double benefit.
+The survivor component offsets the recipient's own benefit; cash applies the own/survivor excess rather than paying both in full. Each payable record rounds separately after dual-entitlement reductions, preserving positive sub-dollar benefits. Survivor claiming is independent of ordinary own-benefit claiming. For the supported birth cohorts, claiming reduced survivor benefits before 62 does not carry that reduction into a later own retirement benefit. This supports survivor-first, own-at-70 comparisons without an invented double benefit.
 
 ## Checks and reference scope
 
