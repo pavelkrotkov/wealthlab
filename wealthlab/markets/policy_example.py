@@ -72,6 +72,11 @@ def harvesting(data, binding):
             selection="hifo",
         )
     ]
+    linked["funding_sources"].extend(
+        dict(source, security_id="replacement")
+        for source in list(linked["funding_sources"])
+        if source["security_id"] == "stock"
+    )
     plans = binding.model_dump(mode="json")
     plans["securities"].append(dict(plans["securities"][0], security_id="replacement"))
     return Scenario.model_validate(data), HouseholdBinding.model_validate(plans)

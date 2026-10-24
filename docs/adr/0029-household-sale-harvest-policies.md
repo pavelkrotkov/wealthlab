@@ -33,3 +33,5 @@ Independent checks include:
 - A one-dollar policy commission reduces ending capital by one dollar, once.
 - After a 50% loss, harvesting the 600 high-basis shares produces a $24,000 federal loss and $30,000 actual replacement basis. With no ordinary income/gains to use it, terminal capital carry stays $24,000, no refund is fabricated, and matched terminal wealth remains $51,000.
 - Source/replacement liquidity locks, month-end/forecast guards, immutable source cases and the actual policy UI protect execution boundaries.
+
+The synthetic harvesting starter carries its source funding permission over to the replacement, so the new holding can meet later ordinary household bills. Actual user plans still require explicit replacement funding permission; eligibility to harvest does not itself authorize liquidation. A two-year $1,500 monthly spending check exhausts the original shares, funds the remaining bills from actual replacement shares and ends with $15,000, without an artificial liquidity failure.
