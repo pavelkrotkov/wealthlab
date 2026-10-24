@@ -1,5 +1,6 @@
 """Show the selected path's conditional work changes, separate from supplied tax allocations."""
 
+import pandas as pd
 import streamlit as st
 
 
@@ -15,4 +16,14 @@ def display(result, index):
     )
     detail = next(d for d in result["details"] if d["path"] == index)
     with st.expander("Market-linked employment changes"):
-        st.json(detail["employment_changes"])
+        events = [
+            {
+                "Worker": path["owner"],
+                "Effective date": event["date"],
+                "Work state": event["kind"].replace("_", " "),
+                "Baseline pay multiplier": float(event["multiplier"]),
+            }
+            for path in detail["employment_changes"]
+            for event in path["changes"]
+        ]
+        st.dataframe(pd.DataFrame(events), hide_index=True, width="stretch")
