@@ -14,6 +14,8 @@ def display(rows: list[dict]) -> None:
         dict(
             year=year,
             federal_income=result["federal"]["income_tax"],
+            gross_social_security=result["federal"]["gross_social_security"],
+            taxable_social_security=result["federal"]["taxable_social_security"],
             employee_payroll=result["federal"]["employee_payroll"],
             new_jersey=result["new_jersey"]["income_tax"],
             total_liability=result["total_liability"],

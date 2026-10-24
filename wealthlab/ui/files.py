@@ -11,12 +11,16 @@ def import_scenario():
     upload = st.file_uploader("Load scenario JSON", type="json")
     if upload is not None and st.button("Load selected scenario"):
         scenario = loads(upload.getvalue())
-        for key in list(st.session_state):
-            if key.startswith(("table_", "csv_")):
-                del st.session_state[key]
-        st.session_state["scenario"] = scenario
-        st.session_state.pop("projection", None)
+        select_scenario(scenario)
         st.rerun()
+
+
+def select_scenario(scenario):
+    for key in list(st.session_state):
+        if key.startswith(("table_", "csv_")):
+            del st.session_state[key]
+    st.session_state["scenario"] = scenario
+    st.session_state.pop("projection", None)
 
 
 def save_scenario(scenario):

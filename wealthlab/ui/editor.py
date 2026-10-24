@@ -10,6 +10,7 @@ import streamlit as st
 from wealthlab.household import records, schedules
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import MAX_BYTES
+from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.settings import controls
 from wealthlab.ui.tax_plan import controls as tax_controls
 
@@ -47,10 +48,12 @@ def editor(scenario: Scenario) -> Scenario | None:
         )
         uploads = tables(payload)
         tax_plan = tax_controls(payload, scenario)
+        social = benefit_controls(payload, scenario)
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:
         return None
     payload["tax_plan"] = json.loads(tax_plan) if tax_plan is not None else None
+    payload["social_security"] = json.loads(social) if social is not None else None
     payload["usd_per_currency"] = json.loads(payload["usd_per_currency"])
     for name, raw in uploads.items():
         if len(raw) > MAX_BYTES:

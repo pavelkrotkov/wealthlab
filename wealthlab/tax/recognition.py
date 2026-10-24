@@ -44,3 +44,7 @@ def event(case: AnnualCase, item: TaxEvent) -> AnnualCase:
     # add owner-qualified income, but cannot silently grant special eligibility.
     nj = nj.model_copy(update={"business": business, "retirement": retirement})
     return case.model_copy(update={"federal_income": fed, "nj_income": nj})
+
+
+def social_cash(amounts, rules):
+    return sum((amounts[r.income_id] for r in rules if r.federal == "social_security"), Decimal(0))
