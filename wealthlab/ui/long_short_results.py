@@ -13,7 +13,8 @@ def display(result):
     st.caption(
         "Investor wealth includes remaining sleeve equity and outside cash once. Any negative "
         "equity/loan remains owed; liquidation does not cap losses at initial capital. "
-        "A margin failure is separate from household spending failure. The supplied monthly "
+        "A configured liquidation can resolve a margin call; unresolved margin, negative equity "
+        "and blocked exits are separate constraints. The supplied monthly "
         "maintenance rule does not certify a broker's intramonth requirements."
     )
     st.dataframe(pd.DataFrame(result["differences"]), hide_index=True, width="stretch")

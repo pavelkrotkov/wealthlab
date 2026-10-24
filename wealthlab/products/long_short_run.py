@@ -12,6 +12,7 @@ from wealthlab.household.calendar import money
 from wealthlab.products.long_short_book import ZERO, equity, gross, opening, snapshot
 from wealthlab.products.long_short_margin import check
 from wealthlab.products.long_short_paths import periods
+from wealthlab.products.long_short_reporting import any_stage, class_counts
 from wealthlab.products.long_short_returns import apply
 from wealthlab.products.long_short_trading import liquidate, rebalance, redeem
 from wealthlab.products.long_short_validation import validate
@@ -91,11 +92,14 @@ def is_locked(book, locks, long, short):
 
 
 def summarize(case, rows):
-    last = rows[-1]
+    last, counts = rows[-1], class_counts(rows)
     return dict(
         ending_investor_wealth=last["investor_wealth"],
         investment_change=last["investor_wealth"] - case.opening_equity - case.outside_cash,
-        margin_failure=any(any_stage(r, "margin_unfunded") for r in rows),
+        margin_failure=bool(counts["margin_unresolved"]),
+        margin_trigger_months=counts["margin_triggered"],
+        negative_equity_months=counts["negative_equity"],
+        product_feasible=not counts["constraints_failed"],
         forced_liquidations=sum(any_stage(r, "forced_liquidation") for r in rows),
         locked_months=sum(r["locked"] for r in rows),
         unfilled_redemptions=sum((r["redemption_unfilled"] for r in rows), ZERO),
@@ -110,7 +114,3 @@ def terminal(book, case, locked, final):
     if locked:
         return dict(terminal_exit_blocked=True)
     return dict(terminal_exit_blocked=False, **liquidate(book, case.exit_cost))
-
-
-def any_stage(row, name):
-    return any(row.get(f"{prefix}{name}", 0) for prefix in ("entry_", "", "post_trade_"))
