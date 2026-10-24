@@ -32,7 +32,9 @@ def show():
     mode = st.selectbox(
         "Product market mode", ["deterministic", "monte_carlo", "historical", "stress"]
     )
-    stress = st.selectbox("Product named stress", [*NAMES, "short_squeeze"])
+    stress = st.selectbox(
+        "Product named stress", [*NAMES, "short_squeeze"], disabled=mode != "stress"
+    )
     uploaded = st.file_uploader("Load product economic case JSON", type="json")
     if source(uploaded, json.dumps(synthetic(mode, stress), indent=2), "long_short") is None:
         return
