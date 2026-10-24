@@ -8,6 +8,7 @@ from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
+from wealthlab.retirement.ira_household_example import synthetic as ira_example
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.ui import editor, files, results
 
@@ -30,18 +31,7 @@ def show():
     )
     try:
         files.import_scenario()
-        if st.button("Load synthetic Social Security household"):
-            files.select_scenario(benefit_example())
-            st.rerun()
-        if st.button("Load synthetic employment household"):
-            files.select_scenario(employment_example())
-            st.rerun()
-        if st.button("Load synthetic employer compensation household"):
-            files.select_scenario(compensation_example())
-            st.rerun()
-        if st.button("Load synthetic linked employment and asset shock"):
-            files.select_scenario(linked_shock())
-            st.rerun()
+        examples()
         scenario = st.session_state.setdefault("scenario", synthetic())
         updated = editor.editor(scenario)
         if updated is not None:
@@ -55,3 +45,21 @@ def show():
         files.save_scenario(scenario)
     except (ValueError, ValidationError, OSError) as error:
         st.error(str(error))
+
+
+def examples():
+    if st.button("Load synthetic Social Security household"):
+        files.select_scenario(benefit_example())
+        st.rerun()
+    if st.button("Load synthetic employment household"):
+        files.select_scenario(employment_example())
+        st.rerun()
+    if st.button("Load synthetic employer compensation household"):
+        files.select_scenario(compensation_example())
+        st.rerun()
+    if st.button("Load synthetic linked employment and asset shock"):
+        files.select_scenario(linked_shock())
+        st.rerun()
+    if st.button("Load synthetic IRA household"):
+        files.select_scenario(ira_example())
+        st.rerun()

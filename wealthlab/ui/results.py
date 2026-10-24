@@ -12,6 +12,7 @@ from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.household_ira import display as ira_summary
 from wealthlab.ui.projected_tax import display as tax_summary
 
 
@@ -28,6 +29,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "funding_basis",
             "employer_tranches",
             "employer_event_log",
+            "ira_annual_reconciliation",
         ],
         errors="ignore",
     )
@@ -45,6 +47,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.dataframe(table, hide_index=True, width="stretch")
     tax_summary(rows)
     compensation_summary(rows)
+    ira_summary(rows)
     with st.expander("Ending accounts, debts and reproduction details"):
         st.caption(
             "All reported account and debt balances are converted to USD at the stated fixed rates."

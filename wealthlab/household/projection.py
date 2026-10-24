@@ -1,4 +1,9 @@
-"""Monthly cash conservation before the later household tax and market modules."""
+"""Coordinate monthly cash, wrapper movements and tax settlement in one wallet.
+
+Employer and IRA movements update their own asset books before household
+funding. Their actual cash and recognized tax events enter the shared tax
+ledger once; optional requests never create negative account balances.
+"""
 
 from decimal import Decimal
 
@@ -12,6 +17,7 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import validate_resolved
+from wealthlab.retirement import ira_household
 from wealthlab.retirement.social_household import prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
@@ -24,9 +30,21 @@ def project(scenario: Scenario) -> list[dict]:
     rows, fees_owed = [], Decimal(0)
     tax_ledger = TaxLedger(scenario.tax_plan, scenario) if scenario.tax_plan else None
     compensation = CompensationLedger(scenario) if scenario.compensation_plan else None
+    ira = ira_household.make(scenario)
     for start, end in months(scenario.start, scenario.end):
         events = compensation.month(wallet, start, end) if compensation else ()
-        row = month(scenario, wallet, debt_balances, start, end, fees_owed, tax_ledger, events)
+        ira_events, ira_summary = ira_household.month(ira, wallet, start, end)
+        row = month(
+            scenario,
+            wallet,
+            debt_balances,
+            start,
+            end,
+            fees_owed,
+            tax_ledger,
+            [*events, *ira_events],
+        )
+        row.update(ira_summary)
         if compensation:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
