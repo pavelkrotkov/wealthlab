@@ -7,6 +7,7 @@ issuer distribution history from total-return marks would lose real tax and
 basis events, so that convention requires a separate adapter.
 """
 
+from wealthlab.household.calendar import months
 from wealthlab.portfolio.household_validation import validate as validate_lots
 
 
@@ -58,3 +59,19 @@ def validate_inflation(scenario, binding):
         raise ValueError("Inflation expense IDs must be unique existing household expenses.")
     if any(expenses[i].annual_growth != 0 for i in ids):
         raise ValueError("Market-indexed expenses need zero separate annual growth.")
+
+
+def validate_batch(scenario, batch):
+    dates = tuple(start for start, _ in months(scenario.start, scenario.end))
+    if batch.mark_returns.ndim != 3:
+        raise ValueError("Market batch marks require path, month and factor axes.")
+    expected = (batch.mark_returns.shape[0], len(dates), len(batch.assets))
+    actual_shapes = (
+        batch.mark_returns.shape,
+        batch.cash_yields.shape,
+        batch.inflation.shape,
+        batch.locked.shape,
+    )
+    expected_shapes = (expected, expected, expected[:2], expected[1:])
+    if tuple(batch.dates) != dates or actual_shapes != expected_shapes:
+        raise ValueError("Market batch observation dates/shapes must cover every household month.")

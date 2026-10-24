@@ -4,10 +4,11 @@ from wealthlab.household.projection import project
 from wealthlab.markets.household_compile import compile_marks
 from wealthlab.markets.household_execution import Execution
 from wealthlab.markets.household_report import aggregate, summarize
-from wealthlab.markets.household_validation import validate
+from wealthlab.markets.household_validation import validate, validate_batch
 
 
 def run(scenario, batch, binding, indices=None, progress=None):
+    validate_batch(scenario, batch)
     indices = list(range(len(batch.mark_returns))) if indices is None else list(indices)
     if not indices or len(indices) != len(set(indices)):
         raise ValueError("Select unique path indices from the realized batch.")
