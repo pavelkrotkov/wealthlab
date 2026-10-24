@@ -8,10 +8,12 @@ import streamlit as st
 from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.household_sleeves import display as sleeve_results
 from wealthlab.ui.household_workplace import display as workplace_results
+from wealthlab.ui.hsa_invested_results import display as hsa_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
 from wealthlab.ui.market_funding_results import display as funding_results
 from wealthlab.ui.market_medical_results import display as medical_results
+from wealthlab.ui.medical_bills import display as bill_results
 from wealthlab.ui.results import HIDDEN
 
 
@@ -40,6 +42,7 @@ def display(bundle):
     sleeve_results(rows)
     employment_results(result, index)
     medical_results(result, index, rows)
+    hsa_scope(result, rows)
     st.line_chart(
         pd.DataFrame(rows)
         .set_index("date")[["closing_cash", "net_wealth", "real_net_wealth"]]
@@ -87,3 +90,10 @@ def wrapper_scope(result, rows):
             "Unmeasured issuer accounts": rows[-1]["market_unmeasured_issuer_accounts"],
         }
     )
+
+
+def hsa_scope(result, rows):
+    if result["binding"].get("hsa_securities"):
+        hsa_results(rows)
+        if not result["binding"].get("medical_bill_inflation"):
+            bill_results(rows)

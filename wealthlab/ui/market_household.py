@@ -16,6 +16,7 @@ from wealthlab.markets.guardrail_example import enable
 from wealthlab.markets.household_example import synthetic
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.household_run import paired, run
+from wealthlab.markets.hsa_example import synthetic as hsa_example
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.medical_example import synthetic as medical_example
 from wealthlab.markets.paths import generate
@@ -34,7 +35,8 @@ def show():
     st.subheader("Actual household market funding")
     st.caption(
         "Realized paths fund spending through the same household tax/cash ledger. Selected budgets "
-        "and medical bills use prior CPI; HSA election bounds remain explicit. Other accounts keep "
+        "and medical bills use prior CPI; HSA election bounds remain explicit. Invested HSAs use "
+        "actual lots, observed prices, cash yield and sale locks. Other accounts keep "
         "entered schedules. The two-year synthetic horizon does not cover retirement to age 100. "
         "Dated sales and harvesting use current marks. IRA/529 proxies and employer factors reuse "
         "their ledgers; employment responds next month. Sleeve taxes use supplied allocations. "
@@ -142,6 +144,7 @@ def account_example(mode, stress):
             "Employee 401(k)",
             "Long-short household",
             "Medical bill inflation",
+            "Invested HSA",
         ],
         key="market_account_scope",
     )
@@ -152,5 +155,6 @@ def account_example(mode, stress):
         "Employee 401(k)": workplace_example,
         "Long-short household": sleeve_example,
         "Medical bill inflation": medical_example,
+        "Invested HSA": hsa_example,
     }[scope]
     return starter(mode, stress)

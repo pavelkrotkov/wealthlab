@@ -8,6 +8,7 @@ enter the same account exactly once. NJ tax ingredients have zero cash effect.
 from decimal import Decimal
 
 from wealthlab.portfolio.fees import settle
+from wealthlab.portfolio.household_values import security_values
 from wealthlab.retirement.hsa_investment_reporting import income, receivables, snapshot, values
 from wealthlab.retirement.hsa_investments import Ledger
 from wealthlab.tax.facts import FederalIncome
@@ -64,7 +65,11 @@ class Investments:
         )
 
     def summary(self):
-        return dict(hsa_investment_fees_owed=sum(self.ledger.book.fee_owed.values(), ZERO))
+        return dict(
+            hsa_investment_fees_owed=sum(self.ledger.book.fee_owed.values(), ZERO),
+            hsa_investment_accounts=sorted(self.accounts),
+            hsa_investment_security_values=security_values(self.ledger.book, self.ledger.prices),
+        )
 
     def finish(self, audit):
         audit["investments"] = snapshot(self.ledger)
