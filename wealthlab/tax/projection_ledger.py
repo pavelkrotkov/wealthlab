@@ -19,10 +19,14 @@ class TaxLedger:
     receipt. Federal and NJ carry character survives the annual reset.
     """
 
-    def __init__(self, plan, scenario):
+    def __init__(self, plan, scenario, lots=None):
         validate(plan, scenario)
         self.plan = plan
         self.funding = AccountFunding(plan, scenario)
+        if lots is not None:
+            from wealthlab.portfolio.household_funding import Funding
+
+            self.funding = Funding(self.funding, lots)
         self.cases = {case.policy.year: case for case in plan.cases}
         self.result: dict = {}
         self.previous = None
@@ -60,7 +64,15 @@ class TaxLedger:
         )
 
     def month(
-        self, amounts, wallet, start, end, required_cash, extra_events=(), receipt_hook=None
+        self,
+        amounts,
+        wallet,
+        start,
+        end,
+        required_cash,
+        extra_events=(),
+        receipt_hook=None,
+        pre_receipt_hook=None,
     ) -> dict:
         """Recognize this month's income, then pay only available cash.
 
@@ -70,9 +82,13 @@ class TaxLedger:
         """
         self.start_year(start.year)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
-        prior_paid = prior_payments.pay(self, wallet)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
         event_cash = self.events(wallet, start, end, extra_events)
+        if pre_receipt_hook is not None:
+            event_cash += self.apply_events(
+                wallet, start, end, pre_receipt_hook(wallet, start, end)
+            )
+        prior_paid = prior_payments.pay(self, wallet)
         if receipt_hook is not None:
             event_cash += self.apply_events(wallet, start, end, receipt_hook(wallet, start, end))
         # Wrapper funding can lower the remaining cash bill after receipts.

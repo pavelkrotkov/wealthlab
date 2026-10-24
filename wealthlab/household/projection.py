@@ -17,6 +17,7 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import validate_resolved
+from wealthlab.portfolio import household_book
 from wealthlab.retirement import (
     education_household,
     hsa_household,
@@ -34,7 +35,8 @@ def project(scenario: Scenario) -> list[dict]:
     wallet = Wallet(scenario)
     debt_balances = debts.opening_debts(scenario)
     rows, fees_owed = [], Decimal(0)
-    tax_ledger = TaxLedger(scenario.tax_plan, scenario) if scenario.tax_plan else None
+    lots = household_book.make(scenario)
+    tax_ledger = TaxLedger(scenario.tax_plan, scenario, lots) if scenario.tax_plan else None
     compensation = CompensationLedger(scenario) if scenario.compensation_plan else None
     ira = ira_household.make(scenario)
     medicare = medicare_household.make(scenario)
@@ -59,6 +61,7 @@ def project(scenario: Scenario) -> list[dict]:
             ira,
             hsa,
             education,
+            lots,
         )
         row.update(ira_summary)
         row.update(medicare_household.observe(medicare, tax_ledger, end))
@@ -78,4 +81,5 @@ def project(scenario: Scenario) -> list[dict]:
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)
     education_household.finish(education, rows)
+    household_book.finish(lots, rows)
     return rows

@@ -43,3 +43,5 @@ Load the synthetic cash HSA household for [actual HSA funding, historical receip
 Load the synthetic 529 tuition household for [qualified institution payments, cash fallback and actual NJBEST deductions](docs/adr/0023-household-education.md).
 
 The Markets workspace generates and exports [realized market batches](docs/adr/0024-paired-market-paths.md); its factor charts do not yet measure household spending safety.
+
+Load the synthetic actual-lot funding household for [actual share sales, separate basis and household tax cash](docs/adr/0025-household-lot-funding.md). This bounded profile replaces proportional-basis selling for linked accounts; remaining harvesting/year-end/distribution adapters are unfinished.
