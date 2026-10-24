@@ -2,7 +2,14 @@
 
 import streamlit as st
 
-from wealthlab.ui import education, health_education, medicare, retirement, retirement_withdrawals
+from wealthlab.ui import (
+    education,
+    health_education,
+    medicare,
+    retirement,
+    retirement_withdrawals,
+    social_security,
+)
 
 
 def show():
@@ -12,6 +19,7 @@ def show():
         "HSA": health_education,
         "Education": education,
         "Medicare": medicare,
+        "Social Security": social_security,
     }
     mode = st.radio(
         "Retirement workbench", list(workbenches), horizontal=True, key="retirement_mode"

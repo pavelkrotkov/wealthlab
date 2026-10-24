@@ -4,10 +4,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.education import run
 from wealthlab.retirement.education_example import synthetic
 from wealthlab.retirement.education_inputs import EducationCase
+from wealthlab.ui.uploads import invalid, source
 
 
 def show():
@@ -37,17 +37,14 @@ def show():
         "Coverdell, K-12, credentials, loans, refunds and rollovers remain unfinished."
     )
     uploaded = st.file_uploader("Load education case JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Education input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2), "education")
+    if raw is None:
         return
-    if st.session_state.get("education_source") != raw:
-        st.session_state.pop("education_result", None)
-        st.session_state.pop("education_input", None)
-        st.session_state["education_source"] = raw
     with st.form("education_case"):
         edited = st.text_area(
-            "529 accounts, events and expense allocations (JSON)", raw, height=400
+            "529 accounts, events and expense allocations (JSON)",
+            key="education_editor",
+            height=400,
         )
         submitted = st.form_submit_button("Project education accounts", type="primary")
     if submitted:
@@ -57,8 +54,7 @@ def show():
             st.session_state["education_result"] = result
             st.session_state["education_input"] = case.model_dump_json(indent=2)
         except ValueError as error:
-            st.session_state.pop("education_result", None)
-            st.error(str(error))
+            invalid(error, "education")
     if "education_result" in st.session_state:
         display(st.session_state["education_result"])
 

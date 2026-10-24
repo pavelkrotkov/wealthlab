@@ -6,8 +6,9 @@ from wealthlab.portfolio.distribution_example import synthetic as distribution_e
 from wealthlab.portfolio.example import synthetic
 from wealthlab.portfolio.fee_example import synthetic as fee_example
 from wealthlab.portfolio.harvest_example import synthetic as harvest_example
-from wealthlab.ui.lot_inputs import edit, read
+from wealthlab.ui.lot_inputs import edit
 from wealthlab.ui.lot_results import results
+from wealthlab.ui.uploads import invalid, source
 
 
 def show():
@@ -37,9 +38,11 @@ def show():
     uploaded = st.file_uploader("Load lot case JSON", type="json")
     try:
         demo = examples[example]()
-        raw = read(uploaded) if uploaded else demo.model_dump_json(indent=2)
-        edit(raw)
+        raw = source(uploaded, demo.model_dump_json(indent=2), "lot")
+        if raw is None:
+            return
+        edit()
         if "lot_result" in st.session_state:
             results(st.session_state["lot_result"])
     except (ValueError, TypeError) as exc:
-        st.error(str(exc))
+        invalid(exc, "lot")
