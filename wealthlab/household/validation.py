@@ -35,3 +35,14 @@ def validate_references(scenario: "Scenario") -> None:
     validate_owners(scenario)
     validate_currencies(scenario, records)
     validate_transfers(scenario)
+
+
+def validate_resolved(scenario):
+    unresolved = [
+        record.id
+        for table in TABLES
+        for record in getattr(scenario, table)
+        if record.provenance == "unresolved"
+    ]
+    if unresolved:
+        raise ValueError("Resolve critical inputs before projecting: " + ", ".join(unresolved))

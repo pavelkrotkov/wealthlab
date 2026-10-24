@@ -9,7 +9,14 @@ from wealthlab.household.scenario import Scenario
 
 
 def month(
-    scenario: Scenario, wallet: Wallet, debt_balances: dict, start, end, fees_owed, tax_ledger=None
+    scenario: Scenario,
+    wallet: Wallet,
+    debt_balances: dict,
+    start,
+    end,
+    fees_owed,
+    tax_ledger=None,
+    extra_events=(),
 ) -> dict:
     row = dict(date=start.isoformat(), period_end=end.isoformat(), opening_cash=wallet.cash)
     incomes = flows.earning_items(scenario, start, end)
@@ -17,7 +24,7 @@ def month(
     wallet.deposit(row["income"])
     if tax_ledger is not None:
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
-        row.update(tax_ledger.month(incomes, wallet, start, end, required_cash))
+        row.update(tax_ledger.month(incomes, wallet, start, end, required_cash, extra_events))
         row.update(tax_ledger.close(wallet, start, end))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))

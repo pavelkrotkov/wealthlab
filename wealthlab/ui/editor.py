@@ -10,6 +10,7 @@ import streamlit as st
 from wealthlab.household import records, schedules
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import MAX_BYTES
+from wealthlab.ui.compensation import controls as compensation_controls
 from wealthlab.ui.employment import controls as employment_controls
 from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.settings import controls
@@ -48,15 +49,16 @@ def editor(scenario: Scenario) -> Scenario | None:
             "Opening balances already include year-to-date activity. End dates are exclusive."
         )
         uploads = tables(payload)
-        tax_plan = tax_controls(payload, scenario)
-        social = benefit_controls(payload, scenario)
-        employment = employment_controls(payload, scenario)
+        plans = dict(
+            tax_plan=tax_controls(payload, scenario),
+            social_security=benefit_controls(payload, scenario),
+            employment_plan=employment_controls(payload, scenario),
+            compensation_plan=compensation_controls(payload, scenario),
+        )
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:
         return None
-    payload["tax_plan"] = optional_json(tax_plan)
-    payload["social_security"] = optional_json(social)
-    payload["employment_plan"] = optional_json(employment)
+    payload.update({name: optional_json(raw) for name, raw in plans.items()})
     payload["usd_per_currency"] = json.loads(payload["usd_per_currency"])
     for name, raw in uploads.items():
         if len(raw) > MAX_BYTES:

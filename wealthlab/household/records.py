@@ -31,6 +31,8 @@ class Member(Record):
 class Account(Record):
     owner: Identifier
     currency: Currency
-    wrapper: Literal["cash", "taxable", "traditional", "roth", "hsa", "education", "property"]
+    wrapper: Literal[
+        "cash", "taxable", "traditional", "roth", "hsa", "education", "property", "employer"
+    ]
     balance: Money
     monthly_fee: Money

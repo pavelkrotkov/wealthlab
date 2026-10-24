@@ -3,6 +3,8 @@
 import streamlit as st
 from pydantic import ValidationError
 
+from wealthlab.employment.compensation_example import synthetic as compensation_example
+from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
@@ -15,7 +17,8 @@ def show():
     st.warning(
         "Enable household tax assumptions to include federal/NJ taxes. "
         "Without a tax plan, income is gross and taxes are omitted. "
-        "Assets still have no returns. Only explicitly permitted taxable accounts can be sold, "
+        "Market paths remain unfinished; employer returns use supplied dated events. "
+        "Only explicitly permitted taxable accounts can be sold, "
         "using entered proportional-basis assumptions. "
         "This screen does not yet establish retirement safety."
     )
@@ -32,6 +35,12 @@ def show():
             st.rerun()
         if st.button("Load synthetic employment household"):
             files.select_scenario(employment_example())
+            st.rerun()
+        if st.button("Load synthetic employer compensation household"):
+            files.select_scenario(compensation_example())
+            st.rerun()
+        if st.button("Load synthetic linked employment and asset shock"):
+            files.select_scenario(linked_shock())
             st.rerun()
         scenario = st.session_state.setdefault("scenario", synthetic())
         updated = editor.editor(scenario)

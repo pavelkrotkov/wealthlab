@@ -10,6 +10,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from wealthlab.employment.compensation_inputs import CompensationPlan
 from wealthlab.employment.inputs import EmploymentPlan
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
@@ -47,6 +48,7 @@ class Scenario(BaseModel):
     tax_plan: TaxPlan | None = None
     social_security: SocialCase | None = None
     employment_plan: EmploymentPlan | None = None
+    compensation_plan: CompensationPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
