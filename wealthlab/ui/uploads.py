@@ -1,4 +1,9 @@
-"""Bounded UTF-8 upload text for editable financial case forms and lot CSV imports."""
+"""Bounded UTF-8 text and explicit source changes for editable financial case forms.
+
+A file can have the same contents as a starter yet still be a new selection.
+Keep its upload identity separate from editor text so loading it replaces a
+modified draft. Reruns with the same selected file must preserve manual edits.
+"""
 
 import streamlit as st
 
@@ -15,12 +20,37 @@ def read(uploaded):
         raise ValueError("Use a UTF-8 text file, optionally with a byte-order mark.") from error
 
 
-def source(uploaded, default):
-    """Return actual editable text; invalid uploads do not reach a JSON editor."""
-    if uploaded is None:
-        return default
+def source(uploaded, default, namespace):
+    """Prepare a keyed editor; invalid files never reach the editable form."""
     try:
-        return read(uploaded)
+        text = read(uploaded) if uploaded is not None else default
     except ValueError as error:
-        st.error(str(error))
+        invalid(error, namespace)
         return None
+    identity = ("default", text)
+    if uploaded is not None:
+        identity = ("upload", getattr(uploaded, "file_id", id(uploaded)), text)
+    select(namespace, identity, text)
+    return text
+
+
+def select(namespace, identity, text):
+    key = f"{namespace}_editor"
+    if st.session_state.get(f"{namespace}_source") != identity:
+        clear(namespace)
+        st.session_state[f"{namespace}_source"] = identity
+        st.session_state[key] = text
+    elif key not in st.session_state:
+        # Streamlit removes widget keys when a workbench is not rendered. Restore
+        # its last validated input so the returning form matches any shown result.
+        st.session_state[key] = st.session_state.get(f"{namespace}_input", text)
+
+
+def clear(namespace):
+    for suffix in ("result", "input"):
+        st.session_state.pop(f"{namespace}_{suffix}", None)
+
+
+def invalid(error, namespace):
+    clear(namespace)
+    st.error(str(error))

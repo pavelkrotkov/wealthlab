@@ -7,7 +7,7 @@ import streamlit as st
 from wealthlab.retirement.hsa import run
 from wealthlab.retirement.hsa_example import synthetic
 from wealthlab.retirement.hsa_inputs import HSACase
-from wealthlab.ui.uploads import source
+from wealthlab.ui.uploads import invalid, source
 
 
 def show():
@@ -33,15 +33,13 @@ def show():
         "assumption. Tax ingredients below are not a calculated annual tax saving."
     )
     uploaded = st.file_uploader("Load HSA case JSON", type="json")
-    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    raw = source(uploaded, synthetic().model_dump_json(indent=2), "hsa")
     if raw is None:
         return
-    if st.session_state.get("hsa_source") != raw:
-        st.session_state.pop("hsa_result", None)
-        st.session_state.pop("hsa_input", None)
-        st.session_state["hsa_source"] = raw
     with st.form("hsa_case"):
-        edited = st.text_area("HSA coverage, funding and receipts (JSON)", raw, height=400)
+        edited = st.text_area(
+            "HSA coverage, funding and receipts (JSON)", key="hsa_editor", height=400
+        )
         submitted = st.form_submit_button("Project HSA cash flows", type="primary")
     if submitted:
         try:
@@ -49,7 +47,7 @@ def show():
             st.session_state["hsa_result"] = run(case)
             st.session_state["hsa_input"] = case.model_dump_json(indent=2)
         except ValueError as error:
-            st.error(str(error))
+            invalid(error, "hsa")
     result = st.session_state.get("hsa_result")
     if result is not None:
         display(result)

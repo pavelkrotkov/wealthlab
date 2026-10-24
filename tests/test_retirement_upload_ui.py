@@ -29,6 +29,15 @@ CASES = [
 ]
 
 
+def workbench(mode="Social Security"):
+    app = AppTest.from_file(
+        Path(__file__).resolve().parents[1] / "app.py", default_timeout=30
+    ).run()
+    app.sidebar.radio[0].set_value("Retirement").run()
+    app.radio(key="retirement_mode").set_value(mode).run()
+    return app
+
+
 @pytest.mark.parametrize(("mode", "build", "button"), CASES)
 def test_uploaded_case_is_editable_json_and_calculates_without_repr_corruption(mode, build, button):
     app = AppTest.from_file(

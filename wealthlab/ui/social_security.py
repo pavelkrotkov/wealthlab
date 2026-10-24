@@ -11,7 +11,7 @@ import streamlit as st
 from wealthlab.retirement.social import run
 from wealthlab.retirement.social_example import synthetic
 from wealthlab.retirement.social_inputs import SocialCase
-from wealthlab.ui.uploads import source
+from wealthlab.ui.uploads import invalid, source
 
 
 def show():
@@ -42,15 +42,13 @@ def show():
         "no-deduction assumption as valid after changing wages."
     )
     uploaded = st.file_uploader("Load Social Security case JSON", type="json")
-    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    raw = source(uploaded, synthetic().model_dump_json(indent=2), "social")
     if raw is None:
         return
-    if st.session_state.get("social_source") != raw:
-        st.session_state.pop("social_result", None)
-        st.session_state.pop("social_input", None)
-        st.session_state["social_source"] = raw
     with st.form("social_case"):
-        edited = st.text_area("PIA, eligibility and fixed claim dates (JSON)", raw, height=400)
+        edited = st.text_area(
+            "PIA, eligibility and fixed claim dates (JSON)", key="social_editor", height=400
+        )
         submitted = st.form_submit_button("Project Social Security claims", type="primary")
     if submitted:
         try:
@@ -58,8 +56,7 @@ def show():
             st.session_state["social_result"] = run(case)
             st.session_state["social_input"] = case.model_dump_json(indent=2)
         except ValueError as error:
-            st.session_state.pop("social_result", None)
-            st.error(str(error))
+            invalid(error, "social")
     if "social_result" in st.session_state:
         display(st.session_state["social_result"])
 

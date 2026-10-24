@@ -12,10 +12,11 @@ from wealthlab.ui import harvest_editor, sale_policy_editor
 from wealthlab.ui.uploads import read
 
 
-def edit(raw):
-    select_source(raw)
+def edit():
     with st.form("lot_case"):
-        edited = st.text_area("Accounts, securities, lots and dated trades (JSON)", raw, height=400)
+        edited = st.text_area(
+            "Accounts, securities, lots and dated trades (JSON)", key="lot_editor", height=400
+        )
         lots = st.file_uploader("Replace opening lots from CSV", type="csv")
         nj_mode = st.selectbox(
             "NJ wash treatment override",
@@ -58,11 +59,3 @@ def edit(raw):
         case = LotCase.model_validate(payload)
         st.session_state["lot_result"] = run(case)
         st.session_state["lot_input"] = case.model_dump_json(indent=2)
-
-
-def select_source(raw):
-    """A newly selected example/import must not inherit another case's result."""
-    if st.session_state.get("lot_source") != raw:
-        st.session_state.pop("lot_result", None)
-        st.session_state.pop("lot_input", None)
-        st.session_state["lot_source"] = raw
