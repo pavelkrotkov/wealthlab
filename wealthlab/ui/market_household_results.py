@@ -27,6 +27,11 @@ def display(bundle):
         "drawdown includes spending and external flows. Marked terminal wealth includes "
         "unrealized gains; it is not a fully liquidated after-tax exit value."
     )
+    st.caption(
+        "Funding success uses the spending policy actually requested. Discretionary "
+        "spending reductions are reported separately; cutting spending does not mean "
+        "the original uncut lifestyle was funded."
+    )
     st.dataframe(pd.DataFrame(result["outcomes"]), hide_index=True, width="stretch")
     index = st.selectbox("Household path detail", result["indices"])
     rows = next(d["rows"] for d in result["details"] if d["path"] == index)

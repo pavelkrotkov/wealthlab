@@ -41,6 +41,8 @@ def paired(left, right):
             path=a["path"],
             funded_change=int(b["funded"]) - int(a["funded"]),
             real_wealth_change=b["ending_real_wealth"] - a["ending_real_wealth"],
+            discretionary_reduction_change=b["discretionary_spending_reduction"]
+            - a["discretionary_spending_reduction"],
             shortfall_change=b["funding_shortfall"] - a["funding_shortfall"],
         )
         for a, b in zip(left["outcomes"], right["outcomes"], strict=True)

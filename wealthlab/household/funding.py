@@ -30,3 +30,13 @@ class Wallet:
             self.balances[key] -= paid
             remaining -= paid
         return requested - remaining
+
+
+def opening_wealth(scenario):
+    assets = sum(
+        a.balance * Decimal(str(scenario.usd_per_currency[a.currency])) for a in scenario.accounts
+    )
+    debt = sum(
+        d.balance * Decimal(str(scenario.usd_per_currency[d.currency])) for d in scenario.debts
+    )
+    return assets - debt
