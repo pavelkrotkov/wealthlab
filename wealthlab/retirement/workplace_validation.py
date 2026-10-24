@@ -13,6 +13,7 @@ inputs would otherwise consume room or exclude the same wages twice.
 from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.contribution_validation import validate_order
 from wealthlab.retirement.workplace_products import validate_products
+from wealthlab.retirement.workplace_returns import validate as validate_returns
 from wealthlab.retirement.workplace_wages import validate_wages
 from wealthlab.tax.projection_validation import validate as validate_tax
 
@@ -38,6 +39,7 @@ def validate(scenario):
     if sorted(years) != list(range(scenario.start.year, scenario.end.year)):
         raise ValueError("Provide exactly one employee-deferral context for every calendar year.")
     validate_products(scenario)
+    validate_returns(scenario)
     validate_years(scenario)
     validate_wages(scenario)
 

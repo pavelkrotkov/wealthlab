@@ -12,12 +12,13 @@ failures; any resulting inability to meet taxes or spending remains visible.
 
 Prior-year employer wages and plan permissions are explicit annual forecasts.
 There is one sponsoring employer per owner; no match, vesting, rollover,
-withdrawal, investment return or later excess correction is invented.
+withdrawal or later excess correction is invented.
 """
 
 from decimal import Decimal
 
 from wealthlab.retirement.contribution_rules import workplace_limits
+from wealthlab.retirement.workplace_returns import apply as apply_returns
 from wealthlab.retirement.workplace_tax import events, summarize, tax_amounts
 from wealthlab.retirement.workplace_validation import validate
 
@@ -32,6 +33,7 @@ class Ledger:
         self.rules = scenario.tax_plan.income_rules
         self.used = {}
         self.log = []
+        self.market_log = []
 
     def month(self, wallet, amounts, start, end):
         context = next(y for y in self.plan.years if y.year == start.year)
@@ -46,10 +48,14 @@ class Ledger:
                 if order.kind == "pretax_401k":
                     excluded[order.owner] += row["funded"]
         self.log.extend(rows)
+        summary = summarize(rows)
+        summary["workplace_market_change"] = apply_returns(
+            self.plan, wallet, start, end, self.market_log
+        )
         return (
             tax_amounts(amounts, self.rules, self.members, excluded),
             events(self.members, excluded, start),
-            summarize(rows),
+            summary,
         )
 
     def wages(self, amounts, owner):
