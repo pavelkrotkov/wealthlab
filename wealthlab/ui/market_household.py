@@ -20,6 +20,7 @@ from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
+from wealthlab.markets.sleeve_example import synthetic as sleeve_example
 from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
@@ -36,14 +37,19 @@ def show():
         "two-year horizon does not cover retirement through age 100. Dated staged/target sales "
         "and conditional harvesting use current marks. Explicit IRA/529 proxies and employer "
         "net factors reuse their ledgers; linked employment reacts next month. "
-        "Broader rebalancing remains unfinished. "
+        "Sleeve taxes use supplied allocations; broader rebalancing remains unfinished. "
         "Optional discretionary guardrails use observed real wealth; "
         "their cuts are reported separately."
     )
     mode = st.selectbox(
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
     )
-    stress = st.selectbox("Household named stress", NAMES)
+    stresses = (
+        [*NAMES, "short_squeeze"]
+        if st.session_state.get("market_account_scope") == "Long-short household"
+        else NAMES
+    )
+    stress = st.selectbox("Household named stress", stresses)
     household, market, binding = account_example(mode, stress)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
@@ -129,7 +135,13 @@ def paired_inputs(text, binding):
 def account_example(mode, stress):
     scope = st.selectbox(
         "Synthetic account scope",
-        ["Taxable lots", "IRA and education proxies", "Employer and employment", "Employee 401(k)"],
+        [
+            "Taxable lots",
+            "IRA and education proxies",
+            "Employer and employment",
+            "Employee 401(k)",
+            "Long-short household",
+        ],
         key="market_account_scope",
     )
     starter = {
@@ -137,5 +149,6 @@ def account_example(mode, stress):
         "IRA and education proxies": wrapper_example,
         "Employer and employment": employer_example,
         "Employee 401(k)": workplace_example,
+        "Long-short household": sleeve_example,
     }[scope]
     return starter(mode, stress)

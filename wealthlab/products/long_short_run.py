@@ -9,12 +9,10 @@ from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
-from wealthlab.products.long_short_book import ZERO, equity, gross, opening, snapshot
-from wealthlab.products.long_short_margin import check
+from wealthlab.products.long_short_book import ZERO, opening
 from wealthlab.products.long_short_paths import periods
 from wealthlab.products.long_short_reporting import any_stage, class_counts
-from wealthlab.products.long_short_returns import apply
-from wealthlab.products.long_short_trading import liquidate, rebalance, redeem
+from wealthlab.products.long_short_step import advance, is_locked
 from wealthlab.products.long_short_validation import validate
 
 
@@ -34,61 +32,21 @@ def run(case, batch, indices=None):
 def path(case, batch, index):
     book, rows, cpi = opening(case), [], Decimal(1)
     long, short = batch.assets.index(case.long_factor), batch.assets.index(case.short_factor)
-    entry_cost = money(gross(book) * case.turnover_cost)
-    entry = check(book, case, is_locked(book, batch.locked[0], long, short))
     for month, (_, following) in enumerate(periods(batch)):
-        when = following - timedelta(days=1)
-        row = dict(
-            date=when.isoformat(),
-            opening_equity=equity(book),
-            entry_cost=entry_cost if month == 0 else ZERO,
+        values = dict(
+            long_return=batch.mark_returns[index, month, long],
+            short_return=batch.mark_returns[index, month, short],
+            long_yield=batch.cash_yields[index, month, long],
+            short_yield=batch.cash_yields[index, month, short],
+            locked=is_locked(book, batch.locked[month], long, short),
         )
-        if month == 0:
-            row.update({f"entry_{k}": v for k, v in entry.items()})
-        row.update(
-            apply(
-                book,
-                case,
-                batch.mark_returns[index, month, long],
-                batch.mark_returns[index, month, short],
-                batch.cash_yields[index, month, long],
-                batch.cash_yields[index, month, short],
-            )
+        row = advance(
+            book, case, values, following - timedelta(days=1), month, month == len(batch.dates) - 1
         )
-        locked = is_locked(book, batch.locked[month], long, short)
-        row.update(locked=locked, **check(book, case, locked))
-        row.update(orders(book, case, when, locked))
-        if eligible_rebalance(case, month, book, locked):
-            row.update(rebalance(book, case))
-            row.update({f"post_trade_{k}": v for k, v in check(book, case, locked).items()})
-        row.update(terminal(book, case, locked, month == len(batch.dates) - 1))
         cpi *= 1 + Decimal(str(batch.inflation[index, month]))
-        row.update(
-            snapshot(book), real_investor_wealth=money((equity(book) + book["outside"]) / cpi)
-        )
+        row["real_investor_wealth"] = money(row["investor_wealth"] / cpi)
         rows.append(row)
     return dict(path=index, rows=rows, summary=summarize(case, rows))
-
-
-def orders(book, case, when, locked):
-    requested = sum((r.amount for r in case.redemptions if r.date == when), ZERO)
-    result = dict(redemption_requested=requested, redemption_paid=ZERO, exit_cost=ZERO)
-    if requested and not (book["closed"] or locked):
-        result.update(redeem(book, requested, case.exit_cost))
-    result["redemption_unfilled"] = requested - result["redemption_paid"]
-    return result
-
-
-def eligible_rebalance(case, month, book, locked):
-    periods = dict(none=0, monthly=1, quarterly=3, annually=12)
-    period = periods[case.rebalance]
-    return (
-        period and (month + 1) % period == 0 and not (book["closed"] or locked) and equity(book) > 0
-    )
-
-
-def is_locked(book, locks, long, short):
-    return bool((book["long"] and locks[long]) or (book["short"] and locks[short]))
 
 
 def summarize(case, rows):
@@ -107,10 +65,3 @@ def summarize(case, rows):
         terminal_exit_blocked=last.get("terminal_exit_blocked", False),
     )
 
-
-def terminal(book, case, locked, final):
-    if not (final and case.exit_at_horizon) or book["closed"]:
-        return {}
-    if locked:
-        return dict(terminal_exit_blocked=True)
-    return dict(terminal_exit_blocked=False, **liquidate(book, case.exit_cost))

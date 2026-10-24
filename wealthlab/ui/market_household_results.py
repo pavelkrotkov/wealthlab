@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
+from wealthlab.ui.household_sleeves import display as sleeve_results
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
@@ -43,6 +44,7 @@ def display(bundle):
     wrapper_scope(result, rows)
     employer_results(rows)
     workplace_results(rows)
+    sleeve_results(rows)
     employment_results(result, index)
     st.line_chart(
         pd.DataFrame(rows)
@@ -50,7 +52,9 @@ def display(bundle):
         .astype(float)
     )
     st.dataframe(
-        pd.DataFrame(rows).drop(columns=["annual_tax", "lot_audit"], errors="ignore"),
+        pd.DataFrame(rows).drop(
+            columns=["annual_tax", "lot_audit", "sleeve_positions", "sleeve_audit"], errors="ignore"
+        ),
         hide_index=True,
         width="stretch",
     )

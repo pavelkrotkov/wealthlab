@@ -75,6 +75,7 @@ def funding(rows):
         first_failure=failures[0]["date"] if failures else None,
         funding_shortfall=sum((r["funding_shortfall"] for r in rows), Decimal(0)),
         missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
+        product_failure_months=sum(map(lambda r: r.get("sleeve_failure", False), rows)),
         cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
     )
 

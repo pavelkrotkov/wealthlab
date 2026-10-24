@@ -61,3 +61,5 @@ Markets / Household funding offers [employer net factors with conditional employ
 Markets / Household funding also offers [employee 401(k) investment proxies](docs/adr/0032-workplace-investment-returns.md). Actual payroll-funded pretax/Roth deposits earn explicit month-end returns inside the plan, with unchanged wage/payroll recognition and separate investment audits; broader workplace withdrawal adapters remain unfinished.
 
 The **Products** workspace now compares [long/short pre-tax economics and margin risk](docs/adr/0033-long-short-economics.md) with a separately configured unlevered reference on identical paths. Short collateral, loans, actual costs and blocked/forced exits remain visible; conditional private-fund taxes and household integration are still open.
+
+Load the synthetic long-short household, or select **Long-short household** in Markets / Household funding, for [actual collateral, redemptions and recourse-debt integration](docs/adr/0034-household-long-short-cash.md). Taxes use separately supplied recognition; automatic trade tax/basis, benefit-state controls and private-fund contracts remain unfinished.
