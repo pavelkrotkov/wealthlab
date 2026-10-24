@@ -61,6 +61,8 @@ def validate_records(scenario):
 def validate_sources(scenario):
     plan = scenario.ira_plan
     accounts = {a.id for a in scenario.accounts if a.wrapper in {"traditional", "roth"}}
+    workplace = set(scenario.workplace_plan.products) if scenario.workplace_plan else set()
+    accounts -= workplace
     if not accounts or accounts != set(plan.products):
         raise ValueError(
             "Explicitly classify every household traditional/Roth account as an ordinary IRA."

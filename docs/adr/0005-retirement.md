@@ -8,7 +8,7 @@ IRA capacity is shared across the owner's traditional/Roth destinations. Joint f
 
 Receipts precede orders on the same date. Orders retain their supplied priority within a date. Each reports requested, permitted, funded, blocked-by-limit and unfunded amounts. Only funded amounts consume limits and enter the destination. Earlier failed requests are not automatically retried when later cash arrives. Opening assets plus receipts always equal ending cash plus assets. Separate account IDs preserve the difference between IRAs and workplace plans even when both have a traditional wrapper.
 
-Federal IRA deductibility uses actual funded amounts and owner-specific coverage/MAGI. Nondeductible contributions become federal basis; NJ contributions produce separate previously taxed basis. Roth regular contributions remain distinct from designated Roth workplace money. Payroll and tax liabilities are not calculated here; a pretax wage exclusion is not a payroll-tax exemption. This is contribution allocation, with no claim to household spending safety or complete withdrawal basis.
+Federal IRA deductibility uses actual funded amounts and owner-specific coverage/MAGI. Nondeductible contributions become federal basis; NJ contributions produce separate previously taxed basis. Roth regular contributions remain distinct from designated Roth workplace money. Payroll and tax liabilities are not calculated here; a pretax wage exclusion is not a payroll-tax exemption. This workbench remains contribution allocation. The [household employee 401(k) bridge](0019-household-employee-deferrals.md) now applies current-payroll funding and annual tax recognition; ordinary IRA contributions and complete wrapper withdrawal basis remain unfinished.
 
 ## Rule provenance
 

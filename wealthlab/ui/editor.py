@@ -20,6 +20,7 @@ from wealthlab.ui.employment import controls as employment_controls
 from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.household_ira import controls as ira_controls
 from wealthlab.ui.household_medicare import controls as medicare_controls
+from wealthlab.ui.household_workplace import controls as workplace_controls
 from wealthlab.ui.settings import controls
 from wealthlab.ui.tax_plan import controls as tax_controls
 
@@ -63,6 +64,7 @@ def editor(scenario: Scenario) -> Scenario | None:
             compensation_plan=compensation_controls(payload, scenario),
             ira_plan=ira_controls(payload, scenario),
             medicare_plan=medicare_controls(payload, scenario),
+            workplace_plan=workplace_controls(payload, scenario),
         )
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:
