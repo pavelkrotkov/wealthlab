@@ -49,6 +49,8 @@ def template(scenario):
     )
     return dict(
         case=case,
+        collection_mode="direct_bill_only",
+        ssa_current_premiums_context_confirmed=False,
         direct_billing_without_benefit_withholding_confirmed=False,
         costs_excluded_from_other_expenses_confirmed=False,
         complete_household_tax_history_confirmed=False,

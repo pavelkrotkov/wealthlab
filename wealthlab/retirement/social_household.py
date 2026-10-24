@@ -8,6 +8,7 @@ cutoffs again would change them. The original scenario remains exportable.
 from datetime import date
 
 from wealthlab.household.schedules import Income
+from wealthlab.retirement.medicare_household_inputs import withholding
 from wealthlab.retirement.social import run
 from wealthlab.retirement.social_dates import shift
 from wealthlab.retirement.social_household_validation import validate
@@ -19,6 +20,8 @@ def prepare(scenario):
         return scenario
     result = run(scenario.social_security)
     validate(scenario, result)
+    if withholding(scenario):
+        return scenario
     incomes, rules = [], []
     for index, row in enumerate(result["cash_months"]):
         when = row["payment_month"]

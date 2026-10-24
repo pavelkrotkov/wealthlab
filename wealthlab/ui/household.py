@@ -11,6 +11,7 @@ from wealthlab.household.projection import project
 from wealthlab.retirement.ira_household_example import synthetic as ira_example
 from wealthlab.retirement.medicare_household_example import synthetic as medicare_example
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
+from wealthlab.retirement.social_medicare_example import synthetic as withholding_example
 from wealthlab.ui import editor, files, results
 
 
@@ -50,22 +51,16 @@ def show():
 
 
 def examples():
-    if st.button("Load synthetic Social Security household"):
-        files.select_scenario(benefit_example())
-        st.rerun()
-    if st.button("Load synthetic employment household"):
-        files.select_scenario(employment_example())
-        st.rerun()
-    if st.button("Load synthetic employer compensation household"):
-        files.select_scenario(compensation_example())
-        st.rerun()
-    if st.button("Load synthetic linked employment and asset shock"):
-        files.select_scenario(linked_shock())
-        st.rerun()
-    if st.button("Load synthetic IRA household"):
-        files.select_scenario(ira_example())
-        st.rerun()
-
-    if st.button("Load synthetic Medicare household"):
-        files.select_scenario(medicare_example())
-        st.rerun()
+    choices = (
+        ("Load synthetic Social Security household", benefit_example),
+        ("Load synthetic employment household", employment_example),
+        ("Load synthetic employer compensation household", compensation_example),
+        ("Load synthetic linked employment and asset shock", linked_shock),
+        ("Load synthetic IRA household", ira_example),
+        ("Load synthetic Medicare household", medicare_example),
+        ("Load synthetic Social Security with Medicare withholding", withholding_example),
+    )
+    for label, build in choices:
+        if st.button(label):
+            files.select_scenario(build())
+            st.rerun()
