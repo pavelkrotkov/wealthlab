@@ -7,7 +7,7 @@ from math import sqrt
 from statistics import NormalDist
 
 from wealthlab.household.funding import opening_wealth
-from wealthlab.tax.payments import missed_schedule
+from wealthlab.markets.household_outcomes import funding, product_totals
 
 
 def summarize(scenario, rows, index):
@@ -32,6 +32,7 @@ def aggregate(scenario, batch, results):
     target = date(year, youngest.month, min(youngest.day, monthrange(year, youngest.month)[1]))
     attained = scenario.end >= target
     return dict(
+        **product_totals(results),
         paths=len(results),
         successes=successes,
         funding_fraction=fraction,
@@ -63,20 +64,6 @@ def drawdown(scenario, rows):
         if peak > 0:
             result = max(result, (peak - row["net_wealth"]) / peak)
     return result
-
-
-def funding(rows):
-    failures = [r for r in rows if r["funding_failure"]]
-    return dict(
-        funded=not failures,
-        discretionary_spending_reduction=sum(
-            (r.get("guardrail_discretionary_reduction", 0) for r in rows), Decimal(0)
-        ),
-        first_failure=failures[0]["date"] if failures else None,
-        funding_shortfall=sum((r["funding_shortfall"] for r in rows), Decimal(0)),
-        missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
-        cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
-    )
 
 
 def known_weight(rows):

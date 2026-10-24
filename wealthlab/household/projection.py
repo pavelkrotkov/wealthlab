@@ -18,6 +18,7 @@ from wealthlab.household.monthly import month
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import validate_resolved
 from wealthlab.portfolio import household_book, household_wash
+from wealthlab.products import household as sleeves
 from wealthlab.retirement import (
     education_household,
     hsa_household,
@@ -43,6 +44,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
     employee = workplace.make(scenario)
     hsa = hsa_household.make(scenario)
     education = education_household.make(scenario)
+    products = sleeves.make(scenario)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
         live, market_events = market.start(scenario, lots, start) if market else (scenario, ())
@@ -64,6 +66,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
             hsa,
             education,
             lots,
+            products,
         )
         row.update(ira_summary)
         row.update(medicare_household.observe(medicare, tax_ledger, end))
@@ -73,15 +76,16 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
         row["net_wealth"] -= row.get("tax_position", Decimal(0))
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
+        row["net_wealth"] -= row.get("sleeve_liability", Decimal(0))
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
         observe_market(market, lots, row)
         rows.append(row)
-    finish(rows, compensation, employee, lots, medicare, hsa, education, market)
+    finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
     return rows
 
 
-def finish(rows, compensation, employee, lots, medicare, hsa, education, market):
+def finish(rows, compensation, employee, lots, medicare, hsa, education, market, products):
     if compensation:
         rows[-1]["employer_event_log"] = compensation.log
     if employee:
@@ -91,6 +95,7 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market)
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)
     education_household.finish(education, rows)
+    sleeves.finish(products, rows)
     if market:
         market.finish(rows)
 

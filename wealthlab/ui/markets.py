@@ -46,7 +46,7 @@ def show():
     mode = st.selectbox(
         "Synthetic market mode", ["monte_carlo", "deterministic", "historical", "stress"]
     )
-    stress = st.selectbox("Synthetic named stress", NAMES)
+    stress = st.selectbox("Synthetic named stress", NAMES, disabled=mode != "stress")
     uploaded = st.file_uploader("Load market assumptions JSON", type="json")
     if source(uploaded, synthetic(mode, stress).model_dump_json(indent=2), "markets") is None:
         return

@@ -12,6 +12,7 @@ from wealthlab.household.calendar import fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
 from wealthlab.portfolio import household_book
+from wealthlab.products import household as sleeves
 from wealthlab.retirement import (
     education_household,
     hsa_household,
@@ -38,6 +39,7 @@ def month(
     hsa=None,
     education=None,
     lots=None,
+    products=None,
 ) -> dict:
     row = dict(date=start.isoformat(), period_end=end.isoformat(), opening_cash=wallet.cash)
     incomes = flows.earning_items(scenario, start, end)
@@ -57,7 +59,7 @@ def month(
                 end,
                 quote,
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa, education),
+                receipt_hook=receipt_hook(ira, hsa, education, products),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
             )
         )
@@ -66,6 +68,7 @@ def month(
         row.update(hsa_household.completed(hsa, end))
         education_household.completed(education, tax_ledger, end)
         row.update(household_book.completed(lots))
+        row.update(sleeves.completed(products))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))
     row.update(flows.spending(scenario, wallet, start, end, medicare, education))

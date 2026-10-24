@@ -23,6 +23,8 @@ class HouseholdBinding(TaxModel):
     securities: list[SecurityBinding] = Field(default_factory=list)
     wrappers: list[WrapperBinding] = Field(default_factory=list)
     employers: list[EmployerBinding] = Field(default_factory=list)
+    sleeves: list[Identifier] = Field(default_factory=list)
+    replace_sleeve_observations_confirmed: bool = False
     inflation_expenses: list[Identifier] = Field(default_factory=list)
     cash_yield_timing: Literal["opening_value_received_before_month_end_sales"]
     ordinary_cash_character_confirmed: bool

@@ -6,6 +6,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import months
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.employer_compile import compile_plans as compile_employers
+from wealthlab.markets.sleeve_compile import compile_plans as compile_sleeves
 from wealthlab.markets.wrapper_compile import compile_plans
 
 
@@ -13,6 +14,7 @@ def compile_marks(scenario, batch, binding, index):
     payload = scenario.model_dump(mode="json")
     compile_plans(payload, scenario, batch, binding, index)
     compile_employers(payload, scenario, batch, binding, index)
+    compile_sleeves(payload, scenario, batch, binding, index)
     if scenario.lot_plan is not None:
         compile_lots(payload, scenario, batch, binding, index)
     return Scenario.model_validate(payload)

@@ -30,10 +30,14 @@ def securities(lots):
 def report(scenario, binding, lots, row):
     values = securities(lots)
     known = set(lots.book.accounts) if lots else set()
-    unmapped_issuers = missing(scenario, row, known)
+    unmapped_issuers = sorted(set(missing(scenario, row, known)) | sleeve_accounts(row))
     assets = sum(row["account_balances"].values(), ZERO)
     factors = factor_values(binding, values, row)
-    mapped = known | {w.account_id for w in [*binding.wrappers, *binding.employers]}
+    mapped = (
+        known
+        | {w.account_id for w in [*binding.wrappers, *binding.employers]}
+        | set(binding.sleeves)
+    )
     return dict(
         market_security_values=values,
         market_max_security_weight=issuer_weight(values, assets, unmapped_issuers),
@@ -49,7 +53,7 @@ def missing(scenario, row, measured):
     return [
         a.id
         for a in scenario.accounts
-        if a.wrapper != "cash" and a.id not in measured and row["account_balances"][a.id] > 0
+        if a.wrapper != "cash" and a.id not in measured and positive_value(a, scenario, row)
     ]
 
 
@@ -67,6 +71,13 @@ def factor_values(binding, values, row):
         factors[wrapper.factor] = (
             factors.get(wrapper.factor, ZERO) + row["account_balances"][wrapper.account_id]
         )
+    for position in row.get("sleeve_positions", []):
+        factors[position["long_factor"]] = (
+            factors.get(position["long_factor"], ZERO) + position["long_value"]
+        )
+        factors[position["short_factor"]] = (
+            factors.get(position["short_factor"], ZERO) - position["short_liability"]
+        )
     return factors
 
 
@@ -77,3 +88,28 @@ def contingent_factors(binding, row):
         amount = sum((t["unvested"] for t in tranches if t["account"] == item.account_id), ZERO)
         result[item.factor] = result.get(item.factor, ZERO) + amount
     return result
+
+
+def sleeve_accounts(row):
+    return {
+        p["account_id"]
+        for p in row.get("sleeve_positions", [])
+        if p["long_value"] + p["short_liability"] > 0
+    }
+
+
+def positive_value(account, scenario, row):
+    opening = account.balance if row["date"] == scenario.start.isoformat() else ZERO
+    sleeve = sum(
+        (
+            p["long_value"] + p["short_liability"]
+            for p in row.get("sleeve_positions", [])
+            if p["account_id"] == account.id
+        ),
+        ZERO,
+    )
+    contingent = sum(
+        (t["unvested"] for t in row.get("employer_tranches", []) if t["account"] == account.id),
+        ZERO,
+    )
+    return max(row["account_balances"][account.id], opening, sleeve, contingent) > 0

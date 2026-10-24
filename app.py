@@ -41,7 +41,15 @@ def main():
     st.title("Wealthlab")
     page = st.sidebar.radio(
         "Workspace",
-        ["Household", "Annual tax", "Tax lots", "Retirement", "Markets", "Engine checks"],
+        [
+            "Household",
+            "Annual tax",
+            "Tax lots",
+            "Retirement",
+            "Markets",
+            "Products",
+            "Engine checks",
+        ],
     )
     if page == "Household":
         from wealthlab.ui.household import show
@@ -61,6 +69,10 @@ def main():
         show()
     elif page == "Markets":
         from wealthlab.ui.markets import show
+
+        show()
+    elif page == "Products":
+        from wealthlab.ui.products import show
 
         show()
     else:

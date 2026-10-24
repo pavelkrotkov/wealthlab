@@ -10,6 +10,7 @@ from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.portfolio.household_example import synthetic as lot_example
 from wealthlab.portfolio.january_example import synthetic as january_example
+from wealthlab.products.household_example import synthetic as sleeve_example
 from wealthlab.retirement.education_household_example import synthetic as education_example
 from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
 from wealthlab.retirement.ira_deposit_household_example import synthetic as ira_deposit_example
@@ -34,11 +35,13 @@ def show():
     )
     st.caption(
         "Payments use cash accounts in listed order: confirmed employee payroll elections, "
-        "then optional HSA/529/IRA deposits after receipts and prior-tax arrears, "
+        "then sleeve collateral/recourse debt and optional HSA/529/IRA deposits after receipts "
+        "and prior-tax arrears, "
         "then current tax withholding/settlement when enabled, "
         "debts, fees, essential, healthcare, "
         "mortgage, education, discretionary, then contributions. Unpaid debt interest "
-        "accrues; fees remain owed; unmet spending is a shortfall. No new borrowing is assumed."
+        "accrues; fees remain owed; unmet spending is a shortfall. "
+        "Only explicit sleeve margin terms create investment borrowing."
     )
     try:
         files.import_scenario()
@@ -61,6 +64,7 @@ def show():
 
 def examples():
     choices = (
+        ("Load synthetic long-short household", sleeve_example),
         ("Load synthetic employee 401(k) household", workplace_example),
         ("Load synthetic Social Security household", benefit_example),
         ("Load synthetic employment household", employment_example),
