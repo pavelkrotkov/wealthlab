@@ -1,6 +1,7 @@
 """Every configured account is an ordinary, non-inherited traditional or Roth IRA."""
 
 from wealthlab.retirement.distribution_owner_validation import validate_owners, validate_tax
+from wealthlab.retirement.ira_contribution_validation import validate as validate_contributions
 
 
 def validate(case):
@@ -17,6 +18,7 @@ def validate(case):
     validate_orders(case, accounts)
     validate_returns(case, accounts)
     validate_tax(case)
+    validate_contributions(case)
 
 
 def validate_accounts(case, people):

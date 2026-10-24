@@ -7,36 +7,20 @@ import streamlit as st
 from wealthlab.retirement.distribution_example import synthetic
 from wealthlab.retirement.distribution_inputs import DistributionCase
 from wealthlab.retirement.distributions import run
+from wealthlab.retirement.ira_contribution_example import synthetic as combined
+from wealthlab.ui.ira_contribution_results import display as contribution_summary
 from wealthlab.ui.uploads import invalid, source
 
 
 def show():
     st.header("IRA withdrawals and conversions")
-    st.caption(
-        "Ordinary, non-inherited traditional/Roth IRAs only, with complete owner-wide history. "
-        "Confirm opening_context_complete: all IRA accounts/history, no prior deferred RMD, "
-        "outstanding rollover or current-year regular contribution. "
-        "Opening balances are prior December 31 values. Fixed dated schedules draw only actual "
-        "available assets; conversions move assets without adding spendable cash. Returns "
-        "precede same-day orders and apply to the balance then held."
+    introduction()
+    choice = st.selectbox(
+        "IRA example", ["Withdrawals and conversions", "Contributions with withdrawals"]
     )
-    st.info(
-        "Federal basis uses annual Form 8606-style aggregation; NJ uses separately combined "
-        "traditional and Roth owner pools. Final-year values reconcile actual tax recognition "
-        "after all cash decisions. They do not enter earlier decisions. Roth qualification "
-        "requires the first-contribution clock and age 59½; conversion recapture has its own clock."
-    )
-    st.caption(
-        "An early-penalty exception is an explicit conditional assumption for the entire "
-        "withdrawal, not a validated eligibility decision. Disability, death, first-home Roth "
-        "qualification, mixed qualified/nonqualified NJ Roth withdrawals, workplace/inherited "
-        "accounts, current-year regular contributions and outstanding rollovers are unfinished. "
-        "RMDs target December 31; first-year deferral, arrears and shortfall excise tax "
-        "are excluded. "
-        "Tax forecasts exclude these modeled flows; tax liability is reported but not cash-funded."
-    )
+    default = synthetic() if choice == "Withdrawals and conversions" else combined()
     uploaded = st.file_uploader("Load IRA withdrawal JSON", type="json")
-    raw = source(uploaded, synthetic().model_dump_json(indent=2), "withdrawal")
+    raw = source(uploaded, default.model_dump_json(indent=2), "withdrawal")
     if raw is None:
         return
     with st.form("ira_withdrawals"):
@@ -56,13 +40,47 @@ def show():
         display(result)
 
 
+def introduction():
+    st.caption(
+        "Ordinary, non-inherited traditional/Roth IRAs only, with complete owner-wide history. "
+        "Confirm opening_context_complete: all IRA accounts/history, no prior deferred RMD, "
+        "outstanding rollover or unlisted current-year contribution. "
+        "Opening balances are prior December 31 values. Fixed dated schedules draw only actual "
+        "available assets; conversions move assets without adding spendable cash. Returns "
+        "precede same-day withdrawals; contributions follow them. Receipts precede both. "
+        "All current-year contributions and outside cash receipts belong in the optional "
+        "contributions plan, sharing the same opening cash/accounts."
+    )
+    st.info(
+        "Federal basis uses annual Form 8606-style aggregation; NJ uses separately combined "
+        "traditional and Roth owner pools. Final-year values reconcile actual tax recognition "
+        "after all cash decisions. They do not enter earlier decisions. Roth qualification "
+        "requires the first-contribution clock and age 59½; conversion recapture has its own clock."
+    )
+    st.caption(
+        "An early-penalty exception is an explicit conditional assumption for the entire "
+        "withdrawal, not a validated eligibility decision. Disability, death, first-home Roth "
+        "qualification, mixed qualified/nonqualified NJ Roth withdrawals, workplace/inherited "
+        "accounts, prior-year deposits made after year end and outstanding rollovers "
+        "are unfinished. "
+        "RMDs target December 31; first-year deferral, arrears and shortfall excise tax "
+        "are excluded. "
+        "Tax forecasts exclude modeled IRA flows/deductions. Contribution compensation and MAGI "
+        "are confirmed annual assumptions. A tax case checks supported W-2 compensation, "
+        "maximum deduction and funded Roth eligibility; Social Security deduction worksheets "
+        "and AGI-dependent passive losses require later adapters. Without that tax case, "
+        "eligibility remains conditional. Tax liability is reported but not cash-funded."
+    )
+
+
 def display(result):
     """Show gross cash separately from the incremental annual tax obligation.
 
     Reconciliation does not pay that obligation or make it spendable wealth;
     the later household layer must fund it through the ordinary cash ledger.
     """
-    st.metric("Cash received before tax payments", f"${result['cash']:,.2f}")
+    st.metric("Cash remaining before tax payments", f"${result['cash']:,.2f}")
+    contribution_summary(result)
     st.subheader("Dated IRA cash and annual recognition")
     st.dataframe(result["orders"], hide_index=True, width="stretch")
     st.subheader("Remaining owner basis and conversion buckets")

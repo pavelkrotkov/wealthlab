@@ -5,10 +5,21 @@ from decimal import Decimal
 from wealthlab.tax.annual import evaluate
 
 
-def compare(case, rows):
+def compare(case, rows, contributions=()):
     annual = case.annual_tax_case
     if annual is None:
         return None
+    deduction = sum((p["federal_ira_deduction"] for p in contributions), Decimal(0))
+    annual = annual.model_copy(
+        update=dict(
+            federal_income=annual.federal_income.model_copy(
+                update=dict(
+                    deductible_ira_contributions=annual.federal_income.deductible_ira_contributions
+                    + deduction
+                )
+            )
+        )
+    )
     taxable = sum((row["federal_taxable"] for row in rows), Decimal(0))
     penalty = sum((row["additional_tax"] for row in rows), Decimal(0))
     nj_taxable = sum((row["nj_taxable"] for row in rows), Decimal(0))

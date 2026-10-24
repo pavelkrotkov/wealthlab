@@ -1,16 +1,28 @@
 """Move funded amounts exactly once; revaluations are explicit market gains or losses."""
 
 from wealthlab.household.calendar import money
+from wealthlab.retirement.contribution_inputs import CashReceipt, ContributionOrder
 from wealthlab.retirement.distribution_inputs import AccountReturn
+from wealthlab.retirement.ira_contributions import fund
 
 
 def timeline(case):
-    events = [(item.date, 0, i, item) for i, item in enumerate(case.returns)]
-    events += [(item.date, 1, i, item) for i, item in enumerate(case.orders)]
+    # Same-day receipts, returns, withdrawals/conversions, then contributions.
+    events = [(item.date, 1, i, item) for i, item in enumerate(case.returns)]
+    events += [(item.date, 2, i, item) for i, item in enumerate(case.orders)]
+    if case.contributions is not None:
+        events += [(item.date, 0, i, item) for i, item in enumerate(case.contributions.receipts)]
+        events += [(item.date, 3, i, item) for i, item in enumerate(case.contributions.orders)]
     return sorted(events, key=lambda event: event[:3])
 
 
-def apply(book, item):
+def apply(book, item, case=None):
+    if isinstance(item, CashReceipt):
+        book["cash"] += item.amount
+        return
+    if isinstance(item, ContributionOrder):
+        fund(case, book, item)
+        return
     if isinstance(item, AccountReturn):
         delta = money(book["balances"][item.account_id] * item.rate)
         book["balances"][item.account_id] += delta
