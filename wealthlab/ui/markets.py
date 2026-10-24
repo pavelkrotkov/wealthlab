@@ -1,4 +1,12 @@
-"""Inspect/export a reusable realized market batch without claiming retirement safety."""
+"""Inspect reusable factor diagnostics or execute actual household funding.
+
+The diagnostic view excludes household taxes, sales and spending. The household
+view explicitly binds realized marks and separate cash yield to taxable lots,
+then retains the ordinary household tax/payment ledger. Sharing the market
+batch permits paired policy comparisons without resampling favorable paths.
+Neither a factor percentile nor a short supplied horizon establishes retirement
+safety through the household's target age.
+"""
 
 import json
 
@@ -11,11 +19,18 @@ from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
 from wealthlab.markets.report import summarize, terminal_table
 from wealthlab.markets.stresses import NAMES
+from wealthlab.ui import market_household
 from wealthlab.ui.uploads import invalid, source
 
 
 def show():
     st.header("Market paths and named stresses")
+    workbench = st.radio(
+        "Market workbench", ["Factor diagnostics", "Household funding"], key="market_workbench"
+    )
+    if workbench == "Household funding":
+        market_household.show()
+        return
     st.warning(
         "Path assumptions and buy-and-hold factor diagnostics only. Household lot sales, "
         "tax payments, rebalancing, spending guardrails and employer-linked employment "

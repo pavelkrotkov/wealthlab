@@ -76,3 +76,8 @@ def estimated_requests(plan, start, end) -> dict:
 
 def settlement_due(plan, start, end):
     return plan.settlement_timing == "monthly_accrued" or end >= date(start.year + 1, 1, 1)
+
+
+def missed_schedule(row):
+    """Count a month once if current withholding or settlement was underfunded."""
+    return row.get("tax_payment_gap", 0) > 0 or row.get("tax_settlement_payment_gap", 0) > 0

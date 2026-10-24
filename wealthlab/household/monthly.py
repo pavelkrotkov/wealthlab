@@ -20,6 +20,7 @@ from wealthlab.retirement import (
     workplace,
 )
 from wealthlab.retirement.household_receipts import receipt_hook
+from wealthlab.tax.payments import missed_schedule
 
 
 def month(
@@ -79,10 +80,7 @@ def metrics(scenario, row, start, end):
     row["funding_shortfall"] = row["debt_shortfall"] + sum(
         value for key, value in row.items() if key.endswith("_unfunded")
     )
-    row["funding_failure"] = any(
-        row.get(key, 0) > 0
-        for key in ("funding_shortfall", "tax_payment_gap", "tax_settlement_payment_gap")
-    )
+    row["funding_failure"] = row["funding_shortfall"] > 0 or missed_schedule(row)
     demand = (
         row["debt_payment"]
         + row["current_fees_due"]

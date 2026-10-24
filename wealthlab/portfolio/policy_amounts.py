@@ -15,8 +15,10 @@ def positions(book, policy):
         for lot in book.lots.values()
         if lot.security_id == policy.security_id
     )
-    wealth = sum(book.cash.values()) + sum(
-        lot.quantity * policy.prices[lot.security_id] for lot in book.lots.values()
+    wealth = (
+        book.external_wealth
+        + sum(book.cash.values())
+        + sum(lot.quantity * policy.prices[lot.security_id] for lot in book.lots.values())
     )
     return security_value, wealth + receivable(book) - sum(book.fee_owed.values())
 
