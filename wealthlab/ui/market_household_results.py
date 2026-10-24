@@ -7,27 +7,18 @@ import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.household_sleeves import display as sleeve_results
-from wealthlab.ui.household_sleeves import feasibility
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
+from wealthlab.ui.market_funding_results import display as funding_results
+
+HIDDEN = ("annual_tax", "lot_audit", "sleeve_positions", "sleeve_audit", "sleeve_tax_assumptions")
 
 
 def display(bundle):
     result = bundle["baseline"]
     totals = result["aggregate"]
-    a, b, c = st.columns(3)
-    a.metric("Funded paths / supplied horizon", f"{totals['successes']} / {totals['paths']}")
-    b.metric("Simulated funding fraction", f"{totals['funding_fraction']:.1%}")
-    c.metric("Covers entire target age", "Yes" if totals["horizon_covers_target_age"] else "No")
-    feasibility(result)
-    interval = totals["monte_carlo_95_wilson"]
-    if interval is not None:
-        st.caption(
-            f"95% Wilson interval for simulated funding: {interval[0]:.1%} to {interval[1]:.1%}. "
-            "Sampling uncertainty conditional on this model; "
-            "not uncertainty in market or tax assumptions."
-        )
+    funding_results(result)
     st.caption(
         f"Shared realized batch: {result['batch_id']}; path indices: {result['indices']}. "
         f"Horizon ends {totals['end']}; target is through age {totals['target_age']}. "
@@ -54,9 +45,7 @@ def display(bundle):
         .astype(float)
     )
     st.dataframe(
-        pd.DataFrame(rows).drop(
-            columns=["annual_tax", "lot_audit", "sleeve_positions", "sleeve_audit"], errors="ignore"
-        ),
+        pd.DataFrame(rows).drop(columns=list(HIDDEN), errors="ignore"),
         hide_index=True,
         width="stretch",
     )

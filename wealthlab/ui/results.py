@@ -24,6 +24,27 @@ from wealthlab.ui.household_sleeves import display as sleeve_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
 from wealthlab.ui.projected_tax import display as tax_summary
 
+HIDDEN = [
+    "account_balances",
+    "debt_balances",
+    "annual_tax",
+    "funding_basis",
+    "employer_tranches",
+    "employer_event_log",
+    "ira_annual_reconciliation",
+    "ira_contribution_eligibility",
+    "ira_contribution_audit",
+    "hsa_audit",
+    "education_audit",
+    "lot_audit",
+    "medicare_audit",
+    "sleeve_positions",
+    "sleeve_audit",
+    "sleeve_tax_assumptions",
+    "workplace_audit",
+    "workplace_market_audit",
+]
+
 
 def display(scenario: Scenario, rows: list[dict]) -> None:
     st.subheader(scenario.name)
@@ -33,25 +54,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
         + lot_scope_note(scenario.lot_plan)
     )
     table = pd.DataFrame(rows).drop(
-        columns=[
-            "account_balances",
-            "debt_balances",
-            "annual_tax",
-            "funding_basis",
-            "employer_tranches",
-            "employer_event_log",
-            "ira_annual_reconciliation",
-            "ira_contribution_eligibility",
-            "ira_contribution_audit",
-            "hsa_audit",
-            "education_audit",
-            "lot_audit",
-            "medicare_audit",
-            "sleeve_positions",
-            "sleeve_audit",
-            "workplace_audit",
-            "workplace_market_audit",
-        ],
+        columns=HIDDEN,
         errors="ignore",
     )
     numeric = table.drop(columns=["date", "period_end"]).astype(float)

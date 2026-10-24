@@ -5,9 +5,10 @@ months, including its debt, while the available cash comes from the current
 household wallet rather than a separate synthetic investor reserve.
 """
 
+from wealthlab.products.conditional_allocations import audit as tax_audit
+from wealthlab.products.conditional_allocations import events as tax_events
 from wealthlab.products.household_cash import execute
 from wealthlab.products.household_reporting import summarize
-from wealthlab.products.household_tax import event as tax_event
 from wealthlab.products.household_validation import validate
 from wealthlab.products.long_short_book import opening
 
@@ -17,6 +18,10 @@ class Ledger:
         validate(scenario)
         self.plan = scenario.sleeve_plan
         self.books = {s.account_id: opening(s.case) for s in self.plan.sleeves}
+        self.allocations = {
+            s.account_id: [e for a in s.allocations for e in tax_events(a)]
+            for s in self.plan.sleeves
+        }
         self.month = 0
         self.log = []
         self.summary = {}
@@ -25,7 +30,7 @@ class Ledger:
         audits, events = [], []
         for sleeve in self.plan.sleeves:
             audits.append(execute(self.books[sleeve.account_id], sleeve, self.month, wallet, end))
-            events.extend(tax_event(a) for a in sleeve.allocations if start <= a.date < end)
+            events.extend(a for a in self.allocations[sleeve.account_id] if start <= a.date < end)
         self.log.extend(audits)
         self.summary = summarize(audits)
         self.month += 1
@@ -43,3 +48,6 @@ def completed(ledger):
 def finish(ledger, rows):
     if ledger:
         rows[-1]["sleeve_audit"] = ledger.log
+        rows[-1]["sleeve_tax_assumptions"] = [
+            tax_audit(a) for s in ledger.plan.sleeves for a in s.allocations
+        ]
