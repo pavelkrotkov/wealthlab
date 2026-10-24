@@ -55,11 +55,11 @@ def main():
 
         show()
     elif page == "Retirement":
-        from wealthlab.ui import health_education, retirement, retirement_withdrawals
+        from wealthlab.ui import education, health_education, retirement, retirement_withdrawals
 
         mode = st.radio(
             "Retirement workbench",
-            ["Contributions", "IRA withdrawals", "HSA"],
+            ["Contributions", "IRA withdrawals", "HSA", "Education"],
             horizontal=True,
             key="retirement_mode",
         )
@@ -67,8 +67,10 @@ def main():
             retirement.show()
         elif mode == "IRA withdrawals":
             retirement_withdrawals.show()
-        else:
+        elif mode == "HSA":
             health_education.show()
+        else:
+            education.show()
     else:
         checks()
 
