@@ -4,10 +4,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.education import run
 from wealthlab.retirement.education_example import synthetic
 from wealthlab.retirement.education_inputs import EducationCase
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -37,9 +37,8 @@ def show():
         "Coverdell, K-12, credentials, loans, refunds and rollovers remain unfinished."
     )
     uploaded = st.file_uploader("Load education case JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Education input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("education_source") != raw:
         st.session_state.pop("education_result", None)

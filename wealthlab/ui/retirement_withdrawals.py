@@ -4,10 +4,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.distribution_example import synthetic
 from wealthlab.retirement.distribution_inputs import DistributionCase
 from wealthlab.retirement.distributions import run
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -36,9 +36,8 @@ def show():
         "Tax forecasts exclude these modeled flows; tax liability is reported but not cash-funded."
     )
     uploaded = st.file_uploader("Load IRA withdrawal JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Withdrawal input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("withdrawal_source") != raw:
         st.session_state.pop("withdrawal_result", None)

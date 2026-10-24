@@ -8,10 +8,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.medicare import run
 from wealthlab.retirement.medicare_example import synthetic
 from wealthlab.retirement.medicare_inputs import MedicareCase
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -39,9 +39,8 @@ def show():
         "integration remain unfinished. Other health costs are supplied estimates."
     )
     uploaded = st.file_uploader("Load Medicare case JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Medicare input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("medicare_source") != raw:
         st.session_state.pop("medicare_result", None)

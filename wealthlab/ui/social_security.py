@@ -8,10 +8,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.social import run
 from wealthlab.retirement.social_example import synthetic
 from wealthlab.retirement.social_inputs import SocialCase
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -42,9 +42,8 @@ def show():
         "no-deduction assumption as valid after changing wages."
     )
     uploaded = st.file_uploader("Load Social Security case JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Social Security input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("social_source") != raw:
         st.session_state.pop("social_result", None)

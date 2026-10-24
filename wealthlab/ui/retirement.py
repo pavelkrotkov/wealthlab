@@ -4,10 +4,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.contribution_example import synthetic
 from wealthlab.retirement.contribution_inputs import ContributionCase
 from wealthlab.retirement.contributions import run
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -33,9 +33,8 @@ def show():
         "a separate correction model and must not be entered as funded opening history."
     )
     uploaded = st.file_uploader("Load retirement contribution JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("Contribution input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("retirement_source") != raw:
         st.session_state.pop("retirement_result", None)

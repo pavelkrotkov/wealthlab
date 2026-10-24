@@ -6,10 +6,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.portfolio.cases import LotCase
 from wealthlab.portfolio.engine import run
 from wealthlab.ui import harvest_editor, sale_policy_editor
+from wealthlab.ui.uploads import read
 
 
 def edit(raw):
@@ -58,13 +58,6 @@ def edit(raw):
         case = LotCase.model_validate(payload)
         st.session_state["lot_result"] = run(case)
         st.session_state["lot_input"] = case.model_dump_json(indent=2)
-
-
-def read(uploaded):
-    raw = uploaded.getvalue()
-    if len(raw) > MAX_BYTES:
-        raise ValueError("Lot import exceeds the 2 MB limit.")
-    return raw.decode("utf-8-sig")
 
 
 def select_source(raw):

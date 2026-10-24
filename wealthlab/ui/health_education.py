@@ -4,10 +4,10 @@ import json
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.hsa import run
 from wealthlab.retirement.hsa_example import synthetic
 from wealthlab.retirement.hsa_inputs import HSACase
+from wealthlab.ui.uploads import source
 
 
 def show():
@@ -33,9 +33,8 @@ def show():
         "assumption. Tax ingredients below are not a calculated annual tax saving."
     )
     uploaded = st.file_uploader("Load HSA case JSON", type="json")
-    raw = uploaded.getvalue() if uploaded is not None else synthetic().model_dump_json(indent=2)
-    if len(raw) > MAX_BYTES:
-        st.error("HSA input exceeds the 2 MB limit.")
+    raw = source(uploaded, synthetic().model_dump_json(indent=2))
+    if raw is None:
         return
     if st.session_state.get("hsa_source") != raw:
         st.session_state.pop("hsa_result", None)
