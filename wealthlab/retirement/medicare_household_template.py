@@ -20,8 +20,8 @@ def template(scenario):
             dict(
                 id=distinct(f"coverage_{i}", used),
                 member=p,
-                start=scenario.start,
-                end=scenario.end,
+                start=scenario.start.isoformat(),
+                end=scenario.end.isoformat(),
                 eligibility_confirmed=False,
                 part_a=True,
                 part_a_monthly_2026=0,
