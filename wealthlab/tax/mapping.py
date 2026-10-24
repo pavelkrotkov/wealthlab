@@ -14,6 +14,7 @@ INCOME_FIELDS = dict(
     dividends="e00600",
     qualified_dividends="e00650",
     ira_distributions="e01400",
+    retirement_additional_tax="e09900",
     taxable_pension="e01700",
     social_security="e02400",
     allowed_passive_income="e02000",
