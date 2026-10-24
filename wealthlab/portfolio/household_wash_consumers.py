@@ -21,7 +21,7 @@ def check_ira(ira, year, annual, result):
     )
 
 
-def update_medicare(medicare, year, result, when):
+def medicare_revision(medicare, year, result, when):
     if medicare is None:
         return
     identity = f"household_return_{year}"
@@ -30,7 +30,7 @@ def update_medicare(medicare, year, result, when):
         return
     validate_billing(medicare.case, identity, when)
     revised = old.model_copy(update=dict(agi=result["federal"]["agi"]))
-    medicare.case = medicare.case.model_copy(
+    return medicare.case.model_copy(
         update=dict(
             income_history=[
                 revised if i.id == identity else i for i in medicare.case.income_history

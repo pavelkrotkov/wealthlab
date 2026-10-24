@@ -13,8 +13,8 @@ from wealthlab.household.calendar import money
 from wealthlab.portfolio.household_recognition import totals
 from wealthlab.portfolio.household_wash_consumers import (
     check_ira,
+    medicare_revision,
     update_education,
-    update_medicare,
 )
 from wealthlab.portfolio.tax_recognition import gains, with_gains
 from wealthlab.tax.annual import evaluate
@@ -50,8 +50,10 @@ def reconcile(lots, year, when):
     annual = with_gains(original, change, nj - old_nj)
     result = evaluate(annual)
     checked = check_ira(lots.ira, year, annual, result)
-    update_medicare(lots.medicare, year, result, when)
+    medicare = medicare_revision(lots.medicare, year, result, when)
     audit = revise(lots.taxes, year, annual, when)
+    if medicare is not None:
+        lots.medicare.case = medicare
     audit["ira_eligibility"] = checked
     update_education(lots.education, year, result)
     lots.taxes.provisional_returns.remove(year)

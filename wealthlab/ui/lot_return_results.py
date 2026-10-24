@@ -16,7 +16,9 @@ def display(rows, audit):
             - r["old_result"]["total_liability"],
             "Remaining tax": sum(r["new_owed"].values()),
             "Refund receivable at revision": sum(r["new_receivable"].values()),
-            "IRA election": "Checked fixed election" if r["ira_eligibility"] else "No IRA election",
+            "IRA election": "Checked fixed election"
+            if r["ira_eligibility"]
+            else "Not applicable / not checked",
         }
         for r in revisions
     ]
