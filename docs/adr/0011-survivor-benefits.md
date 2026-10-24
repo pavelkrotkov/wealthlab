@@ -1,0 +1,25 @@
+# ADR 0011: Dated survivor claims and switching to own benefits
+
+Status: survivor layer of open retirement ticket #6. Extends [ordinary claims](0010-social-security.md); earnings-test deductions and household benefit/tax integration remain unfinished.
+
+Each person can supply a death date and independent survivor entitlement month, with explicit relationship/insured eligibility confirmation. An in-horizon confirmed survivor case requires a supplied entitlement month; the engine does not infer application or automatic-conversion timing. Current law, no work deductions, no other auxiliaries and the existing restricted history remain conditions. Disability, divorce, remarriage, child benefits, family maxima, voluntary suspensions and earnings-history recomputation are outside this layer.
+
+Own and ordinary spouse entitlement end before the relevant death month. A valid prior-month benefit can still arrive in the death month. Survivor entitlement can start in that death month, at or after age 60, with cash following a month later. A survivor's own death ends entitlement before that month. Prior-December checks and the final unpaid December retain the existing cash convention.
+
+Owl's public FRA schedules supply separate retirement and survivor ages. The calendar adapter handles first-day birthdays and the January-first cohort boundary. Survivor age reduction uses an exact fraction of the months between age 60 and survivor FRA, with a maximum ordinary reduction of 28.5%; dime truncation occurs after reduction. An early reduction remains after FRA when no work-deduction adjustment applies.
+
+The regular death PIA is distinct from the worker's hypothetical life benefit and inherited delayed credits. Pre-claim credits through the month before death are inherited immediately, including credits not yet reflected in the worker's pre-70 claim-year check. They stop at age 70. A supplied January-2026-equivalent regular survivor PIA supports conditional young-death cases; Windex and alternative PIA calculations are not reconstructed. Death in or before the worker's age-62 calendar year conservatively requires that supplied value, a broader guard than the legal before-62 boundary. Without delayed credits, a larger projected ordinary retirement PIA does not replace the supplied regular death PIA.
+
+For a worker actually entitled to reduced retirement benefits before death, age-reduce the survivor amount first, then cap it at the greater of 82.5% of regular death PIA and the hypothetical reduced worker benefit. Applying the cap before age reduction would underpay; treating 82.5% as the universal survivor rate would also be wrong. A planned worker claim in the death month creates no own entitlement and no early-worker cap.
+
+The survivor component offsets the recipient's own benefit; cash pays the larger supported amount rather than both in full. Survivor claiming is independent of ordinary own-benefit claiming. For the supported birth cohorts, claiming reduced survivor benefits before 62 does not carry that reduction into a later own retirement benefit. This supports survivor-first, own-at-70 comparisons without an invented double benefit.
+
+## Checks and reference scope
+
+Two editable synthetic examples demonstrate the rules. Survivor then own benefits issue $234,772 over 2031–2036: seven $3,100 worker checks, 42 $3,036 survivor checks and 23 $3,720 own checks. An early-worker example caps full-age survivor entitlement at $2,062.50, issuing whole-dollar $2,062 checks. It issues $82,980 through 2029, including valid prior-December own/spouse checks in the death year.
+
+Checks also cover separate survivor FRA, death-year unpaid months, permanently reduced early survivor benefits, larger/smaller own offsets, inherited unrecognized credits, explicit denied eligibility, young-death supplied PIA, missing timing and UI example changes. A supported unreduced full year after death independently matches Owl's public survivor stream at $30,000. Production reference output excludes dated deaths: Owl's full-year mortality convention cannot validate monthly death-year cash or every switch/cap case. Native monthly cash remains authoritative.
+
+## Primary authorities
+
+Checked October 24, 2026. [20 CFR 404.311](https://www.ssa.gov/OP_Home/cfr20/404/404-0311.htm) and [404.337](https://www.ssa.gov/OP_Home/cfr20/404/404-0337.htm) establish death and entitlement boundaries. [404.410](https://www.ssa.gov/OP_Home/cfr20/404/404-0410.htm) supplies age-reduction arithmetic; [POMS RS 00615.003](https://secure.ssa.gov/poms.nsf/lnx/0300615003) supplies separate FRA schedules. [404.338](https://www.ssa.gov/OP_Home/cfr20/404/404-0338.htm), [RS 00615.706](https://secure.ssa.gov/poms.nsf/lnx/0300615706) and [RS 00615.320](https://secure.ssa.gov/poms.nsf/lnx/0300615320) distinguish regular/deemed PIA, inherited credits and the reduced-worker limit. [SSA filing rules](https://www.ssa.gov/benefits/retirement/planner/claiming.html) permit independent survivor/own claiming; [RS 00615.160](https://secure.ssa.gov/poms.nsf/lnx/0300615160) excludes the old pre-1928 carry-over reduction for supported cohorts.

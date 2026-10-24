@@ -1,6 +1,6 @@
 # ADR 0010: Ordinary Social Security claims and a limited Owl reference
 
-Status: own/ordinary-spouse claim layer of open retirement ticket #6. Survivor/work-test behavior, full benefit histories and household integration remain unfinished.
+Status: own/ordinary-spouse claim layer of open retirement ticket #6. [Dated survivor behavior](0011-survivor-benefits.md) is a subsequent layer. Work-test behavior, full benefit histories and household integration remain unfinished.
 
 The initial claim model supports births after January 1, 1943, using the corresponding eight-percent annual delayed-credit rate. It accepts a supplied January-2026 PIA as an SSA dime amount, insured-worker status, ordinary claim month and reciprocal partner identity. Eligibility is supplied and checked for basic consistency; the engine does not infer insured or marital eligibility from a household relationship. An uninsured spouse can have zero own PIA and receive a confirmed benefit on an insured partner's record.
 
