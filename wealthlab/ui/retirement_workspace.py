@@ -6,6 +6,7 @@ from wealthlab.ui import (
     education,
     health_education,
     medicare,
+    owl_reference,
     retirement,
     retirement_withdrawals,
     social_security,
@@ -20,6 +21,7 @@ def show():
         "Education": education,
         "Medicare": medicare,
         "Social Security": social_security,
+        "OWL household reference": owl_reference,
     }
     mode = st.radio(
         "Retirement workbench", list(workbenches), horizontal=True, key="retirement_mode"

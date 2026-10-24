@@ -70,6 +70,7 @@ def breakdown(values: dict, income: FederalIncome, label: str) -> dict:
         taxable_social_security=values["c02500"],
         taxable_income=values["c04800"],
         standard_deduction=values["standard"],
+        senior_deduction=values["senior_deduction"],
         itemized_deduction=values["c04470"],
         amt=values["c09600"],
         short_carry=carried["short_term"],
