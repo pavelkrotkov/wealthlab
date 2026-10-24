@@ -10,6 +10,7 @@ from datetime import date
 from decimal import Decimal
 
 from wealthlab.household.calendar import amount, money
+from wealthlab.household.funding import opening_wealth
 
 ZERO = Decimal(0)
 
@@ -76,13 +77,3 @@ def validate(scenario, plan):
         raise ValueError("Unknown guardrail expense ID.")
     if any(expenses[i].category != "discretionary" for i in plan.expense_ids):
         raise ValueError("Guardrails can change only explicitly selected discretionary expenses.")
-
-
-def opening_wealth(scenario):
-    assets = sum(
-        a.balance * Decimal(str(scenario.usd_per_currency[a.currency])) for a in scenario.accounts
-    )
-    debt = sum(
-        d.balance * Decimal(str(scenario.usd_per_currency[d.currency])) for d in scenario.debts
-    )
-    return assets - debt
