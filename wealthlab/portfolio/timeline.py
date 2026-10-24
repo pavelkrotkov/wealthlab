@@ -24,9 +24,8 @@ def events(case):
     return sorted(result, key=lambda item: item[:3])
 
 
-def replay(case, book):
-    decisions = []
-    handlers = {
+def handlers(case, book, decisions):
+    return {
         0: lambda event: entitle(book, event),
         1: lambda event: recognize(book, event),
         2: lambda event: pay(book, event),
@@ -35,6 +34,11 @@ def replay(case, book):
         5: lambda event: decisions.append(execute(case, book, event)),
         6: lambda event: book.harvest_decisions.extend(harvest(book, event)),
     }
+
+
+def replay(case, book):
+    decisions = []
+    actions = handlers(case, book, decisions)
     for _, kind, _, event in events(case):
-        handlers[kind](event)
+        actions[kind](event)
     return decisions

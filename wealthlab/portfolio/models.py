@@ -14,7 +14,7 @@ Price = Annotated[Decimal, Field(gt=0, max_digits=18, decimal_places=8)]
 
 class TradingAccount(Record):
     owner: Literal["primary", "spouse", "joint"]
-    wrapper: Literal["taxable", "traditional_ira", "roth_ira"]
+    wrapper: Literal["taxable", "traditional_ira", "roth_ira", "hsa"]
     cash: Money
 
 

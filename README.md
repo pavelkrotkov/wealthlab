@@ -75,3 +75,5 @@ Retirement / **OWL household reference** compares a solved independent withdrawa
 Load **synthetic current medical bills** in Household for [actual HSA provider payments, cash fallback, arrears and paid-only shared receipts](docs/adr/0039-current-medical-bills.md). Automatic medical deductions, insurance recovery and invested-HSA state basis remain unfinished.
 
 Markets / Household funding / **Medical bill inflation** adds [dated cost forecasts and fixed-versus-indexed HSA election bounds on identical CPI paths](docs/adr/0040-medical-bill-market-inflation.md). The synthetic matched case has equal ending wealth but different ability to pay the bill; indexed forecasts do not create reimbursement receipts.
+
+Retirement / **HSA investments** adds [dated inside-HSA lot accounting](docs/adr/0041-invested-hsa-book.md), current-price cash targets, custodian fees and independently supplied conditional NJ basis. Recipient distributions and household integration remain separate work.
