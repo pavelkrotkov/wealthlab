@@ -46,6 +46,8 @@ def completed_magi(rows, additions, annual):
     deduction = sum((p["federal_ira_deduction"] for p in additions), ZERO)
     magi = annual["with_distributions"]["federal"]["agi"] + deduction
     conversions = sum((r["federal_taxable"] for r in rows if r["kind"] == "conversion"), ZERO)
+    # IRS 590-A Worksheet 2-1 subtracts conversion income (line 2) and adds
+    # the traditional IRA deduction (line 4): AGI + deduction - conversion.
     roth_magi = magi - conversions
     return magi, roth_magi
 

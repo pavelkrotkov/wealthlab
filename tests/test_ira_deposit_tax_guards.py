@@ -37,3 +37,15 @@ def test_missing_tax_case_keeps_eligibility_explicitly_conditional():
     result = run(DistributionCase.model_validate(data))
     assert result["contribution_eligibility"] == dict(status="supplied_annual_forecasts_only")
     assert result["annual_tax"] is None
+
+
+def test_roth_phaseout_adds_back_the_traditional_deduction():
+    data = synthetic().model_dump(mode="json")
+    data["orders"] = []
+    data["annual_tax_case"]["federal_income"]["wages_primary"] = "164000"
+    data["annual_tax_case"]["nj_income"]["wages"] = "164000"
+    # Worksheet 2-1: $161k AGI + $3k deduction = $164k Roth MAGI.
+    # Age-55 2026 cap: ceil($8,600 * 4/15 / $10) * $10 = $2,300.
+    # A $3,000 Roth deposit is ineligible; omitting the add-back would allow it.
+    with pytest.raises(ValueError, match="Funded Roth IRA contributions exceed"):
+        run(DistributionCase.model_validate(data))
