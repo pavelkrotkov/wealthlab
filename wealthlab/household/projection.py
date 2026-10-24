@@ -17,7 +17,13 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import validate_resolved
-from wealthlab.retirement import hsa_household, ira_household, medicare_household, workplace
+from wealthlab.retirement import (
+    education_household,
+    hsa_household,
+    ira_household,
+    medicare_household,
+    workplace,
+)
 from wealthlab.retirement.social_household import prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
@@ -34,6 +40,7 @@ def project(scenario: Scenario) -> list[dict]:
     medicare = medicare_household.make(scenario)
     employee = workplace.make(scenario)
     hsa = hsa_household.make(scenario)
+    education = education_household.make(scenario)
     for start, end in months(scenario.start, scenario.end):
         medical_events = medicare_household.start(medicare, start)
         events = compensation.month(wallet, start, end) if compensation else ()
@@ -51,6 +58,7 @@ def project(scenario: Scenario) -> list[dict]:
             employee,
             ira,
             hsa,
+            education,
         )
         row.update(ira_summary)
         row.update(medicare_household.observe(medicare, tax_ledger, end))
@@ -69,4 +77,5 @@ def project(scenario: Scenario) -> list[dict]:
         rows[-1]["workplace_audit"] = employee.log
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)
+    education_household.finish(education, rows)
     return rows

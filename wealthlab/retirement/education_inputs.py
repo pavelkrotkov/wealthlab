@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
+from wealthlab.retirement.contribution_assumptions import RuleMode
 from wealthlab.retirement.contribution_inputs import CashReceipt
 from wealthlab.retirement.distribution_inputs import AccountReturn
 from wealthlab.tax.facts import TaxModel
@@ -33,10 +34,15 @@ class EducationAccount(Account):
     beneficiary: Identifier
     plan: Identifier
     contribution_basis: Money
+    zero_value_basis_history_confirmed: bool = False
 
     @model_validator(mode="after")
     def empty_balance(self) -> Self:
-        if not self.balance and self.contribution_basis:
+        if (
+            not self.balance
+            and self.contribution_basis
+            and not self.zero_value_basis_history_confirmed
+        ):
             raise ValueError("An empty opening 529 cannot retain closed-account basis.")
         return self
 
@@ -85,7 +91,8 @@ class EducationAllocation(Record):
 
 
 class EducationCase(TaxModel):
-    year: Literal[2025, 2026]
+    year: int = Field(ge=2025, le=2200)
+    rule_mode: RuleMode = "published"
     opening_cash: Money
     complete_context: bool
     nj_gross_income: Money | None

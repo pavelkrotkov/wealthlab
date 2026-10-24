@@ -5,7 +5,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import amount, fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
-from wealthlab.retirement import medicare_household
+from wealthlab.retirement import education_household, medicare_household
 
 
 def earning_items(scenario: Scenario, start, end) -> dict[str, Decimal]:
@@ -21,7 +21,7 @@ def earnings(scenario: Scenario, start, end) -> Decimal:
     return sum(earning_items(scenario, start, end).values(), Decimal(0))
 
 
-def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None) -> dict:
+def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None, education=None) -> dict:
     result = {}
     for category in ("essential", "healthcare", "mortgage", "education", "discretionary"):
         due = sum(
@@ -32,13 +32,11 @@ def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None) -> d
             ),
             Decimal(0),
         )
-        premiums = (
-            medicare_household.fund(medicare, wallet, start) if category == "healthcare" else {}
-        )
-        result.update(premiums)
+        extra, gap, details = wrapper_spending(category, wallet, start, medicare, education)
+        result.update(details)
         paid = wallet.pay(due)
-        result[category] = paid + premiums.get("medicare_paid", Decimal(0))
-        result[f"{category}_unfunded"] = due - paid
+        result[category] = paid + extra
+        result[f"{category}_unfunded"] = due - paid + gap
     return result
 
 
@@ -78,3 +76,16 @@ def fee_due(scenario: Scenario, start, end) -> Decimal:
         )
         * fraction(start, end)
     )
+
+
+def wrapper_spending(category, wallet, start, medicare, education):
+    if category == "healthcare":
+        premiums = medicare_household.fund(medicare, wallet, start)
+        return premiums.get("medicare_paid", Decimal(0)), Decimal(0), premiums
+    if category == "education":
+        tuition = education_household.fund(education, wallet)
+        gap = tuition.pop("education_tuition_unfunded", Decimal(0))
+        paid = tuition.get("education_wrapper_paid", Decimal(0))
+        paid += tuition.get("education_cash_fallback", Decimal(0))
+        return paid, gap, tuition
+    return Decimal(0), Decimal(0), {}

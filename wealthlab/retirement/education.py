@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.contribution_inputs import CashReceipt
 from wealthlab.retirement.distribution_inputs import AccountReturn
 from wealthlab.retirement.education_cash import contribute, withdraw
@@ -17,6 +18,8 @@ def run(case):
     tax = reconcile(case, book)
     return dict(
         year=case.year,
+        rule_mode=case.rule_mode,
+        rule_base_year=rule_year(case),
         cash=book["cash"],
         account_balances=book["balances"],
         contribution_basis=book["basis"],

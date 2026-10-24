@@ -11,7 +11,13 @@ from wealthlab.household import debts, flows, needs
 from wealthlab.household.calendar import fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
-from wealthlab.retirement import hsa_household, ira_household, medicare_household, workplace
+from wealthlab.retirement import (
+    education_household,
+    hsa_household,
+    ira_household,
+    medicare_household,
+    workplace,
+)
 from wealthlab.retirement.household_receipts import receipt_hook
 
 
@@ -28,6 +34,7 @@ def month(
     employee=None,
     ira=None,
     hsa=None,
+    education=None,
 ) -> dict:
     row = dict(date=start.isoformat(), period_end=end.isoformat(), opening_cash=wallet.cash)
     incomes = flows.earning_items(scenario, start, end)
@@ -38,23 +45,25 @@ def month(
     if tax_ledger is not None:
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
         required_cash += medicare_household.required(medicare)
+        quote = (lambda: required_cash + education.cash_need) if education else required_cash
         row.update(
             tax_ledger.month(
                 taxable,
                 wallet,
                 start,
                 end,
-                required_cash,
+                quote,
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa),
+                receipt_hook=receipt_hook(ira, hsa, education),
             )
         )
         row.update(tax_ledger.close(wallet, start, end))
         row.update(ira_household.completed(ira, tax_ledger, end))
         row.update(hsa_household.completed(hsa, end))
+        education_household.completed(education, tax_ledger, end)
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))
-    row.update(flows.spending(scenario, wallet, start, end, medicare))
+    row.update(flows.spending(scenario, wallet, start, end, medicare, education))
     row.update(flows.contributions(scenario, wallet, start, end))
     row["closing_cash"] = wallet.cash
     row["account_balances"] = dict(wallet.balances)

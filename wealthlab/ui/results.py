@@ -12,6 +12,7 @@ from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.household_education import display as education_summary
 from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
 from wealthlab.ui.household_ira import display as ira_summary
@@ -39,6 +40,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "ira_contribution_eligibility",
             "ira_contribution_audit",
             "hsa_audit",
+            "education_audit",
             "medicare_audit",
             "workplace_audit",
         ],
@@ -61,6 +63,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     ira_summary(rows)
     ira_deposit_summary(rows)
     hsa_summary(rows)
+    education_summary(rows)
     medicare_summary(rows)
     workplace_summary(rows)
     with st.expander("Ending accounts, debts and reproduction details"):

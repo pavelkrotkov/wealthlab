@@ -18,6 +18,7 @@ from wealthlab.household.storage import MAX_BYTES
 from wealthlab.ui.compensation import controls as compensation_controls
 from wealthlab.ui.employment import controls as employment_controls
 from wealthlab.ui.household_benefits import controls as benefit_controls
+from wealthlab.ui.household_education import controls as education_controls
 from wealthlab.ui.household_hsa import controls as hsa_controls
 from wealthlab.ui.household_ira import controls as ira_controls
 from wealthlab.ui.household_medicare import controls as medicare_controls
@@ -67,6 +68,7 @@ def editor(scenario: Scenario) -> Scenario | None:
             medicare_plan=medicare_controls(payload, scenario),
             workplace_plan=workplace_controls(payload, scenario),
             hsa_plan=hsa_controls(payload, scenario),
+            education_plan=education_controls(payload, scenario),
         )
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:

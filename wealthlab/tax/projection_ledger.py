@@ -75,7 +75,9 @@ class TaxLedger:
         event_cash = self.events(wallet, start, end, extra_events)
         if receipt_hook is not None:
             event_cash += self.apply_events(wallet, start, end, receipt_hook(wallet, start, end))
-        sold = self.funding.fund(self, wallet, required_cash, amounts, start, end)
+        # Wrapper funding can lower the remaining cash bill after receipts.
+        required = required_cash() if callable(required_cash) else required_cash
+        sold = self.funding.fund(self, wallet, required, amounts, start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
         requested = payments.withholding_request(amounts, self.plan, result, start, end)
