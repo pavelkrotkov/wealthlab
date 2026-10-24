@@ -21,3 +21,4 @@ def test_combined_ira_workbench_shows_cash_and_contribution_tax_inputs():
         "$6,000.00",
         "$3,000.00",
     )
+    assert "Decimal(" not in str(app.json[0].value)

@@ -1,5 +1,7 @@
 """Keep IRA contribution funding, deductions and basis separate from withdrawals."""
 
+import json
+
 import streamlit as st
 
 
@@ -18,7 +20,7 @@ def display(result):
         "The tax comparison holds funded contributions and their deduction fixed on both sides; "
         "it is not a re-optimized strategy comparison. Taxes are not paid from this workbench."
     )
-    st.json(result["contribution_eligibility"])
+    st.json(json.dumps(result["contribution_eligibility"], default=str))
     st.dataframe(result["contribution_orders"], hide_index=True, width="stretch")
     with st.expander("Current-year IRA deductions and separate basis additions"):
-        st.json(result["contribution_owners"])
+        st.json(json.dumps(result["contribution_owners"], default=str))
