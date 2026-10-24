@@ -6,6 +6,8 @@ from decimal import Decimal
 from math import sqrt
 from statistics import NormalDist
 
+from wealthlab.tax.payments import missed_schedule
+
 
 def summarize(scenario, rows, index):
     return dict(
@@ -72,6 +74,6 @@ def funding(rows):
         funded=not failures,
         first_failure=failures[0]["date"] if failures else None,
         funding_shortfall=sum((r["funding_shortfall"] for r in rows), Decimal(0)),
-        missed_tax_schedule_months=sum(r.get("tax_payment_gap", 0) > 0 for r in rows),
+        missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
         cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
     )
