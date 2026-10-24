@@ -42,15 +42,16 @@ class Funding:
         funded = wallet.pay(cap)
         used[order.kind] += funded
         effective = date(start.year, start.month, monthrange(start.year, start.month)[1])
-        self.orders.append(order.model_copy(update=dict(date=effective, amount=funded)))
-        self.receipts.append(
-            dict(
-                id=f"{PREFIX}{len(self.orders)}",
-                provenance="assumption",
-                date=effective,
-                amount=funded,
+        if funded:
+            self.orders.append(order.model_copy(update=dict(date=effective, amount=funded)))
+            self.receipts.append(
+                dict(
+                    id=f"{PREFIX}{len(self.orders)}",
+                    provenance="assumption",
+                    date=effective,
+                    amount=funded,
+                )
             )
-        )
         row = dict(
             id=order.id,
             date=order.date.isoformat(),

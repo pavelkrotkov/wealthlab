@@ -35,8 +35,13 @@ class Ledger:
         self.funding = Funding(self.plan.contributions)
         self.summary = {}
         self.year = scenario.start.year
+        self.cache_key: tuple[int, int] | None = None
 
     def refresh(self, year):
+        # Per-projection fixed schedules; funded deposits are append-only.
+        key = (year, len(self.funding.orders))
+        if key == self.cache_key:
+            return
         self.year = year
         context = next(y for y in self.plan.contributions.years if y.year == year)
         orders = [o for o in self.funding.orders if o.date.year == year]
@@ -51,6 +56,7 @@ class Ledger:
             )
         )
         self.result = run(self.case)
+        self.cache_key = key
 
     def month(self, wallet, start, end):
         self.refresh(start.year)
