@@ -10,7 +10,7 @@ from wealthlab.retirement.hsa_household_template import template
 def controls(payload, scenario):
     with st.expander("Household cash HSA and historical reimbursements"):
         enabled = st.checkbox(
-            "Project cash HSA contributions and qualified reimbursements",
+            "Project cash HSA contributions and withdrawals",
             value=payload.get("hsa_plan") is not None,
         )
         st.caption(
@@ -18,8 +18,11 @@ def controls(payload, scenario):
             "eligibility. Personal deposits use available cash before IRA elections/current tax. "
             "Historical receipts must already be paid before this projection and unavailable "
             "for another reimbursement or deduction. One shared ledger prevents reuse across "
-            "years. Nonqualified withdrawals, new medical bills, HSA investments and corrections "
-            "need later adapters. Salary reduction is not modeled as a personal deposit. "
+            "years. Nonqualified cash requires explicit ordinary/noninvestment classification, "
+            "NJ taxable fractions and confirmation against duplicate tax inputs. NJ fractions "
+            "apply to the entire actual funded withdrawal, independently of federal receipts. "
+            "New medical bills, HSA investments and corrections still need adapters. "
+            "Salary reduction is not modeled as a personal deposit. "
             "NJ bank treatment is a confirmed scenario assumption: no personal deduction, "
             "current taxable bank interest and employer funding added to NJ wages. Exclude "
             "that same employer amount from other wage inputs. Do not infer state treatment "
@@ -41,8 +44,12 @@ def display(rows):
     st.subheader("Household cash HSA — conditional NJ bank treatment")
     a, b, c = st.columns(3)
     a.metric("Personal HSA deposits", f"${sum(r['hsa_personal_contributions'] for r in rows):,.2f}")
-    b.metric("Qualified HSA reimbursements", f"${sum(r['hsa_withdrawal_cash'] for r in rows):,.2f}")
+    b.metric(
+        "Qualified HSA reimbursements",
+        f"${sum(r['hsa_qualified_reimbursements'] for r in rows):,.2f}",
+    )
     c.metric("Unfilled HSA requests", f"${sum(r['hsa_unfilled_requests'] for r in rows):,.2f}")
+    distribution_metrics(rows)
     st.caption(
         "Reimbursements transfer existing assets to cash; they are not new earnings. "
         "Only funded personal deposits create the federal deduction. Employer funding and "
@@ -55,3 +62,22 @@ def display(rows):
 
 def scope_note(plan):
     return " Includes conditional NJ cash-HSA tax treatment." if plan else ""
+
+
+def distribution_metrics(rows):
+    a, b, c = st.columns(3)
+    a.metric(
+        "Nonqualified federal taxable cash",
+        f"${sum(r['hsa_nonqualified_taxable'] for r in rows):,.2f}",
+    )
+    b.metric("HSA federal additional tax", f"${sum(r['hsa_additional_tax'] for r in rows):,.2f}")
+    c.metric(
+        "Conditional NJ withdrawal income",
+        f"${sum(r['hsa_nj_withdrawal_income'] for r in rows):,.2f}",
+    )
+    st.caption(
+        "Federal nonqualified amounts use the explicit ordinary/noninvestment assumption; "
+        "age65/disability exceptions affect additional tax, not ordinary income. "
+        "NJ fractions are supplied assumptions, not inferred state basis. Only actual funded "
+        "cash is recognized. Tax ingredients are not a second deposit or a hypothetical saving."
+    )

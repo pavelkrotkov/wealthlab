@@ -6,6 +6,8 @@ naming it. Employer funding and personal deposits share actual annual room;
 manual deductions and generic transfers cannot introduce them again.
 """
 
+from wealthlab.retirement.hsa_household_tax import validate as validate_distributions
+
 
 def validate_sources(scenario):
     plan = scenario.hsa_plan
@@ -21,10 +23,7 @@ def validate_sources(scenario):
 def validate_receipts(plan, start):
     if any(r.paid >= start for r in plan.medical_receipts):
         raise ValueError("This HSA reimbursement profile uses receipts paid before the projection.")
-    if any(w.mode != "qualified_only" for w in plan.withdrawals):
-        raise ValueError(
-            "Nonqualified household HSA withdrawals need the ordinary-income tax adapter."
-        )
+    validate_distributions(plan)
     records = [*plan.medical_receipts, *plan.contributions, *plan.withdrawals, *plan.interest]
     if len({r.id for r in records}) != len(records):
         raise ValueError("Household HSA event and receipt IDs must be unique.")
