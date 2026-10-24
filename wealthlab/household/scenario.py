@@ -18,6 +18,7 @@ from wealthlab.household.validation import validate_dates, validate_references
 from wealthlab.retirement.ira_household_inputs import IRAPlan
 from wealthlab.retirement.medicare_household_inputs import MedicarePlan
 from wealthlab.retirement.social_inputs import SocialCase
+from wealthlab.retirement.workplace_inputs import WorkplacePlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
 
@@ -53,6 +54,7 @@ class Scenario(BaseModel):
     compensation_plan: CompensationPlan | None = None
     ira_plan: IRAPlan | None = None
     medicare_plan: MedicarePlan | None = None
+    workplace_plan: WorkplacePlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:

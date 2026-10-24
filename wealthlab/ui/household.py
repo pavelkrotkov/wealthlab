@@ -12,6 +12,7 @@ from wealthlab.retirement.ira_household_example import synthetic as ira_example
 from wealthlab.retirement.medicare_household_example import synthetic as medicare_example
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.retirement.social_medicare_example import synthetic as withholding_example
+from wealthlab.retirement.workplace_example import synthetic as workplace_example
 from wealthlab.ui import editor, files, results
 
 
@@ -26,7 +27,8 @@ def show():
         "This screen does not yet establish retirement safety."
     )
     st.caption(
-        "Payments use cash accounts in listed order: tax withholding/settlement when enabled, "
+        "Payments use cash accounts in listed order: confirmed employee payroll elections, "
+        "then tax withholding/settlement when enabled, "
         "debts, fees, essential, healthcare, "
         "mortgage, education, discretionary, then contributions. Unpaid debt interest "
         "accrues; fees remain owed; unmet spending is a shortfall. No new borrowing is assumed."
@@ -52,6 +54,7 @@ def show():
 
 def examples():
     choices = (
+        ("Load synthetic employee 401(k) household", workplace_example),
         ("Load synthetic Social Security household", benefit_example),
         ("Load synthetic employment household", employment_example),
         ("Load synthetic employer compensation household", compensation_example),

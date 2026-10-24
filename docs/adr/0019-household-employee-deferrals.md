@@ -1,0 +1,25 @@
+# ADR 0019: Employee 401(k) elections in household payroll and taxes
+
+Status: household employee-deferral layer of open retirement ticket #6. Reuses [contribution limits](0005-retirement.md) and [forward rule assumptions](0016-future-contribution-assumptions.md). Ordinary IRA contributions, HSA/education household funding and remaining benefit rules are unfinished.
+
+The household may supply annual eligibility forecasts and dated pretax/designated-Roth employee 401(k) elections, with one sponsoring employer per owner. Complete calendar years and confirmation of all current-year elections exclude unknown opening deferrals. Gross wage streams must precede employee deferrals; manual annual wage/deferral facts or dated wage events cannot duplicate them. Account IDs explicitly distinguish these workplace plans from ordinary IRA pools.
+
+Elections use that month's gross payroll before income-tax withholding, taxes and household spending. This is an explicit monthly pooled-resource convention, not an intramonth payroll simulation or certification of employer election deadlines. Annual compensation, plan permission, prior employer wages and catch-up availability are supplied assumptions. The existing shared limit functions apply actual calendar age independently of the selected published/frozen rule table.
+
+Annual room shares actual funded pretax and Roth amounts per owner. Current-month wage capacity is also shared; neither opening wealth, the spouse's wages nor future salary can replace missing payroll. Ties preserve supplied order. Requests report limit blocks, current-wage blocks and unavailable cash separately. Failed requests are not retried automatically. Optional unfilled elections are distinct from spending failures, while missing tax/spending cash still fails the household funding checks.
+
+Funded elections move cash into the selected retirement account once. Pretax contributions reduce federal and NJ income-tax wage streams. The federal adapter separately receives those deferrals through its existing `pencon` mapping, retaining them in Social Security/Medicare payroll wages. Entered income-tax withholding percentages use post-pretax wages. Designated Roth elections remain taxable wages and do not become ordinary Roth-IRA contribution basis. Workplace balances cannot enter ordinary IRA pro-rata pools or permitted taxable sales. No employer match, plan growth, withdrawal, rollover, non-Roth after-tax contribution, multiple-employer allocation or special-plan exception is inferred.
+
+## Reproducible synthetic case
+
+The UI case begins with $100,000 cash and earns $120,000 gross wages during 2026. Monthly pretax requests fund $24,000. A December $2,000 Roth request receives the remaining $500 under the shared $24,500 cap; $1,500 is limit-blocked. The supplied plan does not permit catch-up contributions despite the participant's age.
+
+Frozen-2025 tax assumptions give $96,000 federal AGI, $64,500 federal taxable income, $7,263 federal income tax and $9,180 employee payroll tax. NJ gross income is $96,000; after two personal exemptions, its $94,000 taxable-income table band produces $2,420. Total tax is $18,863, cash is $176,637, pretax assets $24,000 and designated Roth $500. Wealth reconciles to $201,137: opening wealth plus wages less tax; account transfers are neither consumption nor returns.
+
+Changing all elections to designated Roth preserves $9,180 payroll tax while leaving $120,000 federal AGI and $10,143 federal income tax. A reduced-pay/job-loss path produces $75,000 wages and $18,000 funded elections; opening cash cannot fund the later missing-payroll requests. A separate future age-60 high-earner case permits $24,500 pretax and $11,250 Roth under explicit frozen-2026 assumptions. An ordinary-IRA comparison verifies that a separate $10,000 workplace balance leaves IRA basis reconciliation unchanged. JSON export reproduces projections without mutating original inputs.
+
+## Sources checked October 24, 2026
+
+[IRS 401(k) plan overview](https://www.irs.gov/retirement-plans/plan-sponsor/401k-plan-overview) distinguishes income-tax treatment, designated Roth and continued payroll taxation. [IRS catch-up guidance](https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-catch-up-contributions) and [Notice 2025-67](https://www.irs.gov/pub/irs-drop/n-25-67.pdf) supply the dated 2026 framework already used by the contribution engine; frozen later years remain assumptions.
+
+Local QMD vector discovery retrieved the original **2025 New Jersey NJ-1040 instructions**. Printed page 8 excludes qualifying 401(k) contributions up to the federal limit; the $94,000–$94,050 joint table band gives $2,420. The [official instructions](https://www.nj.gov/treasury/taxation/pdf/current/1040i.pdf) are year-specific: the rolling URL may change, so verify the displayed year. This is ordinary 401(k) treatment, not a general deduction for other retirement products or IRA contributions. No private eligibility or actual household wages were inferred.

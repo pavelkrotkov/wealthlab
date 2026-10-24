@@ -11,7 +11,7 @@ from wealthlab.household import debts, flows, needs
 from wealthlab.household.calendar import fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
-from wealthlab.retirement import medicare_household
+from wealthlab.retirement import medicare_household, workplace
 
 
 def month(
@@ -24,15 +24,22 @@ def month(
     tax_ledger=None,
     extra_events=(),
     medicare=None,
+    employee=None,
 ) -> dict:
     row = dict(date=start.isoformat(), period_end=end.isoformat(), opening_cash=wallet.cash)
     incomes = flows.earning_items(scenario, start, end)
     row["income"] = sum(incomes.values(), Decimal(0))
     wallet.deposit(row["income"])
+    taxable, employee_events, contributions = workplace.month(employee, wallet, incomes, start, end)
+    row.update(contributions)
     if tax_ledger is not None:
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
         required_cash += medicare_household.required(medicare)
-        row.update(tax_ledger.month(incomes, wallet, start, end, required_cash, extra_events))
+        row.update(
+            tax_ledger.month(
+                taxable, wallet, start, end, required_cash, [*extra_events, *employee_events]
+            )
+        )
         row.update(tax_ledger.close(wallet, start, end))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))
