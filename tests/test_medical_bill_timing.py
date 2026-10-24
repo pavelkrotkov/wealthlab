@@ -62,3 +62,24 @@ def test_care_before_establishment_cannot_use_a_qualified_direct_election():
     assert rows[0]["medical_cash_paid"] == 1000
     assert rows[0]["medical_owed"] == 5000
     assert rows[-1]["account_balances"]["cash_hsa"] == 3000
+
+
+def test_a_due_but_unpaid_bill_cannot_back_a_same_month_reimbursement():
+    value = data(cash=6000, hsa_amount=0, hsa_source=None)
+    value["hsa_plan"]["withdrawals"] = [
+        dict(
+            id="unpaid_claim",
+            provenance="assumption",
+            date="2026-01-20",
+            source="cash_hsa",
+            amount=3000,
+            mode="qualified_only",
+            receipt_ids=["care"],
+        )
+    ]
+    rows = project(Scenario.model_validate(value))
+    assert rows[0]["hsa_withdrawal_cash"] == 0
+    assert rows[0]["hsa_unfilled_requests"] == 3000
+    assert rows[0]["medical_cash_paid"] == 6000
+    assert rows[-1]["account_balances"]["cash_hsa"] == 3000
+    assert rows[-1]["hsa_audit"]["receipt_remaining"] == {"care": 6000}
