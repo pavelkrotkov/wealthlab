@@ -11,6 +11,7 @@ from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
 from wealthlab.ui.market_funding_results import display as funding_results
+from wealthlab.ui.market_medical_results import display as medical_results
 from wealthlab.ui.results import HIDDEN
 
 
@@ -38,6 +39,7 @@ def display(bundle):
     workplace_results(rows)
     sleeve_results(rows)
     employment_results(result, index)
+    medical_results(result, index, rows)
     st.line_chart(
         pd.DataFrame(rows)
         .set_index("date")[["closing_cash", "net_wealth", "real_net_wealth"]]

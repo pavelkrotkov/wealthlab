@@ -16,10 +16,11 @@ ZERO = Decimal(0)
 
 
 def validate(plan):
-    ids = {w.id for w in plan.withdrawals}
+    ids = {w.id for w in plan.withdrawals} | {b.id for b in plan.medical_bills}
     nonqualified = {w.id for w in plan.withdrawals if w.mode == "allow_nonqualified"}
     if set(plan.nj_withdrawal_taxable_fractions) - ids:
         raise ValueError("NJ HSA withdrawal fractions must reference known withdrawal IDs.")
+    nonqualified |= nonqualified_bills(plan)
     validate_treatment(plan, nonqualified)
     if not nonqualified.issubset(plan.nj_withdrawal_taxable_fractions):
         raise ValueError(
@@ -67,3 +68,7 @@ def event(when, amounts):
             wages=amounts["employer"], interest=amounts["interest"], other=amounts["nj_taxable"]
         ),
     )
+
+
+def nonqualified_bills(plan):
+    return {b.id for b in plan.medical_bills if b.hsa_amount and b.hsa_mode == "allow_nonqualified"}

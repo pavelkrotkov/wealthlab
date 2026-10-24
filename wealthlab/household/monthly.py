@@ -21,6 +21,7 @@ from wealthlab.retirement import (
     workplace,
 )
 from wealthlab.retirement.household_receipts import receipt_hook
+from wealthlab.retirement.household_receipts import required as wrapper_required
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -50,14 +51,13 @@ def month(
     if tax_ledger is not None:
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
         required_cash += medicare_household.required(medicare)
-        quote = (lambda: required_cash + education.cash_need) if education else required_cash
         row.update(
             tax_ledger.month(
                 taxable,
                 wallet,
                 start,
                 end,
-                quote,
+                lambda: required_cash + wrapper_required(education, hsa),
                 [*extra_events, *employee_events],
                 receipt_hook=receipt_hook(ira, hsa, education, products),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
@@ -65,13 +65,13 @@ def month(
         )
         row.update(tax_ledger.close(wallet, start, end))
         row.update(ira_household.completed(ira, tax_ledger, end))
-        row.update(hsa_household.completed(hsa, end))
         education_household.completed(education, tax_ledger, end)
         row.update(household_book.completed(lots))
         row.update(sleeves.completed(products))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))
-    row.update(flows.spending(scenario, wallet, start, end, medicare, education))
+    row.update(flows.spending(scenario, wallet, start, end, medicare, education, hsa))
+    row.update(hsa_household.completed(hsa, end))
     row.update(flows.contributions(scenario, wallet, start, end))
     row["closing_cash"] = wallet.cash
     row["account_balances"] = dict(wallet.balances)
@@ -83,7 +83,9 @@ def metrics(scenario, row, start, end):
     row["funding_shortfall"] = row["debt_shortfall"] + sum(
         value for key, value in row.items() if key.endswith("_unfunded")
     )
-    row["funding_failure"] = row["funding_shortfall"] > 0 or missed_schedule(row)
+    row["funding_failure"] = (
+        row["funding_shortfall"] > 0 or missed_schedule(row) or row.get("medical_owed", 0) > 0
+    )
     demand = (
         row["debt_payment"]
         + row["current_fees_due"]
@@ -91,6 +93,7 @@ def metrics(scenario, row, start, end):
         - row["fees_unfunded"]
         - row.get("tax_unfunded", Decimal(0))
         - row.get("medicare_arrears_paid", Decimal(0))
+        - row.get("medical_arrears_paid", Decimal(0))
     )
     demand += sum(
         row[key] for key in ("essential", "healthcare", "mortgage", "education", "discretionary")

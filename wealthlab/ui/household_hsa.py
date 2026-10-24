@@ -5,10 +5,11 @@ import json
 import streamlit as st
 
 from wealthlab.retirement.hsa_household_template import template
+from wealthlab.ui.medical_bills import display as medical_summary
 
 
 def controls(payload, scenario):
-    with st.expander("Household cash HSA and historical reimbursements"):
+    with st.expander("Household cash HSA, reimbursements and medical bills"):
         enabled = st.checkbox(
             "Project cash HSA contributions and withdrawals",
             value=payload.get("hsa_plan") is not None,
@@ -21,7 +22,10 @@ def controls(payload, scenario):
             "years. Nonqualified cash requires explicit ordinary/noninvestment classification, "
             "NJ taxable fractions and confirmation against duplicate tax inputs. NJ fractions "
             "apply to the entire actual funded withdrawal, independently of federal receipts. "
-            "New medical bills, HSA investments and corrections still need adapters. "
+            "Net medical bills can use direct HSA elections and actual cash fallback; only paid, "
+            "undeducted portions can be reimbursed later. Unpaid bills remain liabilities. "
+            "Confirm bills are excluded from other budgets, receipts and deductions. "
+            "HSA investments and corrections still need adapters. "
             "Salary reduction is not modeled as a personal deposit. "
             "NJ bank treatment is a confirmed scenario assumption: no personal deduction, "
             "current taxable bank interest and employer funding added to NJ wages. Exclude "
@@ -32,7 +36,7 @@ def controls(payload, scenario):
             return None
         plan = payload.get("hsa_plan") or template(scenario)
         return st.text_area(
-            "Cash HSA coverage, prior paid receipts and dated orders (JSON)",
+            "Cash HSA coverage, prior receipts, medical bills and dated orders (JSON)",
             json.dumps(plan, indent=2),
             height=350,
         )
@@ -45,16 +49,18 @@ def display(rows):
     a, b, c = st.columns(3)
     a.metric("Personal HSA deposits", f"${sum(r['hsa_personal_contributions'] for r in rows):,.2f}")
     b.metric(
-        "Qualified HSA reimbursements",
+        "Qualified HSA distributions",
         f"${sum(r['hsa_qualified_reimbursements'] for r in rows):,.2f}",
     )
     c.metric("Unfilled HSA requests", f"${sum(r['hsa_unfilled_requests'] for r in rows):,.2f}")
     distribution_metrics(rows)
+    medical_summary(rows)
     st.caption(
         "Reimbursements transfer existing assets to cash; they are not new earnings. "
         "Only funded personal deposits create the federal deduction. Employer funding and "
         "bank interest add assets once. NJ treatment is conditional and kept separate from "
-        "federal treatment. Current healthcare spending remains in the ordinary household budget."
+        "federal treatment. Direct provider payments spend assets without creating household cash. "
+        "Other healthcare spending remains in the ordinary budget."
     )
     with st.expander("HSA actual cash orders, annual ingredients and shared receipt balance"):
         st.json(json.dumps(rows[-1]["hsa_audit"], default=str))

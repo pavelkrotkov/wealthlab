@@ -5,7 +5,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import amount, fraction, money
 from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
-from wealthlab.retirement import education_household, medicare_household
+from wealthlab.retirement import education_household, hsa_household, medicare_household
 
 
 def earning_items(scenario: Scenario, start, end) -> dict[str, Decimal]:
@@ -21,7 +21,9 @@ def earnings(scenario: Scenario, start, end) -> Decimal:
     return sum(earning_items(scenario, start, end).values(), Decimal(0))
 
 
-def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None, education=None) -> dict:
+def spending(
+    scenario: Scenario, wallet: Wallet, start, end, medicare=None, education=None, hsa=None
+) -> dict:
     result = {}
     for category in ("essential", "healthcare", "mortgage", "education", "discretionary"):
         due = sum(
@@ -32,7 +34,7 @@ def spending(scenario: Scenario, wallet: Wallet, start, end, medicare=None, educ
             ),
             Decimal(0),
         )
-        extra, gap, details = wrapper_spending(category, wallet, start, medicare, education)
+        extra, gap, details = wrapper_spending(category, wallet, start, medicare, education, hsa)
         result.update(details)
         paid = wallet.pay(due)
         result[category] = paid + extra
@@ -78,10 +80,15 @@ def fee_due(scenario: Scenario, start, end) -> Decimal:
     )
 
 
-def wrapper_spending(category, wallet, start, medicare, education):
+def wrapper_spending(category, wallet, start, medicare, education, hsa):
     if category == "healthcare":
         premiums = medicare_household.fund(medicare, wallet, start)
-        return premiums.get("medicare_paid", Decimal(0)), Decimal(0), premiums
+        medical = hsa_household.fund_medical(hsa, wallet)
+        paid = premiums.get("medicare_paid", Decimal(0))
+        paid += medical.get("medical_provider_paid", Decimal(0)) + medical.get(
+            "medical_cash_paid", Decimal(0)
+        )
+        return paid, Decimal(0), dict(premiums, **medical)
     if category == "education":
         tuition = education_household.fund(education, wallet)
         gap = tuition.pop("education_tuition_unfunded", Decimal(0))

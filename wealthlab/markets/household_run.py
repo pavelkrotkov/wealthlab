@@ -6,6 +6,7 @@ from wealthlab.markets.household_compile import compile_marks
 from wealthlab.markets.household_execution import Execution
 from wealthlab.markets.household_report import aggregate, summarize
 from wealthlab.markets.household_validation import validate, validate_batch
+from wealthlab.markets.medical_inflation import audit as medical_audit
 
 
 def run(scenario, batch, binding, indices=None, progress=None):
@@ -20,7 +21,14 @@ def run(scenario, batch, binding, indices=None, progress=None):
         case = compile_marks(scenario, batch, binding, index)
         rows = project(case, market=Execution(case, batch, binding, index))
         outcomes.append(summarize(case, rows, index))
-        details.append(dict(path=index, rows=rows, employment_changes=audit(case, binding)))
+        details.append(
+            dict(
+                path=index,
+                rows=rows,
+                employment_changes=audit(case, binding),
+                medical_bill_indexing=medical_audit(scenario, case, binding),
+            )
+        )
         if progress is not None:
             progress(len(outcomes), len(indices))
     return dict(
