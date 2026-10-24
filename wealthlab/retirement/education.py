@@ -34,6 +34,7 @@ def run(case):
 def opening(case):
     return dict(
         case=case,
+        liquidity_locks=case.liquidity_locks,
         cash=case.opening_cash,
         balances={a.id: a.balance for a in case.accounts},
         basis={a.id: a.contribution_basis for a in case.accounts},

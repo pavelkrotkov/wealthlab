@@ -10,6 +10,7 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.markets.guardrails import Guardrail
+from wealthlab.markets.household_exposure import report as exposure_report
 from wealthlab.tax.projection_inputs import TaxEvent
 
 
@@ -25,11 +26,12 @@ class Execution:
 
     def start(self, scenario, lots, start):
         month = self.month
-        lots.locked = {
-            security
-            for security, factor in self.factors.items()
-            if self.batch.locked[month, factor]
-        }
+        if lots is not None:
+            lots.locked = {
+                security
+                for security, factor in self.factors.items()
+                if self.batch.locked[month, factor]
+            }
         event = self.yield_event(lots, start)
         self.cash_yield = event.cash_received
         indexed = set(self.binding.inflation_expenses)
@@ -81,26 +83,11 @@ class Execution:
         )
 
     def observe(self, lots, row):
-        values = {
-            s: sum(
-                (
-                    lot.quantity * lots.prices[s]
-                    for lot in lots.book.lots.values()
-                    if lot.security_id == s
-                ),
-                Decimal(0),
-            )
-            for s in self.factors
-        }
-        assets = sum(row["account_balances"].values(), Decimal(0))
         row.update(
             market_cpi=self.cpi,
             market_cash_yield=self.cash_yield,
-            market_locked_securities=sorted(lots.locked),
-            market_security_values=values,
-            market_max_security_weight=max(values.values(), default=Decimal(0)) / assets
-            if assets
-            else Decimal(0),
+            market_locked_securities=sorted(lots.locked) if lots else [],
+            **exposure_report(self.scenario, self.binding, lots, row),
         )
         row["real_net_wealth"] = money(row["net_wealth"] / self.cpi)
 

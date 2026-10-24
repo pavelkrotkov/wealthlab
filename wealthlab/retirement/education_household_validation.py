@@ -8,6 +8,7 @@ ordinary household education budget or another credit/vehicle allocation.
 The annual engine still validates plan identities, recipients and shared caps.
 """
 
+from wealthlab.retirement.account_liquidity import validate as validate_liquidity
 from wealthlab.retirement.education_household_case import annual_case
 from wealthlab.tax.projection_validation import validate as validate_tax
 
@@ -65,6 +66,7 @@ def validate_events(scenario):
     records = [*plan.contributions, *plan.tuition, *plan.returns]
     if any(not scenario.start <= r.date < scenario.end for r in records):
         raise ValueError("Household education events must lie inside the projection.")
+    records += plan.liquidity_locks
     if len({r.id for r in records}) != len(records):
         raise ValueError("Household education event IDs must be unique across years.")
 
@@ -79,6 +81,7 @@ def validate_deductions(scenario):
 def validate_event_accounts(scenario):
     plan = scenario.education_plan
     accounts = {a.account_id for a in plan.accounts}
+    validate_liquidity(plan.liquidity_locks, accounts, scenario.start, scenario.end)
     references = [r.destination for r in plan.contributions]
     references += [r.source for r in plan.tuition]
     references += [r.account_id for r in plan.returns]

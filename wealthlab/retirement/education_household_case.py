@@ -5,6 +5,7 @@ The request reserves that expense once; only actual distributions use it.
 Cash fallback pays any remaining bill without another wrapper withdrawal.
 """
 
+from wealthlab.retirement.account_liquidity import annual as annual_locks
 from wealthlab.retirement.education_inputs import EducationCase
 
 
@@ -25,6 +26,7 @@ def annual_case(scenario, year, balances=None, basis=None):
             accounts=accounts,
             contributions=[r for r in plan.contributions if r.date.year == year],
             returns=[r for r in plan.returns if r.date.year == year],
+            liquidity_locks=annual_locks(plan.liquidity_locks, year),
             **tuition_inputs(tuition, terms),
         )
     )

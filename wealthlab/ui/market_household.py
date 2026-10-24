@@ -20,6 +20,7 @@ from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
 from wealthlab.markets.stresses import NAMES
+from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.uploads import invalid, source
 
@@ -40,11 +41,18 @@ def show():
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
     )
     stress = st.selectbox("Household named stress", NAMES)
-    household, market, binding = synthetic(mode, stress)
+    scope = st.selectbox(
+        "Synthetic account scope",
+        ["Taxable lots", "IRA and education proxies"],
+        key="market_account_scope",
+    )
+    starter = synthetic if scope == "Taxable lots" else wrapper_example
+    household, market, binding = starter(mode, stress)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
-    choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
-    household, binding = policy_example(household, binding, choice)
+    if household.lot_plan is not None:
+        choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
+        household, binding = policy_example(household, binding, choice)
     default = json.dumps(
         dict(
             household=household.model_dump(mode="json"),

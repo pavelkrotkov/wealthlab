@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Account, Identifier, Money, Record
+from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.retirement.contribution_inputs import ContributionCase
 from wealthlab.tax.annual import AnnualCase
 from wealthlab.tax.facts import TaxModel
@@ -53,7 +54,7 @@ class WithdrawalOrder(Record):
 class AccountReturn(Record):
     date: date
     account_id: Identifier
-    rate: Annotated[Decimal, Field(ge=-1, le=10, max_digits=10, decimal_places=6)]
+    rate: Annotated[Decimal, Field(ge=-1, le=10, max_digits=18, decimal_places=12)]
 
 
 class DistributionCase(TaxModel):
@@ -66,6 +67,7 @@ class DistributionCase(TaxModel):
     rmd_policy: Literal["december_target_no_deferral"]
     orders: list[WithdrawalOrder] = Field(default_factory=list)
     returns: list[AccountReturn] = Field(default_factory=list)
+    liquidity_locks: list[AccountLock] = Field(default_factory=list)
     annual_tax_case: AnnualCase | None = None
     contributions: ContributionCase | None = None
     contribution_context_confirmed: bool = False

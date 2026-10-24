@@ -8,6 +8,7 @@ in effect on January first. Dates after the case year are never used early.
 
 from datetime import date
 
+from wealthlab.retirement.account_liquidity import validate as validate_liquidity
 from wealthlab.retirement.contribution_assumptions import rule_year
 from wealthlab.retirement.education_expenses import validate_allocations, validate_expenses
 
@@ -26,6 +27,9 @@ def validate(case):
         validate_plan(plan, case.year)
     for account in case.accounts:
         validate_account(account, people, plans)
+    validate_liquidity(
+        case.liquidity_locks, accounts, date(case.year, 1, 1), date(case.year + 1, 1, 1)
+    )
     validate_events(case, accounts)
     validate_expenses(case, people)
     validate_allocations(case, accounts)
@@ -73,6 +77,7 @@ def validate_records(case):
         case.returns,
         case.expenses,
         case.allocations,
+        case.liquidity_locks,
     ]
     records = [item for group in groups for item in group]
     ids = [item.id for item in records]

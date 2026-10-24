@@ -5,10 +5,18 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import months
 from wealthlab.household.scenario import Scenario
+from wealthlab.markets.wrapper_compile import compile_plans
 
 
 def compile_marks(scenario, batch, binding, index):
     payload = scenario.model_dump(mode="json")
+    compile_plans(payload, scenario, batch, binding, index)
+    if scenario.lot_plan is not None:
+        compile_lots(payload, scenario, batch, binding, index)
+    return Scenario.model_validate(payload)
+
+
+def compile_lots(payload, scenario, batch, binding, index):
     linked = payload["lot_plan"]
     prices = dict(scenario.lot_plan.opening_prices)
     factors = {b.security_id: batch.assets.index(b.factor) for b in binding.securities}
@@ -25,4 +33,3 @@ def compile_marks(scenario, batch, binding, index):
         snapshots.append(dict(date=end - timedelta(days=1), prices=dict(prices)))
     linked["monthly_marks"] = snapshots
     linked["case"]["closing_prices"] = prices
-    return Scenario.model_validate(payload)

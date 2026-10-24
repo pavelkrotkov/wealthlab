@@ -8,6 +8,7 @@ unrecovered loss separately and never fabricates a current tax deduction.
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.retirement.account_liquidity import blocked
 
 
 def contribute(book, item):
@@ -46,7 +47,8 @@ def contribute(book, item):
 def withdraw(book, item):
     account = book["accounts"][item.source]
     balance = book["balances"][account.id]
-    paid = min(item.amount, balance)
+    locked = blocked(book["liquidity_locks"], account.id, item.date)
+    paid = 0 if locked else min(item.amount, balance)
     returned_basis = release_basis(book, account.id, paid)
     book["balances"][account.id] -= paid
     recipient = account.owner if item.payee == "owner" else account.beneficiary
@@ -68,6 +70,7 @@ def withdraw(book, item):
             funded=paid,
             unfilled=item.amount - paid,
             basis_returned=returned_basis,
+            blocked_by_liquidity=locked,
             earnings=paid - returned_basis,
             to_household_cash=internal,
         )

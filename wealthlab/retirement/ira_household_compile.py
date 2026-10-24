@@ -5,6 +5,7 @@ RMD checks. Only the completed annual taxable result enters December's tax
 ledger. In-year tax estimates remain explicitly supplied household payments.
 """
 
+from wealthlab.retirement.account_liquidity import annual as annual_locks
 from wealthlab.retirement.distribution_inputs import DistributionCase, DistributionOwner, IRAAccount
 from wealthlab.retirement.distributions import run
 from wealthlab.retirement.ira_household_validation import validate
@@ -61,4 +62,5 @@ def annual_case(plan, owners, accounts, year):
         rmd_policy="december_target_no_deferral",
         orders=[e for e in plan.orders if e.date.year == year],
         returns=[e for e in plan.returns if e.date.year == year],
+        liquidity_locks=annual_locks(plan.liquidity_locks, year),
     )

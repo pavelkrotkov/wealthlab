@@ -1,5 +1,8 @@
 """Every configured account is an ordinary, non-inherited traditional or Roth IRA."""
 
+from datetime import date
+
+from wealthlab.retirement.account_liquidity import validate as validate_liquidity
 from wealthlab.retirement.distribution_owner_validation import validate_owners, validate_tax
 from wealthlab.retirement.ira_contribution_validation import validate as validate_contributions
 
@@ -9,6 +12,9 @@ def validate(case):
         raise ValueError("Confirm complete IRA pools/history and no unsupported opening events.")
     people = {person.id: person for person in case.owners}
     accounts = {account.id: account for account in case.accounts}
+    validate_liquidity(
+        case.liquidity_locks, accounts, date(case.year, 1, 1), date(case.year + 1, 1, 1)
+    )
     validate_records(case)
     validate_owners(case)
     validate_accounts(case, people)
@@ -78,7 +84,7 @@ def validate_returns(case, accounts):
 
 def validate_records(case):
     """Unknown eligibility blocks the entire run before it can change any balance."""
-    records = [*case.owners, *case.accounts, *case.orders, *case.returns]
+    records = [*case.owners, *case.accounts, *case.orders, *case.returns, *case.liquidity_locks]
     ids = [item.id for item in records]
     if len(ids) != len(set(ids)):
         raise ValueError("Distribution case IDs must be unique across all tables.")
