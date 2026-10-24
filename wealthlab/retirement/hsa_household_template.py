@@ -40,4 +40,7 @@ def template(scenario):
         receipts_paid_before_projection_confirmed=False,
         employer_funding_excluded_from_other_nj_wages_confirmed=False,
         priority="after_receipts_before_ira_and_current_tax",
+        nonqualified_treatment="unconfirmed",
+        nj_withdrawal_taxable_fractions={},
+        generated_distribution_tax_excluded_from_other_inputs_confirmed=False,
     )

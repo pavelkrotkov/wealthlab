@@ -64,6 +64,8 @@ def show():
         "All money is annual USD. Federal and NJ amounts use their own "
         "recognized income and basis. "
         "Qualified dividends are included in total dividends; collections are JSON. "
+        "Ordinary noninvestment income is a supplied positive classification, excluding "
+        "wages, investments, retirement and business income; no eligibility is inferred. "
         "Positive balances are due, negative balances are overpayments. No payment is sent."
     )
     try:

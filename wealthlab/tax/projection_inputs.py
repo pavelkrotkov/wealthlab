@@ -25,6 +25,7 @@ class IncomeRule(TaxModel):
         "taxable_pension",
         "social_security",
         "tax_exempt_interest",
+        "ordinary_noninvestment_income",
         "none",
     ]
     new_jersey: Literal["wages", "interest", "dividends", "pension", "other", "none"]

@@ -65,3 +65,7 @@ The **Products** workspace now compares [long/short pre-tax economics and margin
 Load the synthetic long-short household, or select **Long-short household** in Markets / Household funding, for [actual collateral, redemptions and recourse-debt integration](docs/adr/0034-household-long-short-cash.md). Taxes use separately supplied recognition; automatic trade tax/basis and private-fund contracts remain unfinished.
 
 Markets / Household funding / Long-short household also offers [independent conditional federal/NJ loss recognition](docs/adr/0035-conditional-sleeve-loss-recognition.md). Positive income stays recognized; denied, deferred and allowed supplied losses keep separate dates/character and never create a tax-savings cash receipt. This does not calculate legal eligibility or basis.
+
+The annual tax form and household tax-character rules support [explicit positive ordinary noninvestment income](docs/adr/0036-ordinary-noninvestment-income.md), with a disclosed numerical adapter and separate federal/NJ classification. It does not infer business-loss, private-fund or HSA-distribution eligibility.
+
+Load the synthetic nonqualified HSA household for [actual funded distribution taxes](docs/adr/0037-household-hsa-distribution-tax.md), including qualified receipt matching, separately displayed additional tax and independent declared federal/NJ recognition assumptions. This cash-bank profile does not infer historical state basis or pay new medical bills.

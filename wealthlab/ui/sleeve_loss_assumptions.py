@@ -12,8 +12,8 @@ def controls(household):
     if not enabled:
         return household
     st.caption(
-        "Supplied illustration per annual allocation: $12,000 federal long-term loss and "
-        "$12,000 NJ partnership-category loss, independent of realized market performance. "
+        "Supplied illustration per annual allocation: USD 12,000 federal long-term loss and "
+        "USD 12,000 NJ partnership-category loss, independent of realized market performance. "
         "Positive income remains recognized. Deferred loss release is assumed one year later; "
         "a date beyond the horizon remains unrecognized. These choices do not establish basis, "
         "at-risk/passive eligibility or a provider's loss generation. NJ category and federal "
