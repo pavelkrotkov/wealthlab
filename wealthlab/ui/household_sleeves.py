@@ -5,6 +5,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.ui.sleeve_loss_assumptions import display as loss_results
+
 
 def controls(payload, scenario):
     with st.expander("Household long-short sleeves and supplied tax allocations"):
@@ -16,7 +18,9 @@ def controls(payload, scenario):
             "before optional wrapper deposits. "
             "Negative equity survives as recourse debt. All recognition is supplied separately; "
             "trade P&L does not establish deductible loss, basis or complete-exit tax. "
-            "The synthetic allocations are fixed illustrations, independent of market returns."
+            "The synthetic allocations are fixed illustrations, independent of market returns. "
+            "Negative allocations require separate federal/NJ allowed, denied or deferred choices; "
+            "allowed/released amounts require explicit eligibility-after-limits assumptions."
         )
         if not enabled:
             return None
@@ -59,6 +63,7 @@ def display(rows):
         }
     )
     st.dataframe(pd.DataFrame(rows[-1]["sleeve_positions"]), hide_index=True, width="stretch")
+    loss_results(rows)
     with st.expander("Household sleeve cash and economic audit"):
         st.json(rows[-1].get("sleeve_audit", []))
 

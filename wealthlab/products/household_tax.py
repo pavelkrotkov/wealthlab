@@ -5,7 +5,7 @@ characters are the existing explicit capital/passive/interest/dividend model;
 generic ordinary income or plan eligibility is not inferred from a trade.
 """
 
-from wealthlab.tax.projection_inputs import TaxEvent
+from wealthlab.products.conditional_allocations import events
 from wealthlab.tax.projection_validation import validate_event
 
 FEDERAL = {
@@ -28,7 +28,8 @@ def validate(sleeve, scenario):
         if any(value for key, value in item.federal.model_dump().items() if key not in FEDERAL):
             raise ValueError("Unsupported federal character in supplied sleeve allocation.")
         validate_nj(item.new_jersey)
-        validate_event(event(item))
+        for recognized in events(item):
+            validate_event(recognized)
 
 
 def validate_nj(income):
@@ -38,13 +39,3 @@ def validate_nj(income):
         )
     if any(income.retirement.model_dump().values()):
         raise ValueError("Sleeve allocations cannot introduce retirement exemptions.")
-
-
-def event(item):
-    return TaxEvent(
-        date=item.date,
-        description=item.id,
-        cash_received=0,
-        federal=item.federal,
-        new_jersey=item.new_jersey,
-    )

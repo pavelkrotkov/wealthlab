@@ -25,6 +25,7 @@ from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
+from wealthlab.ui.sleeve_loss_assumptions import controls as loss_controls
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -51,6 +52,7 @@ def show():
     )
     stress = st.selectbox("Household named stress", stresses, disabled=mode != "stress")
     household, market, binding = account_example(mode, stress)
+    household = loss_controls(household)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
     if household.lot_plan is not None:

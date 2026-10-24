@@ -8,6 +8,7 @@ from pydantic import Field
 
 from wealthlab.household.records import Identifier, Record
 from wealthlab.products.long_short_inputs import LongShortCase
+from wealthlab.products.loss_timing import LossTiming
 from wealthlab.tax.facts import FederalIncome, TaxModel
 from wealthlab.tax.nj_facts import NJIncome
 
@@ -28,6 +29,8 @@ class SleeveAllocation(Record):
     date: date
     federal: FederalIncome
     new_jersey: NJIncome
+    federal_loss: LossTiming = Field(default_factory=LossTiming)
+    new_jersey_loss: LossTiming = Field(default_factory=LossTiming)
 
 
 class HouseholdSleeve(Record):
