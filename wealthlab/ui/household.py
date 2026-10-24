@@ -3,6 +3,7 @@
 import streamlit as st
 from pydantic import ValidationError
 
+from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
@@ -28,6 +29,9 @@ def show():
         files.import_scenario()
         if st.button("Load synthetic Social Security household"):
             files.select_scenario(benefit_example())
+            st.rerun()
+        if st.button("Load synthetic employment household"):
+            files.select_scenario(employment_example())
             st.rerun()
         scenario = st.session_state.setdefault("scenario", synthetic())
         updated = editor.editor(scenario)
