@@ -49,7 +49,7 @@ def show():
         if st.session_state.get("market_account_scope") == "Long-short household"
         else NAMES
     )
-    stress = st.selectbox("Household named stress", stresses)
+    stress = st.selectbox("Household named stress", stresses, disabled=mode != "stress")
     household, market, binding = account_example(mode, stress)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
