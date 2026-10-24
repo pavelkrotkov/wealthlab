@@ -77,7 +77,10 @@ def validate_tax_inputs(scenario):
         raise ValueError("Remove manual IRA income rules when using IRA schedules.")
     inputs = [c.federal_income for c in scenario.tax_plan.cases]
     inputs += [e.federal for e in scenario.tax_plan.events]
-    if any(i.ira_distributions or i.retirement_additional_tax for i in inputs):
+    if any(
+        any((i.ira_distributions, i.retirement_additional_tax, i.deductible_ira_contributions))
+        for i in inputs
+    ):
         raise ValueError(
-            "Remove manual IRA income/additional-tax amounts when using IRA schedules."
+            "Remove manual IRA income/additional-tax/deduction amounts when using IRA schedules."
         )

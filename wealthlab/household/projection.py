@@ -48,6 +48,7 @@ def project(scenario: Scenario) -> list[dict]:
             [*events, *ira_events, *medical_events],
             medicare,
             employee,
+            ira,
         )
         row.update(ira_summary)
         row.update(medicare_household.observe(medicare, tax_ledger, end))
