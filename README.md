@@ -59,3 +59,5 @@ Markets / Household funding also offers [ordinary IRA and 529 return proxies](do
 Markets / Household funding offers [employer net factors with conditional employment linkage](docs/adr/0031-employer-market-employment.md). Observed drawdowns can trigger next-month job loss, explicit rehiring and supplied forfeiture, while independent tax allocations and payout rights remain in the existing tranche ledger.
 
 Markets / Household funding also offers [employee 401(k) investment proxies](docs/adr/0032-workplace-investment-returns.md). Actual payroll-funded pretax/Roth deposits earn explicit month-end returns inside the plan, with unchanged wage/payroll recognition and separate investment audits; broader workplace withdrawal adapters remain unfinished.
+
+The **Products** workspace now compares [long/short pre-tax economics and margin risk](docs/adr/0033-long-short-economics.md) with a separately configured unlevered reference on identical paths. Short collateral, loans, actual costs and blocked/forced exits remain visible; conditional private-fund taxes and household integration are still open.
