@@ -14,6 +14,7 @@ from wealthlab.retirement.hsa_inputs import (
     HSAWithdrawal,
     MedicalReceipt,
 )
+from wealthlab.retirement.hsa_investment_inputs import HSAInvestments
 from wealthlab.retirement.medical_bill_inputs import MedicalBill
 from wealthlab.tax.facts import TaxModel
 
@@ -33,6 +34,9 @@ class HSAPlan(TaxModel):
     contributions: list[HSAContribution]
     withdrawals: list[HSAWithdrawal]
     interest: list[HSAInterest]
+    investments: HSAInvestments | None = None
+    cash_accounts_outside_investment_book_confirmed: bool = False
+    investment_income_excluded_from_other_inputs_confirmed: bool = False
     medical_bills: list[MedicalBill] = Field(default_factory=list)
     bill_expenses_excluded_from_other_inputs_confirmed: bool = False
     nj_treatment: Literal["taxable_bank_interest_assumption"]

@@ -7,6 +7,9 @@ book reports that spending and any unpaid liability in the healthcare slot.
 
 from decimal import Decimal
 
+from wealthlab.retirement.contribution_assumptions import rule_year
+from wealthlab.retirement.hsa_household_tax import totals
+
 ZERO = Decimal(0)
 
 
@@ -31,4 +34,19 @@ def summary(rows, amounts):
             ),
             ZERO,
         ),
+    )
+
+
+def annual(ledger):
+    return dict(
+        **totals(ledger.book["rows"]),
+        year=ledger.year,
+        rule_mode=ledger.context.rule_mode,
+        rule_base_year=rule_year(ledger.context),
+        contribution_limits=dict(ledger.book["limits"]),
+        personal_federal_deduction=ledger.book["personal"],
+        employer_funding=ledger.book["employer"],
+        bank_interest=ledger.book["interest"],
+        nj_treatment=ledger.plan.nj_treatment,
+        remaining_receipts=dict(ledger.book["receipt_remaining"]),
     )

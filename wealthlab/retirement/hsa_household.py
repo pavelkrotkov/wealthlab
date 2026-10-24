@@ -4,18 +4,23 @@ Historical paid receipts and current unpaid bills have distinct books. Only
 actual medical payments create new receipt capacity; unpaid bills remain
 liabilities. Nonqualified distributions and provider payments use actual
 funded amounts and explicit federal/NJ assumptions.
-NJ bank treatment remains an explicit conditional assumption.
+Cash-only accounts retain their explicit conditional NJ bank assumption.
+Invested accounts persist one lot book across annual eligibility resets. Their
+wallet value includes marked securities and receivables; withdrawal capacity
+uses actual cash after eligible sales, commissions and prior custodian fees.
+Investment NJ income enters a separate zero-cash event. Fee arrears remain a
+separate household liability, preserving actual gross account values.
 """
 
 from datetime import date
 
 from wealthlab.retirement import hsa
-from wealthlab.retirement.contribution_assumptions import rule_year
-from wealthlab.retirement.hsa_household_reporting import summary
+from wealthlab.retirement.hsa_household_events import apply as apply_events
+from wealthlab.retirement.hsa_household_reporting import annual, summary
 from wealthlab.retirement.hsa_household_tax import annotate, totals
 from wealthlab.retirement.hsa_household_tax import event as tax_event
 from wealthlab.retirement.hsa_household_validation import annual_case, validate
-from wealthlab.retirement.medical_bill_inputs import MedicalBill
+from wealthlab.retirement.hsa_invested_household import Investments
 from wealthlab.retirement.medical_bills import Bills
 
 
@@ -29,6 +34,9 @@ class Ledger:
         self.context = context
         case = annual_case(self.plan, context, self.accounts)
         self.book = hsa.opening(case)
+        self.investments = Investments(self.plan.investments) if self.plan.investments else None
+        if self.investments is not None:
+            self.investments.attach(self.book)
         self.medical = Bills(self.plan.medical_bills)
         self.medical.initialize_receipts(self.book)
         self.events = timeline(self.plan, case)
@@ -46,6 +54,8 @@ class Ledger:
         case = annual_case(self.plan, context, accounts)
         self.book = hsa.opening(case)
         self.book["receipt_remaining"] = remaining
+        if self.investments is not None:
+            self.investments.attach(self.book)
         self.events = timeline(self.plan, case)
         self.year = year
 
@@ -55,14 +65,7 @@ class Ledger:
         self.book["cash"] = wallet.cash
         before = {key: self.book[key] for key in ("personal", "employer", "interest")}
         offset = len(self.book["rows"])
-        for when, _, _, item in self.events:
-            if start <= when < end:
-                if isinstance(item, MedicalBill):
-                    self.medical.issue(item)
-                    self.medical.provider(self.book, item, when)
-                else:
-                    hsa.apply(self.book, item)
-        self.medical.retry(self.book)
+        apply_events(self, start, end)
         rows = self.book["rows"][offset:]
         validate_employer_funding(rows)
         annotate(rows, self.plan)
@@ -72,28 +75,20 @@ class Ledger:
         else:
             wallet.pay(-difference)
         wallet.balances.update(self.book["balances"])
+        if self.investments is not None:
+            self.investments.wallet(wallet)
         self.audit.extend(rows)
         amounts = {key: self.book[key] - before[key] for key in before}
         amounts.update(totals(rows))
         self.summary = summary(rows, amounts)
+        if self.investments is not None:
+            self.summary.update(self.investments.summary())
+            return tax_event(start, amounts), self.investments.event(start)
         return (tax_event(start, amounts),)
 
     def completed(self, end):
         if end == date(self.year + 1, 1, 1):
-            self.annual.append(
-                dict(
-                    **totals(self.book["rows"]),
-                    year=self.year,
-                    rule_mode=self.context.rule_mode,
-                    rule_base_year=rule_year(self.context),
-                    contribution_limits=dict(self.book["limits"]),
-                    personal_federal_deduction=self.book["personal"],
-                    employer_funding=self.book["employer"],
-                    bank_interest=self.book["interest"],
-                    nj_treatment=self.plan.nj_treatment,
-                    remaining_receipts=dict(self.book["receipt_remaining"]),
-                )
-            )
+            self.annual.append(annual(self))
         return self.summary
 
     def finish(self, rows):
@@ -111,6 +106,9 @@ class Ledger:
                 ),
             ),
         )
+
+        if self.investments is not None:
+            self.investments.finish(rows[-1]["hsa_audit"])
 
 
 def make(scenario):

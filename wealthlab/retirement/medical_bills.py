@@ -46,6 +46,7 @@ class Bills:
         owner = book["owners"][book["accounts"][bill.hsa_source].owner]
         receipt = book["receipts"][bill.id]
         qualified = hsa_receipts.available(receipt, owner, when, {bill.id: amount})
+        previous = book["receipt_remaining"][bill.id]
         book["receipt_remaining"][bill.id] += qualified
         order = HSAWithdrawal(
             id=bill.id,
@@ -57,6 +58,10 @@ class Bills:
             receipt_ids=[bill.id],
         )
         hsa.withdraw(book, order)
+        # A provider's temporary eligibility seed is not a paid cash receipt.
+        # Preserve only pre-existing undeducted household cash payments, even
+        # when a lock, commission or fee prevents funding the full election.
+        book["receipt_remaining"][bill.id] = previous
         row = book["rows"][-1]
         paid = row["funded"]
         book["cash"] -= paid
@@ -72,7 +77,7 @@ class Bills:
         amount = min(
             self.remaining[bill.id],
             bill.hsa_amount - self.hsa_paid[bill.id],
-            book["balances"][bill.hsa_source],
+            self.source_capacity(book, bill),
         )
         if bill.hsa_mode == "qualified_only":
             owner = book["owners"][book["accounts"][bill.hsa_source].owner]
@@ -80,6 +85,11 @@ class Bills:
                 book["receipts"][bill.id], owner, when, {bill.id: amount}
             )
         return amount
+
+    def source_capacity(self, book, bill):
+        if book.get("investments") is not None:
+            return bill.hsa_amount
+        return book["balances"][bill.hsa_source]
 
     def retry(self, book):
         # Earlier HSA events retain their actual chronology. A later deposit can
