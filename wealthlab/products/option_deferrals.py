@@ -8,6 +8,4 @@ def validate(tax, rows):
         if supplied.keys() - known:
             raise ValueError("Supplied option deferral references an unmatched recognition ID.")
         if supplied and tax.straddle != "supplied_deferrals":
-            raise ValueError(
-                "Option deferrals require the supplied_deferrals profile."
-            )
+            raise ValueError("Option deferrals require the supplied_deferrals profile.")
