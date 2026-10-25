@@ -41,5 +41,5 @@ def selection():
         "Option market example",
         choices,
         "option_market_strategy",
-        default=st.session_state.get("option_market_selection", choices[-1]),
+        default=choices[-1],
     )
