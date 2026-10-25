@@ -49,6 +49,7 @@ def advance(ledger, observation, wallet):
         property_value=value,
         product_failure=bool(ledger.call_owed or blocked),
     )
+    ledger.reference_exit_pending = blocked
     recognize_at = recognition_date(ledger, observation)
     tax_event = recognize(ledger, observation.date, recognize_at)
     return row, [tax_event]
