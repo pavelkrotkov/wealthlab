@@ -1,4 +1,4 @@
-"""Full exit preserves ordinary recapture, residual capital character and mixed jurisdiction signs."""
+"""Full exit preserves ordinary recapture and independent jurisdiction signs."""
 
 from drilling_cases import change, short
 

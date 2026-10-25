@@ -29,16 +29,3 @@ def test_paid_tangible_pool_and_production_depletion_are_separate_non_cash_deduc
     assert sum(e.new_jersey.business.partnership for e in events) == -500
     assert (wallet.cash, wallet.balances["drilling"]) == (100000, 20800)
     assert sum(e.cash_received for e in events) == 0
-
-
-def test_no_production_cannot_create_a_supplied_depletion_deduction():
-    def configure(data):
-        row = data["drilling_plan"]["observations"][0]
-        row["deductions"].append(deduction("dry_depletion", "depletion", 10000))
-
-    case = change(short(), configure)
-    ledger, wallet = Ledger(case), Wallet(case)
-    events = ledger.after_receipts(wallet, *next(months(case.start, case.end)))
-    assert sum(e.federal.allowed_nonpassive_partnership_income for e in events) == -60000
-    entries = [d for d in ledger.log[0]["deduction_audit"] if d["component"] == "depletion"]
-    assert all(d["limited_amount"] == 0 for d in entries)

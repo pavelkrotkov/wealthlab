@@ -62,6 +62,8 @@ def loss_event(plan, when, identity, jurisdiction, amount, choice: LossTiming):
         return []
     if not choice.eligibility_after_limits_assumed:
         raise ValueError("Confirm drilling loss eligibility after independently supplied limits.")
+    if choice.release_on is not None and choice.release_on <= when:
+        raise ValueError("Deferred drilling loss release must follow its funded source date.")
     federal, nj = FederalIncome(), NJIncome()
     if jurisdiction == "federal":
         federal = FederalIncome(**{ordinary_field(plan): -amount})

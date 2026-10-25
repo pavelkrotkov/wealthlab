@@ -8,6 +8,7 @@ silently reopening the interest or inventing new contribution basis.
 from wealthlab.products import drilling_cash as cash
 from wealthlab.products.conditional_allocations import event
 from wealthlab.products.drilling_exit import execute as exit_interest
+from wealthlab.products.drilling_exit import fund_sale
 from wealthlab.products.drilling_reporting import snapshot
 from wealthlab.products.drilling_tax import losses, ordinary
 from wealthlab.tax.nj_facts import NJIncome
@@ -27,6 +28,7 @@ def step(ledger, observation, wallet):
     if ledger.property_sold and observation.residual_property_value:
         raise ValueError("A sold drilling property cannot reappear in later marks.")
     row = cash.operating(ledger, observation, wallet)
+    fund_sale(ledger, observation, row)
     events.extend(operating_income(ledger, observation, row))
     events.extend(losses(ledger, observation, row))
     row["distribution"] = cash.distribute(ledger, observation.distribution_request, wallet)
@@ -43,6 +45,8 @@ def closed(ledger, observation, wallet):
         observation.production_units,
         observation.distribution_request,
         observation.residual_property_value,
+        observation.exit_fee,
+        observation.exit_gross_proceeds if observation.exit_requested else 0,
         *(getattr(observation, k) for k in cash.COSTS),
     ]
     if any(values) or observation.deductions:

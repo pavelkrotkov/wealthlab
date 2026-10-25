@@ -55,7 +55,7 @@ def operating(ledger, observation, wallet):
 
 def pay_creditors(ledger):
     paid = {}
-    for key in COSTS:
+    for key in ledger.owed:
         paid[key] = min(ledger.cash, ledger.owed[key])
         ledger.cash -= paid[key]
         ledger.owed[key] -= paid[key]

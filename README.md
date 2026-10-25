@@ -131,3 +131,5 @@ Load **synthetic scheduled liquid saving** in Household to edit actual month-end
 
 
 The Annual tax workbench now separates [supplied nonpassive partnership income, self-employment earnings, eligible QBI and AMT additions](docs/adr/0090-supplied-partnership-tax-facts.md). These prelimited numerical inputs preserve distinct NIIT and payroll treatment; they do not infer working-interest, IDC, QBI or other eligibility. The conditional drilling consumer remains in development.
+
+Products / **Drilling partnerships** adds [a conditional synthetic cash-basis partnership and matched liquid-share comparison](docs/adr/0091-conditional-drilling-partnership.md): actual calls, production/commodity prices, paid costs, supplied depletion/IDC/depreciation, creditor exposure, independent federal/NJ bases and deduction timing, ordinary recapture and final cash exit. Both use actual household cash and configured taxes. Legal eligibility, SE/QBI/AMT history and unmodeled liability exposure stay explicit; full-tax optimization is unsupported. Base, poor-production, denied, deferred and liability-claim profiles are editable and exportable.

@@ -13,13 +13,21 @@ from wealthlab.tax.nj_business import BusinessIncome
 from wealthlab.tax.nj_facts import NJIncome
 
 
+def fund_sale(ledger, observation, row):
+    """Pay source creditors from actual property proceeds before recognizing funded costs."""
+    if ledger.property_sold or not observation.exit_requested:
+        return
+    ledger.cash += observation.exit_gross_proceeds
+    ledger.property_value = cash.ZERO
+    ledger.property_sold = True
+    ledger.owed["exit_cost"] += observation.exit_fee
+    paid = cash.pay_creditors(ledger)
+    for key, amount in paid.items():
+        row["paid_costs"][key] += amount
+    row["net_operating_income"] -= sum(paid[k] for k in cash.COSTS[:3])
+
+
 def execute(ledger, observation, wallet, row):
-    if not ledger.property_sold:
-        ledger.cash += observation.exit_gross_proceeds
-        ledger.property_value = cash.ZERO
-        ledger.property_sold = True
-        ledger.owed["manager_fee"] += observation.exit_fee
-        cash.pay_creditors(ledger)
     if sum(ledger.owed.values(), cash.ZERO) or ledger.call_owed:
         row["blocked_exit"] = True
         return []

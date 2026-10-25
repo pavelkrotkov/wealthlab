@@ -22,7 +22,7 @@ class Ledger:
         self.tangible_basis = dict(
             federal=self.plan.opening_federal_tangible_basis, nj=self.plan.opening_nj_tangible_basis
         )
-        self.owed = dict.fromkeys(cash.COSTS, cash.ZERO)
+        self.owed = dict.fromkeys((*cash.COSTS, "exit_cost"), cash.ZERO)
         self.call_owed = cash.ZERO
         self.property_sold = self.closed = False
         self.pending, self.log, self.summary = [], [], {}
