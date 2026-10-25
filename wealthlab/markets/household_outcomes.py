@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 from wealthlab.markets.rollover_report import summary as rollover_summary
+from wealthlab.markets.roth_cash_report import summary as roth_cash_summary
 from wealthlab.markets.workplace_rmd_report import summary as rmd_summary
 from wealthlab.tax.payments import missed_schedule
 
@@ -20,6 +21,7 @@ def funding(rows):
         **product_outcome(rows, not failures),
         **rmd_summary(rows),
         **rollover_summary(rows),
+        **roth_cash_summary(rows),
         cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
     )
 

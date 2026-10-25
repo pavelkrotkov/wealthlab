@@ -101,3 +101,5 @@ Load **synthetic direct plan rollover** in Household for [actual separated-plan 
 Markets / Household funding / **Direct plan rollovers** adds [actual source and IRA execution on shared realized paths](docs/adr/0052-plan-rollover-market-paths.md), per-path funded/unfilled transfers and matched policy comparisons. The two-year synthetic horizon and ordinary zero-basis transfer limits remain explicit.
 
 Load **synthetic designated Roth plan cash** in Household for [complete plan-contract cost pools, participation clocks, ordinary cash and actual payroll cost additions](docs/adr/0053-designated-roth-plan-cash.md). Federal pro-rata recognition stays separate from IRA ordering; independent NJ cost and its conditional treatment remain explicit.
+
+Markets / Household funding / **Designated Roth plan cash** runs [actual contract cost, taxable earnings and outgoing restrictions on realized paths](docs/adr/0054-designated-roth-market-paths.md). Optional unfilled cash requests and independently conditional NJ recognition stay separate from mandatory spending outcomes.
