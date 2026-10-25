@@ -9,6 +9,7 @@ import streamlit as st
 from wealthlab.household.calendar import months
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.lot_return_results import display as return_results
+from wealthlab.ui.saving_results import display as saving_results
 
 
 def controls(payload, scenario):
@@ -91,6 +92,7 @@ def display(rows):
         "Remaining assets include unrealized gains. Funding is feasible under the specified "
         "selection order, not globally optimized. Review the explicit NJ wash assumption."
     )
+    saving_results(rows)
     return_results(rows, audit)
     policy_results(audit)
     with st.expander("Actual lots, disposals, funding orders and recognized annual gains"):

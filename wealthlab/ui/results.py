@@ -62,6 +62,7 @@ HIDDEN = [
     "social_security_work_audit",
     "life_policy_values",
     "life_policy_audit",
+    "saving_audit",
 ]
 
 
