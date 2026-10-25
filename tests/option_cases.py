@@ -28,6 +28,7 @@ def one_leg(kind="call", side="long", *, physical=False, unwind=False):
         constructive_sale="assume_not_applicable",
         holding_period="supplied_unaffected",
         nj_premium_basis="assume_same_mechanics",
+        wash_sales="assume_not_applicable",
     )
     return data
 

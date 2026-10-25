@@ -38,6 +38,7 @@ def validate_book(book):
         book.fee_schedules,
         book.distributions,
         book.federal_wash_tracking,
+        book.nj_wash_treatment == "federal_rules",
         book.terminal_exit,
         book.lot_tax_cases,
     ]

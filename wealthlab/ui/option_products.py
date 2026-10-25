@@ -24,33 +24,31 @@ def show():
         ["Covered call", "Collar", "Four-leg synthetic exposure"],
         key="option_example",
     )
+    namespace = f"option_{strategy}"
     uploaded = st.file_uploader("Load dated option JSON", type="json")
-    if (
-        source(uploaded, synthetic(strategy).model_dump_json(indent=2), f"option_{strategy}")
-        is None
-    ):
+    if source(uploaded, synthetic(strategy).model_dump_json(indent=2), namespace) is None:
         return
     with st.form("option_products"):
         edited = st.text_area(
             "Option terms, marks, events and tax assumptions (JSON)",
-            key=f"option_{strategy}_editor",
+            key=f"{namespace}_editor",
             height=450,
         )
         submitted = st.form_submit_button("Run dated options", type="primary")
     if submitted:
-        calculate(edited)
-    if "option_result" in st.session_state:
-        display(st.session_state["option_result"])
+        calculate(edited, namespace)
+    if f"{namespace}_result" in st.session_state:
+        display(st.session_state[f"{namespace}_result"])
 
 
-def calculate(edited):
+def calculate(edited, namespace):
     try:
         case = OptionCase.model_validate_json(edited)
         result = run(case)
         result["stress"] = stress(case)
-        st.session_state["option_result"] = result
+        st.session_state.update({f"{namespace}_result": result, f"{namespace}_input": edited})
     except (ValueError, KeyError, TypeError) as error:
-        invalid(error, "option")
+        invalid(error, namespace)
 
 
 def display(result):
@@ -70,7 +68,7 @@ def display(result):
     with st.expander("Leg marks, stock/index stress and complete assumptions"):
         st.dataframe(pd.DataFrame(result["legs"]), hide_index=True)
         st.dataframe(pd.DataFrame(result["stress"]), hide_index=True)
-        st.json(result)
+        st.json(json.dumps(result, default=str))
     st.download_button(
         "Export dated option result",
         json.dumps(result, default=str),

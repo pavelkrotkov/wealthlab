@@ -29,7 +29,7 @@ def yearend(state, mark):
 
 
 def unresolved(tax, jurisdiction):
-    fields = ["straddle", "constructive_sale", "holding_period"]
+    fields = ["straddle", "constructive_sale", "holding_period", "wash_sales"]
     if jurisdiction == "federal":
         fields += ["federal_rules", "covered_call"]
     else:

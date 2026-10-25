@@ -24,6 +24,7 @@ class OptionLeg(Record):
     premium: Money
     opening_fee: Money
     closing_fee: Money
+    expiry_fee: Money = Decimal(0)
     style: Literal["european", "american"]
     settlement: Literal["cash", "physical"]
     expiry_rule: Literal["exercise_if_itm", "lapse"]
@@ -64,6 +65,7 @@ class OptionTax(TaxModel):
     covered_call: Literal["unresolved", "assume_qualified", "assume_not_applicable"] = "unresolved"
     constructive_sale: Literal["unresolved", "assume_not_applicable"] = "unresolved"
     holding_period: Literal["unresolved", "supplied_unaffected"] = "unresolved"
+    wash_sales: Literal["unresolved", "assume_not_applicable"] = "unresolved"
     federal_deferrals: dict[str, Money] = Field(default_factory=dict)
     nj_deferrals: dict[str, Money] = Field(default_factory=dict)
     # Key is a recognition ID, not a claim that NJ follows federal option rules.
