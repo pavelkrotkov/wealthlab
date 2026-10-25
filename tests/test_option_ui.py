@@ -31,6 +31,7 @@ def test_switching_strategy_hides_the_other_case_and_restores_edited_validated_i
     app.radio[0].set_value("Products").run()
     app.selectbox("product_workspace").set_value("Options overlays").run()
     editor = app.text_area("option_Covered call_editor")
+    assert isinstance(editor.value, str)
     data = json.loads(editor.value)
     data["legs"][0]["premium"] = "11"
     edited = json.dumps(data)
