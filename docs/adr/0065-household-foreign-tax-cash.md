@@ -115,3 +115,5 @@ $4,275.50 original2025 excess into one2026 claim and keep recurring source label
 separate by person/year. Real funding-sale tests preserve exact US taxes while
 blocking absent foreign basis/source, and generic Household/Cross-border UI
 checks exercise the actual consumers rather than isolated illustrations.
+
+A partial payment can use a later actual receipt in the same month. Each real execution has its own deterministic payment ID and retains the original schedule ID; the first execution identity remains compatible with supplied refund links. Repeated retries without new cash or after full payment add no debit. Generated identities cannot replace reserved opening/withholding/refund IDs, and each actual execution retains its separately disclosed fee.

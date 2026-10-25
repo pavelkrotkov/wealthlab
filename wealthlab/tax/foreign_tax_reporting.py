@@ -57,6 +57,7 @@ def enrich(book, rows):
         dict(
             row,
             assessment_id=assessments[row["id"]].id,
+            payment_schedule_id=book.schedule_by_payment.get(row["id"]),
             tax_type=assessments[row["id"]].tax_type,
             fx_fee_usd=records[row["id"]].fx_fee_usd,
             gross_cash_usd=records[row["id"]].value.dollars(),

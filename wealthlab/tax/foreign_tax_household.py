@@ -15,7 +15,7 @@ from wealthlab.tax.foreign_tax_positions import position_reasons, snapshot
 from wealthlab.tax.foreign_tax_refunds import receive_refunds
 from wealthlab.tax.foreign_tax_reporting import report
 from wealthlab.tax.foreign_tax_sources import history, payment_record
-from wealthlab.tax.foreign_tax_validation import validate
+from wealthlab.tax.foreign_tax_validation import cash_records, validate
 
 ZERO = Decimal(0)
 
@@ -29,6 +29,8 @@ class ForeignTaxBook:
         self.profiles = {p.annual.policy.year: p for p in self.plan.credit_profiles}
         self.payments = [(p.assessment_id, payment_record(p)) for p in self.plan.opening_payments]
         self.filled = {p.id: ZERO for p in self.plan.schedules}
+        self.executions, self.schedule_by_payment = {}, {}
+        self.reserved_ids = {p.record.id for p in cash_records(self.plan)}
         self.credit_results = {}
         self.month_records, self.log = [], []
         self.month = None
