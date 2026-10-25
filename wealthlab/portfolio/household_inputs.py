@@ -9,6 +9,7 @@ from wealthlab.household.records import Money
 from wealthlab.portfolio.cases import LotCase
 from wealthlab.portfolio.models import Price
 from wealthlab.portfolio.rebalance_inputs import RebalancePolicy
+from wealthlab.portfolio.saving_inputs import SavingPolicy
 from wealthlab.tax.facts import TaxModel
 
 
@@ -31,6 +32,7 @@ class HouseholdLots(TaxModel):
     opening_prices: dict[str, Price]
     monthly_marks: list[HouseholdMarks] = Field(min_length=1)
     rebalances: list[RebalancePolicy] = Field(default_factory=list)
+    savings: list[SavingPolicy] = Field(default_factory=list)
     funding_sources: list[LotFundingSource] = Field(default_factory=list)
     complete_ownership_and_outside_purchases_confirmed: bool
     monthly_settlement_and_cash_sweep_confirmed: bool
