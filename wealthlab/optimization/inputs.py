@@ -11,6 +11,7 @@ from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.optimization.account_controls import AccountControls
+from wealthlab.optimization.allocation_inputs import SleeveOpportunity, Units
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
@@ -38,6 +39,7 @@ class PolicyChoice(AccountControls):
     savings: list[SavingPolicy] | None = None
     ira_orders: list[WithdrawalOrder] | None = None
     lot_funding_order: list[int] | None = None
+    sleeve_units: dict[Identifier, Units] | None = None
     change_guardrail: bool = False
     guardrail: SpendingGuardrail | None = None
 
@@ -66,6 +68,7 @@ class PolicySearch(TaxModel):
     binding: HouseholdBinding
     training: MarketCase
     validation: MarketCase
+    sleeve_opportunities: list[SleeveOpportunity] = Field(default_factory=list, max_length=16)
     robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
     dimensions: list[Dimension] = Field(min_length=1, max_length=8)
     targets: SearchTargets = Field(default_factory=SearchTargets)

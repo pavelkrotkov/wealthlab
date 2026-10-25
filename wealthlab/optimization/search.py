@@ -7,6 +7,7 @@ from wealthlab.markets.paths import generate
 from wealthlab.optimization.assessment import assess, score
 from wealthlab.optimization.compile import compile_candidate
 from wealthlab.optimization.robustness import check_all, validation_passed
+from wealthlab.optimization.sleeve_allocations import audit as allocation_audit
 from wealthlab.optimization.validation import choices, validate
 
 
@@ -54,7 +55,11 @@ def evaluate(case, selection, index, batch):
         result = run(household, batch, binding)
     except ValueError as error:
         return dict(**identity, eligible=False, unsupported_reason=str(error)), None
-    return dict(**identity, **assess(case, household, result)), result
+    return dict(
+        **identity,
+        **assess(case, household, result),
+        opening_allocation_audit=allocation_audit(case.household, household),
+    ), result
 
 
 def improves(candidate, winner):
