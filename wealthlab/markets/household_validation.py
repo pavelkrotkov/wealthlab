@@ -8,6 +8,7 @@ basis events, so that convention requires a separate adapter.
 """
 
 from wealthlab.household.calendar import months
+from wealthlab.markets.drilling_compile import validate as validate_drilling
 from wealthlab.markets.employer_validation import validate as validate_employers
 from wealthlab.markets.guardrails import validate as validate_guardrail
 from wealthlab.markets.hsa_validation import validate as validate_hsa
@@ -28,6 +29,7 @@ def validate(scenario, batch, binding, index):
     validate_employers(scenario, batch, binding)
     validate_sleeves(scenario, batch, binding)
     validate_options(scenario, batch, binding)
+    validate_drilling(scenario, batch, binding)
     validate_path(scenario, batch, index)
     validate_bindings(scenario, batch, binding)
     validate_inflation(scenario, binding)
@@ -65,6 +67,7 @@ def validate_bindings(scenario, batch, binding):
             binding.sleeves,
             binding.medical_bill_inflation,
             binding.options,
+            binding.drilling,
         )
     ):
         raise ValueError(

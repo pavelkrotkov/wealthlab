@@ -7,7 +7,9 @@ import streamlit as st
 from wealthlab.household.scenario import Scenario
 from wealthlab.products.drilling_compare import compare
 from wealthlab.products.drilling_example import synthetic
+from wealthlab.ui.drilling_markets import show as market_show
 from wealthlab.ui.drilling_results import display
+from wealthlab.ui.product_selections import select
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -33,6 +35,14 @@ def show():
         "Drilling synthetic case",
         ["base", "poor_production", "denied", "deferred", "liability_call"],
     )
+    mode = select(
+        "Drilling market method",
+        ["entered", "deterministic", "historical", "monte_carlo", "stress"],
+        key="drilling_market_method",
+    )
+    if mode != "entered":
+        market_show(mode, profile)
+        return
     uploaded = st.file_uploader("Load drilling household JSON", type="json")
     starter = json.dumps(synthetic(profile).model_dump(mode="json"), indent=2)
     if source(uploaded, starter, "drilling") is None:

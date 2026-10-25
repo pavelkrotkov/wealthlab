@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import Field
 
 from wealthlab.household.records import Identifier
+from wealthlab.markets.drilling_inputs import DrillingBinding
 from wealthlab.markets.employer_inputs import EmployerBinding
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.hsa_inputs import HSAInvestmentBinding
@@ -24,6 +25,7 @@ class SecurityBinding(TaxModel):
 class HouseholdBinding(TaxModel):
     spending_guardrail: SpendingGuardrail | None = None
     options: OptionBinding | None = None
+    drilling: DrillingBinding | None = None
     securities: list[SecurityBinding] = Field(default_factory=list)
     hsa_securities: list[HSAInvestmentBinding] = Field(default_factory=list)
     replace_hsa_observations_confirmed: bool = False
