@@ -11,12 +11,14 @@ from decimal import Decimal
 from wealthlab.household.calendar import money
 from wealthlab.markets.guardrails import Guardrail
 from wealthlab.markets.household_exposure import report as exposure_report
+from wealthlab.markets.qoz_validation import validate_execution as validate_qoz
 from wealthlab.tax.projection_inputs import TaxEvent
 
 
 class Execution:
     def __init__(self, scenario, batch, binding, index):
         self.scenario, self.batch, self.binding, self.index = scenario, batch, binding, index
+        validate_qoz(scenario, self)
         self.guardrail = (
             Guardrail(scenario, binding.spending_guardrail) if binding.spending_guardrail else None
         )

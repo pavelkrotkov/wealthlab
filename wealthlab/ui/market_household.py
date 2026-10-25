@@ -24,6 +24,7 @@ from wealthlab.markets.option_example import synthetic as option_example
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
+from wealthlab.markets.qoz_example import synthetic as qoz_example
 from wealthlab.markets.rebalance_example import synthetic as rebalance_example
 from wealthlab.markets.rollover_example import synthetic as rollover_example
 from wealthlab.markets.roth_cash_example import synthetic as roth_cash_example
@@ -157,6 +158,7 @@ def account_example(mode, stress):
             "Designated Roth plan cash",
             "Long-short household",
             "Options household",
+            "Opportunity-zone household",
             "Medical bill inflation",
             "Invested HSA",
             "HSA payroll and employment",
@@ -175,6 +177,7 @@ def account_example(mode, stress):
         "Direct plan rollovers": rollover_example,
         "Designated Roth plan cash": roth_cash_example,
         "Long-short household": sleeve_example,
+        "Opportunity-zone household": qoz_example,
         "Medical bill inflation": medical_example,
         "Invested HSA": hsa_example,
         "HSA payroll and employment": hsa_payroll_example,
