@@ -81,5 +81,4 @@ def selection():
         "Option example",
         choices,
         "option_example",
-        default=st.session_state.get("option_selected_example", choices[0]),
     )

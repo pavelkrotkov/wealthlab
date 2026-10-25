@@ -22,7 +22,7 @@ def trade_stock(state, leg, mark):
     if not buy and shares(state) < units(leg):
         state.failures.append(f"{leg.id}: insufficient shares for physical delivery")
         return False
-    if buy and not state.fund(amount + leg.closing_fee):
+    if buy and not state.fund(amount + leg.closing_fee, require_full=True):
         state.failures.append(f"{leg.id}: unfunded physical purchase")
         return False
     trade = Trade(

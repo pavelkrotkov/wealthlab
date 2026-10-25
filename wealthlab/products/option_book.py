@@ -21,8 +21,10 @@ class OptionBook:
         self.entitlements = {}
         self.cash_movements = []
 
-    def fund(self, amount):
+    def fund(self, amount, *, require_full=False):
         deficit = max(Decimal(0), amount - self.book.cash[self.account])
+        if require_full and not self.case.allow_settlement_loan and deficit > self.reserve:
+            return False
         transfer = min(deficit, self.reserve)
         self.reserve -= transfer
         self.book.cash[self.account] += transfer

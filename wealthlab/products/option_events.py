@@ -8,7 +8,7 @@ from wealthlab.products.option_stock import trade_stock
 
 def open_leg(state, leg, mark):
     amount = -direction(leg) * units(leg) * leg.premium - leg.opening_fee
-    if amount < 0 and not state.fund(-amount):
+    if amount < 0 and not state.fund(-amount, require_full=True):
         state.failures.append(f"{leg.id}: unfunded opening premium")
         return
     state.cash(amount, f"open:{leg.id}", mark.date)

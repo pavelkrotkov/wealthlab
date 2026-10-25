@@ -15,17 +15,13 @@ def select(label, choices, key, *, default=None, disabled=False):
 
 
 def long_short():
-    saved = st.session_state.get("long_short_selection", {})
     modes = ["deterministic", "monte_carlo", "historical", "stress"]
     names = [*NAMES, "short_squeeze"]
-    mode = select(
-        "Product market mode", modes, "product_market_mode", default=saved.get("mode", modes[0])
-    )
+    mode = select("Product market mode", modes, "product_market_mode")
     stress = select(
         "Product named stress",
         names,
         "product_named_stress",
-        default=saved.get("stress", names[0]),
         disabled=mode != "stress",
     )
     return mode, stress
