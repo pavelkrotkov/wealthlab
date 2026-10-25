@@ -16,7 +16,7 @@ October 23, 2026. Feature scope and this breakdown were approved; all 18 tickets
 | [08](https://github.com/pavelkrotkov/wealthlab/issues/9) | Compare leveraged long/short and private tax-aware funds | AFK | 04, 07 |
 | [09](https://github.com/pavelkrotkov/wealthlab/issues/10) | Compare covered calls, collars and synthetic exposure | AFK | 04, 07 |
 | [10](https://github.com/pavelkrotkov/wealthlab/issues/11) | Compare a traditional exchange fund and its exit basket | AFK | 04, 07 |
-| [11](https://github.com/pavelkrotkov/wealthlab/issues/12) | Project opportunity-zone fund cash flows and tax dates | AFK | 03, 07 |
+| [11](https://github.com/pavelkrotkov/wealthlab/issues/12) | Project opportunity-zone fund cash flows and tax dates ([bounded QOF stock consumer](adr/0062-qoz-source-gain-contracts.md) plus [prior-source-year reconciliation](adr/0063-qoz-prior-source-returns.md)) | AFK | 03, 07 |
 | [12](https://github.com/pavelkrotkov/wealthlab/issues/13) | Project drilling-partnership cash flows and deduction limits | AFK | 03, 07 |
 | [13](https://github.com/pavelkrotkov/wealthlab/issues/14) | Compare whole-life illustrations with liquid alternatives | AFK | 03, 07 |
 | [14](https://github.com/pavelkrotkov/wealthlab/issues/15) | Evaluate Puerto Rico residency and incentive assumptions | AFK | 03, 04, 06 |

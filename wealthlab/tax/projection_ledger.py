@@ -33,8 +33,10 @@ class TaxLedger:
         self.foreign = foreign_tax_household.make(scenario)
         self.lots = lots
         self.provisional_returns = set()
-        self.preserve_ira_elections = (
-            lots is not None and lots.plan.year_end_wash_policy == "january_reconcile"
+        qoz = scenario.qoz_plan
+        self.preserve_ira_elections = bool(
+            (lots is not None and lots.plan.year_end_wash_policy == "january_reconcile")
+            or (qoz is not None and qoz.prior_source_year_revision_assumed_confirmed)
         )
         self.funding = AccountFunding(plan, scenario)
         if lots is not None:
