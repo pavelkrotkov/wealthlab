@@ -22,8 +22,6 @@ def revisions(rows):
 
 def summary(rows):
     annual = annual_results(rows)
-    revised = {str(r["year"]) for r in revisions(rows)}
-    provisional = {r["date"][:4] for r in rows if r.get("tax_return_provisional")}
     cash = sum((paid(r) for r in rows), ZERO)
     refunds = sum((r["tax_refund_received"] for r in rows), ZERO)
     return dict(
@@ -34,7 +32,7 @@ def summary(rows):
         gross_cash_taxes_paid=cash,
         cash_tax_refunds_received=refunds,
         net_cash_taxes_paid=cash - refunds,
-        provisional_tax_years=sorted(provisional - revised),
+        provisional_tax_years=provisional_years(rows),
         partial_tax_years=partial_years(rows),
     )
 
@@ -58,3 +56,11 @@ def paid(row):
 def partial_years(rows):
     latest = {r["date"][:4]: r["period_end"] for r in rows}
     return sorted(year for year, end in latest.items() if end != f"{int(year) + 1}-01-01")
+
+
+def provisional_years(rows):
+    # Intrayear wash windows can resolve before the return closes. Keep each
+    # year's latest status; only an actual revision can clear a past-year flag.
+    latest = {r["date"][:4]: r.get("tax_return_provisional", False) for r in rows}
+    revised = {str(r["year"]) for r in revisions(rows)}
+    return sorted(year for year, pending in latest.items() if pending and year not in revised)
