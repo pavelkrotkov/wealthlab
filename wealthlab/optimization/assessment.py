@@ -7,6 +7,7 @@ from statistics import median
 from wealthlab.markets.household_report import wilson
 from wealthlab.optimization.account_exits import hsa_closed, lots_closed
 from wealthlab.optimization.metrics import financial_metrics
+from wealthlab.optimization.product_exits import complete as products_closed
 
 
 def assess(case, household, result, sampled=True):
@@ -45,6 +46,7 @@ def completed_exit(household, rows):
         all(value == 0 for key, value in balances.items() if key not in cash)
         and lots_closed(lots)
         and hsa_closed(household, rows[-1])
+        and products_closed(household, rows[-1])
     )
 
 

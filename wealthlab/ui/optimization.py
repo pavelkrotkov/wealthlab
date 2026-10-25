@@ -6,6 +6,7 @@ from wealthlab.optimization.account_example import extend as with_accounts
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.inputs import PolicySearch
+from wealthlab.optimization.product_example import extend as with_products
 from wealthlab.optimization.robustness_example import synthetic as robust
 from wealthlab.optimization.search import search
 from wealthlab.ui.optimization_results import display
@@ -19,7 +20,8 @@ def show():
         "sale/harvest schedules, IRA/workplace contributions and withdrawals, HSA cash, "
         "529 deposits, saving allocations, rebalancing, taxable funding order and "
         "discretionary guardrails. All choices share capital, essential spending and tax facts. "
-        "Product allocations and cross-border search integration are still being built."
+        "Fixed conditional product profiles use actual exits; product allocation choices and "
+        "cross-border search integration are still being built."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "
@@ -32,6 +34,8 @@ def show():
         starter = with_accounts(starter)
     if st.checkbox("Add synthetic stock/bond diversification policies"):
         starter = with_diversification(starter)
+    if st.checkbox("Add synthetic conditional products with actual exits"):
+        starter = with_products(starter)
     uploaded = st.file_uploader("Load policy search JSON", type="json")
     if source(uploaded, starter.model_dump_json(indent=2), "policy_search") is None:
         return

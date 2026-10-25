@@ -12,7 +12,7 @@ from wealthlab.optimization.scope import validate
 
 
 def compile_candidate(case, selection):
-    validate(case.household)
+    validate(case.household, case.binding)
     data = case.household.model_dump(mode="json")
     binding = case.binding.model_dump(mode="json")
     data.update(
