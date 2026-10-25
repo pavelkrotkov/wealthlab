@@ -1,0 +1,68 @@
+"""Only named policy fields change; capital, spending, tax facts and contract terms stay shared.
+
+Each candidate starts from a fresh serialized baseline and is fully validated
+again. Lists replace whole schedules atomically, so clearing harvesting cannot
+leave stale trades from an earlier candidate. Funding choices reorder existing
+permissions without changing their fees, basis, security or sale selection."""
+
+from wealthlab.household.scenario import Scenario
+from wealthlab.markets.household_inputs import HouseholdBinding
+from wealthlab.optimization.scope import validate
+
+
+def compile_candidate(case, selection):
+    validate(case.household)
+    data = case.household.model_dump(mode="json")
+    binding = case.binding.model_dump(mode="json")
+    data.update(
+        target_age=case.targets.target_age,
+        target_success=case.targets.success_fraction,
+        reserve_years=case.targets.reserve_years,
+    )
+    for choice in selection:
+        apply(data, binding, choice)
+    return Scenario.model_validate(data), HouseholdBinding.model_validate(binding)
+
+
+def apply(data, binding, choice):
+    retirement(data, choice)
+    if choice.ira_orders is not None:
+        if data["ira_plan"] is None:
+            raise ValueError("IRA schedule choices require an existing configured IRA plan.")
+        data["ira_plan"]["orders"] = [o.model_dump(mode="json") for o in choice.ira_orders]
+    if choice.change_guardrail:
+        binding["spending_guardrail"] = (
+            choice.guardrail.model_dump(mode="json") if choice.guardrail else None
+        )
+    lot_changes(data, choice)
+
+
+def lot_changes(data, choice):
+    changes = (choice.sale_policies, choice.harvest_policies, choice.lot_funding_order)
+    if all(value is None for value in changes):
+        return
+    if data["lot_plan"] is None:
+        raise ValueError("Sale, harvest and funding-order choices require actual linked lots.")
+    plan = data["lot_plan"]
+    for key in ("sale_policies", "harvest_policies"):
+        value = getattr(choice, key)
+        if value is not None:
+            plan["case"][key] = [p.model_dump(mode="json") for p in value]
+    reorder_funding(plan, choice.lot_funding_order)
+
+
+def reorder_funding(plan, order):
+    if order is None:
+        return
+    sources = plan["funding_sources"]
+    if sorted(order) != list(range(len(sources))):
+        raise ValueError("Funding order must be a permutation of existing source indices.")
+    plan["funding_sources"] = [sources[i] for i in order]
+
+
+def retirement(data, choice):
+    members = {m["id"]: m for m in data["members"]}
+    if not choice.retirement_dates.keys() <= members.keys():
+        raise ValueError("Retirement choices must name existing household members.")
+    for owner, day in choice.retirement_dates.items():
+        members[owner]["retirement_date"] = day.isoformat()
