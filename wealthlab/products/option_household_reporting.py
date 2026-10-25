@@ -8,6 +8,7 @@ def completed(ledger):
 def finish(ledger, rows):
     if ledger:
         rows[-1]["option_audit"] = ledger.log
+        rows[-1]["option_mark_audit"] = ledger.state.rows
         rows[-1]["option_tax_audit"] = recognition_audit(ledger)
         rows[-1]["option_lots"] = [
             lot.model_dump(mode="json") for lot in ledger.state.book.lots.values()

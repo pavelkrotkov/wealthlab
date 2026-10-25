@@ -49,9 +49,9 @@ def validate_opening(plan, account):
 def validate_dependencies(scenario, market):
     validate_product_ownership(scenario)
     if market is not None:
-        raise ValueError(
-            "Options need explicit dated marks; generated market binding is unfinished."
-        )
+        from wealthlab.markets.option_validation import validate_execution
+
+        validate_execution(scenario, market)
     if scenario.tax_plan is None:
         raise ValueError("Household options require a complete household tax plan.")
     plan = scenario.option_plan

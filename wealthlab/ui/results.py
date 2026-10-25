@@ -45,6 +45,7 @@ HIDDEN = [
     "medicare_audit",
     "sleeve_positions",
     "option_audit",
+    "option_mark_audit",
     "option_tax_audit",
     "option_lots",
     "sleeve_audit",

@@ -24,5 +24,6 @@ def margin(self, mark):
             base = leg.strike
         required += quantity * (base + value(leg, mark))
     self.collateral = money(required)
+    self.margin_called = self.collateral > self.book.cash[self.account]
     self.fund(self.collateral)
     return max(Decimal(0), self.collateral - self.book.cash[self.account])

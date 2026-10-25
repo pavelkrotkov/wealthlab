@@ -45,7 +45,8 @@ class Ledger:
                 open_leg(self.state, leg, mark)
         terminations(self.state, mark, same_day=True)
         yearend(self.state, mark)
-        snapshot(self.state, mark)
+        row = snapshot(self.state, mark)
+        row["execution_failed"] = bool(self.state.failures)
 
 
 def make(scenario, market=None):

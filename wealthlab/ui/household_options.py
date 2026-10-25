@@ -15,7 +15,7 @@ def controls(payload, scenario):
             "Actual premiums, strike delivery and unreserved proceeds use household cash after "
             "prior-tax arrears, before sleeves and deposits. Reserved collateral cannot pay bills. "
             "Resolve federal/NJ tax assumptions first. Each month needs an explicit "
-            "dated accounting mark; generated-market option bindings are unfinished."
+            "dated accounting mark; Markets offers a bounded shared-path profile."
         )
         if not enabled:
             return None

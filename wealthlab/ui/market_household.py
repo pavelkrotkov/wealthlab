@@ -20,6 +20,7 @@ from wealthlab.markets.hsa_example import synthetic as hsa_example
 from wealthlab.markets.hsa_payroll_example import synthetic as hsa_payroll_example
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.medical_example import synthetic as medical_example
+from wealthlab.markets.option_example import synthetic as option_example
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
@@ -35,6 +36,7 @@ from wealthlab.ui import market_rebalance
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.market_hsa_payroll import controls as paired_controls
 from wealthlab.ui.market_hsa_payroll import policy_text
+from wealthlab.ui.market_option_results import selection as option_selection
 from wealthlab.ui.sleeve_loss_assumptions import controls as loss_controls
 from wealthlab.ui.uploads import invalid, source
 
@@ -154,12 +156,15 @@ def account_example(mode, stress):
             "Direct plan rollovers",
             "Designated Roth plan cash",
             "Long-short household",
+            "Options household",
             "Medical bill inflation",
             "Invested HSA",
             "HSA payroll and employment",
         ],
         key="market_account_scope",
     )
+    if scope == "Options household":
+        return option_example(mode, stress, option_selection())
     starter = {
         "Taxable lots": synthetic,
         "Taxable rebalancing": rebalance_example,

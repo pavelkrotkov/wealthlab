@@ -29,6 +29,7 @@ def snapshot(self, mark):
         collateral=self.collateral,
         available_cash=max(Decimal(0), cash - self.collateral),
         collateral_shortfall=shortfall,
+        margin_called=self.margin_called,
         dividend_receivable=receivable,
         wealth=stock + option_value + cash + self.reserve + receivable - self.loan,
         federal_basis=sum((lot.federal_basis for lot in self.book.lots.values()), Decimal(0)),
