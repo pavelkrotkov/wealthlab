@@ -1,4 +1,9 @@
-"""One optional assessment book joins existing receipts, saving and the ordinary fee payment."""
+"""One assessment book joins existing receipts, saving and ordinary fee payment.
+
+Requested historical snapshots are captured only when native execution reaches
+that cutoff. The cache never reads a later supplied mark merely because the
+complete scenario contains it. Fee reservations encumber cash without moving it.
+"""
 
 from contextlib import nullcontext
 from datetime import timedelta
@@ -6,6 +11,7 @@ from decimal import Decimal
 
 from wealthlab.household import flows
 from wealthlab.household.advisory_ledger import Ledger
+from wealthlab.household.advisory_snapshot_values import hsa_debts, opening_life
 
 ZERO = Decimal(0)
 
@@ -46,3 +52,12 @@ def pay(scenario, wallet, start, end, previous, products):
     if ledger is not None:
         result.update(ledger.settle(result, end - timedelta(days=1)))
     return result
+
+
+def observe(products, wallet, when, hsa, cutoff):
+    ledger = current(products)
+    if ledger is not None and (when, cutoff) in ledger.snapshots.requested:
+        life = ledger.observations().get("life_policy_values", [])
+        if cutoff == "opening" and when == ledger.scenario.start:
+            life = opening_life(ledger.scenario)
+        ledger.snapshots.capture(cutoff, when, wallet, life, hsa_debts(hsa))

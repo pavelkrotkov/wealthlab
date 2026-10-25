@@ -12,10 +12,10 @@ def validate_coverage(scenario, schedule):
     if len(ids) != len(set(ids)):
         raise ValueError("Advisory coverage cannot repeat an account within one schedule.")
     for covered in schedule.covered:
-        validate_covered(covered, accounts)
+        validate_covered(covered, accounts, {p.valuation_cutoff for p in schedule.periods})
 
 
-def validate_covered(covered, accounts):
+def validate_covered(covered, accounts, cutoffs):
     if covered.presence == "if_present" and not covered.absence_permitted_by_source_confirmed:
         raise ValueError("Conditional advisory coverage needs source-confirmed absence terms.")
     account = accounts.get(covered.account_id)
@@ -23,14 +23,17 @@ def validate_covered(covered, accounts):
         if covered.presence == "required":
             raise ValueError("Required advisory valuation account is missing.")
         return
-    validate_basis(account, covered)
+    validate_basis(account, covered, cutoffs)
 
 
-def validate_basis(account, covered):
+def validate_basis(account, covered, cutoffs):
     if covered.value_basis.startswith("life_"):
         if account.wrapper != "insurance":
             raise ValueError("A life advisory basis requires a native insurance account.")
-    elif account.wrapper in {"insurance", "property", "hsa", "education"}:
+    elif account.wrapper in {"insurance", "property"} or (
+        account.wrapper in {"hsa", "education"}
+        and "product_marks_before_optional_saving" in cutoffs
+    ):
         raise ValueError(
             "This advisory stage lacks the selected net basis; use sourced life values or "
             "a supported current account-equity basis."

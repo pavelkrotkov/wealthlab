@@ -4,6 +4,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.household.advisory_assessment import assess
+from wealthlab.household.advisory_snapshots import Snapshots
 from wealthlab.household.advisory_validation import validate
 
 ZERO = Decimal(0)
@@ -23,6 +24,7 @@ class Ledger:
         self.monthly = []
         self.seen = set()
         self.summary = {}
+        self.snapshots = Snapshots(self.plan)
 
     def begin(self, previous, fixed):
         self.previous_fees_owed, self.fixed_due = previous, fixed
@@ -35,10 +37,15 @@ class Ledger:
             raise ValueError("An advisory snapshot cannot be assessed twice.")
         self.seen.add(when)
         # Every simultaneous schedule uses the same pre-payment/pre-saving snapshot.
-        balances = dict(wallet.balances)
-        life = self.observations().get("life_policy_values", [])
+        self.snapshots.capture(
+            "product_marks_before_optional_saving",
+            when,
+            wallet,
+            self.observations().get("life_policy_values", []),
+            {},
+        )
         self.monthly = [
-            assess(schedule, period, balances, life)
+            self.assessment(schedule, period)
             for schedule in self.plan.schedules
             for period in schedule.periods
             if period.assessment_date == when
@@ -48,6 +55,10 @@ class Ledger:
         self.owed += self.current_due
         self.reserve_amount += self.current_due
         return ()
+
+    def assessment(self, schedule, period):
+        snapshot = self.snapshots.resolve(period)
+        return assess(schedule, period, snapshot["account_net_equity"], snapshot["life_values"])
 
     def settle(self, fee_row, when):
         prior_advisory = self.owed - self.current_due
@@ -75,4 +86,5 @@ class Ledger:
             remaining_owed=self.owed,
             payment_attribution="generic prior, advisory prior, generic current, advisory current",
             automatic_tax_deduction=False,
+            observed_snapshots=self.snapshots.export(),
         )

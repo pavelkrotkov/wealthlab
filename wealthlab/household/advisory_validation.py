@@ -32,7 +32,11 @@ def validate_source(schedule):
         and schedule.outer_cash_fee_not_already_in_embedded_costs_confirmed
     ):
         raise ValueError("Confirm advisory terms/basis and separate outer versus embedded costs.")
-    if not schedule.source_date <= schedule.available_on <= schedule.periods[0].accrual_start:
+    if (
+        not schedule.source_date
+        <= schedule.available_on
+        <= min(schedule.periods[0].accrual_start, schedule.periods[0].assessment_date)
+    ):
         raise ValueError("Advisory source and availability must precede the first accrual period.")
 
 

@@ -33,7 +33,7 @@ def test_full_quarter_arrears_uses_all_ninety_days_without_shortening_to_last_mo
         (dict(accrual_end="2026-04-01"), "Advance advisory billing"),
         (dict(assessment_date="2026-01-15"), "month-end date"),
         (dict(valuation_date="2026-01-01"), "same-date observed valuation"),
-        (dict(payment_due_date="2026-02-28"), "same-date observed valuation"),
+        (dict(payment_due_date="2026-02-28"), "billing and due date"),
     ],
 )
 def test_unknown_accrual_or_unavailable_snapshot_dates_fail_explicitly(updates, message):

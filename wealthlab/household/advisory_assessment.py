@@ -60,6 +60,7 @@ def assess(schedule, period, balances, life_values):
         accrual_start=period.accrual_start.isoformat(),
         accrual_end_exclusive=period.accrual_end.isoformat(),
         valuation_date=period.valuation_date.isoformat(),
+        valuation_cutoff=period.valuation_cutoff,
         payment_due_date=period.payment_due_date.isoformat(),
         period_days=days,
         day_count=schedule.day_count,
