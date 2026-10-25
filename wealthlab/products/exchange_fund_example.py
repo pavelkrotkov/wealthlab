@@ -59,6 +59,7 @@ def synthetic():
         nj_contribution="deferred",
         federal_basket_distribution="deferred",
         nj_basket_distribution="deferred",
+        federal_distribution_character="long_term",
         liquid_after="2033-01-01",
         early_redemption="denied",
         annual_fee="0.0075",

@@ -54,6 +54,7 @@ class ExchangeFundPlan(TaxModel):
     nj_contribution: Treatment = "unconfirmed"
     federal_basket_distribution: Treatment = "unconfirmed"
     nj_basket_distribution: Treatment = "unconfirmed"
+    federal_distribution_character: Literal["short_term", "long_term"]
     liquid_after: date
     early_redemption: Literal["denied", "cash_with_supplied_tax"]
     annual_fee: Decimal = Field(ge=0, le=1)

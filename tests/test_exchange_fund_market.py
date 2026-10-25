@@ -1,4 +1,9 @@
-"""Identical realized prices drive fund and liquid benchmark; prices never infer taxable yield."""
+"""Identical realized prices drive both policies without inferring taxable yield.
+
+The independent one-year 12% check permits only the stated decimal precision.
+Total-return reinvestment and numerically zero prices are rejected because the
+adapter has no hidden dividend or terminal-write-off tax classification.
+"""
 
 from dataclasses import replace
 from datetime import date
@@ -80,3 +85,14 @@ def test_missing_horizon_and_selected_path_block():
         bind(scenario, batch, 1)
     with pytest.raises(ValueError, match="horizon"):
         bind(scenario.model_copy(update={"end": date(2028, 1, 1)}), batch)
+
+
+def test_reinvested_total_returns_and_rounding_to_zero_are_rejected():
+    scenario = flat()
+    case = market(scenario).model_copy(update={"return_convention": "total_return_reinvested"})
+    with pytest.raises(ValueError, match="price-only"):
+        bind(scenario, generate(case))
+    batch = generate(market(scenario))
+    tiny = np.full_like(batch.mark_returns, np.nextafter(-1.0, 0.0))
+    with pytest.raises(ValueError, match="rounded to zero"):
+        bind(scenario, replace(batch, mark_returns=tiny))

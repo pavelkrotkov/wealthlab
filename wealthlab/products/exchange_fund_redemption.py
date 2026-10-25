@@ -57,4 +57,4 @@ def release(ledger, when, prices, wallet, row):
     ledger.nav = lots.ZERO
     ledger.active = False
     ledger.bases = dict.fromkeys(ledger.bases, lots.ZERO)
-    return [lots.event(when, federal, nj)]
+    return [lots.event(when, federal, nj, plan.federal_distribution_character)]

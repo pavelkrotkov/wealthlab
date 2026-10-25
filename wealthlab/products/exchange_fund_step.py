@@ -2,13 +2,11 @@
 
 from wealthlab.household.calendar import money
 from wealthlab.products import exchange_fund_lots as lots
-from wealthlab.products.conditional_allocations import events as allocations
 from wealthlab.products.exchange_fund_redemption import requested
 from wealthlab.products.exchange_fund_trades import marked
 
 
 def advance(ledger, observation, wallet):
-    plan = ledger.plan
     when = observation.date
     row = dict(
         date=when.isoformat(),
@@ -18,17 +16,12 @@ def advance(ledger, observation, wallet):
         early_cash=lots.ZERO,
         basket_cash=lots.ZERO,
     )
-    events = []
     if ledger.active:
         grow(ledger, observation, row)
         distribute(ledger, observation, wallet, row)
-        events.extend(allocations(observation.allocation))
-    for request in plan.requests:
-        if request.date == when:
-            if observation.locked:
-                row["denied_redemptions"] += 1
-            else:
-                events.extend(requested(ledger, request, observation.prices, wallet, row))
+    elif ledger.is_exchange:
+        guard_closed(observation)
+    events = execute_requests(ledger, observation, wallet, row)
     cash = sum(ledger.book.cash.values(), lots.ZERO)
     wallet.deposit(cash)
     ledger.book.cash = dict.fromkeys(ledger.book.cash, lots.ZERO)
@@ -37,13 +30,18 @@ def advance(ledger, observation, wallet):
     row["federal_interest_basis"] = ledger.bases["federal"] if ledger.active else lots.ZERO
     row["nj_interest_basis"] = ledger.bases["nj"] if ledger.active else lots.ZERO
     row["account_value"] = marked(ledger.book, observation.prices) + row["locked_value"]
-    wallet.balances[plan.account_id] = row["account_value"]
+    wallet.balances[ledger.plan.account_id] = row["account_value"]
     ledger.prices = observation.prices
     ledger.log.append(row)
     return events
 
 
 def grow(ledger, observation, row):
+    """Mark the common benchmark, pay NAV fees and apply independently supplied tax bases.
+
+    Basis adjustments do not create economic returns or household receipts.
+    A supplied deduction cannot push outside basis below zero in this profile.
+    """
     plan = ledger.plan
 
     def benchmark(prices):
@@ -77,3 +75,25 @@ def distribute(ledger, observation, wallet, row):
         ledger.bases[key] -= amount
     wallet.deposit(amount)
     row["distribution"] = amount
+
+
+def guard_closed(observation):
+    if any(
+        (
+            observation.distribution,
+            observation.federal_basis_adjustment,
+            observation.nj_basis_adjustment,
+        )
+    ):
+        raise ValueError("Cash or basis changes after exchange exit require a settlement adapter.")
+
+
+def execute_requests(ledger, observation, wallet, row):
+    events = []
+    for request in ledger.plan.requests:
+        if request.date == observation.date:
+            if observation.locked:
+                row["denied_redemptions"] += 1
+            else:
+                events.extend(requested(ledger, request, observation.prices, wallet, row))
+    return events

@@ -1,6 +1,7 @@
 """A single exchange book shares actual household cash, annual taxes and consumption funding."""
 
 from wealthlab.products import exchange_fund_lots as lots
+from wealthlab.products.conditional_allocations import events as allocation_events
 from wealthlab.products.exchange_fund_basket import create_basket
 from wealthlab.products.exchange_fund_step import advance
 from wealthlab.products.exchange_fund_validation import validate
@@ -20,7 +21,8 @@ class Ledger:
         self.bases = dict(federal=lots.ZERO, nj=lots.ZERO)
         self.nav = lots.ZERO
         self.active = False
-        self.pending = []
+        self.is_exchange = self.plan.mode == "exchange" and self.plan.accepted
+        self.pending = scheduled_allocations(self.plan)
         self.initial_cash = lots.ZERO
         self.opening_events = []
         self.log = []
@@ -47,18 +49,10 @@ class Ledger:
         wallet.deposit(self.initial_cash)
         self.initial_cash = lots.ZERO
         observation = next(o for o in self.plan.observations if start <= o.date < end)
-        events = [*self.pending, *advance(self, observation, wallet)]
-        self.pending = []
-        row = self.log[-1]
-        self.summary = {
-            "exchange_" + key: value
-            for key, value in row.items()
-            if key not in {"date", "account_value"}
-        }
-        self.summary["exchange_liquid_value"] = row["account_value"] - row["locked_value"]
-        self.summary["exchange_acceptance_denied"] = (
-            self.plan.mode == "exchange" and not self.plan.accepted
-        )
+        self.pending.extend(advance(self, observation, wallet))
+        events = [e for e in self.pending if start <= e.date < end]
+        self.pending = [e for e in self.pending if e.date >= end]
+        self.summary = summarize(self.log[-1], self.plan)
         return events
 
     def finish(self, rows):
@@ -69,5 +63,25 @@ class Ledger:
             remaining_lots=[lot.model_dump(mode="json") for lot in self.book.lots.values()],
             disposals=self.book.disposals,
             opening_contribution_events=[e.model_dump(mode="json") for e in self.opening_events],
+            unrecognized_future_events=[e.model_dump(mode="json") for e in self.pending],
             conditional=True,
         )
+
+
+def scheduled_allocations(plan):
+    """Final K-1 and deferred losses follow recognition dates, even after economic exit."""
+    if plan.mode != "exchange" or not plan.accepted:
+        return []
+    return [e for o in plan.observations for e in allocation_events(o.allocation)]
+
+
+def summarize(row, plan):
+    """Report restricted NAV separately from actually received cash and liquid shares."""
+    summary = {
+        "exchange_" + key: value
+        for key, value in row.items()
+        if key not in {"date", "account_value"}
+    }
+    summary["exchange_liquid_value"] = row["account_value"] - row["locked_value"]
+    summary["exchange_acceptance_denied"] = plan.mode == "exchange" and not plan.accepted
+    return summary
