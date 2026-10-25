@@ -102,11 +102,17 @@ def parse(data: dict, case: AnnualCase) -> AnnualCase:
 
 def show():
     selected = st.selectbox(
-        "Annual tax workbench", ["US federal and NJ", "Puerto Rico annual"], key="annual_workbench"
+        "Annual tax workbench",
+        ["US federal and NJ", "Puerto Rico annual", "Puerto Rico incentives"],
+        key="annual_workbench",
     )
     if selected == "Puerto Rico annual":
         from wealthlab.ui.puerto_rico import show as pr_show
 
         pr_show()
+    elif selected == "Puerto Rico incentives":
+        from wealthlab.ui.pr_incentives import show as incentives_show
+
+        incentives_show()
     else:
         mainland_show()

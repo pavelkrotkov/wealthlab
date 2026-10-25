@@ -130,3 +130,5 @@ Products / **Whole life versus liquid saving** compares [matched limited/longer 
 Load **synthetic scheduled liquid saving** in Household to edit actual month-end investment budgets, commissions, allocations and cash buffers in the linked-lot form. Unfilled optional saving remains distinct from required-payment failures.
 
 The Annual tax workbench also offers a [Puerto Rico annual comparison](docs/puerto-rico-acceptance.md) with editable dated residence/source claims, separate federal and PR ordinary/ABT computation, and credit allocation audits. Its synthetic baseline is independent US/NJ input. This annual screen does not yet connect relocation to monthly Household funding or optimizer decisions; see cross-border issue #17.
+
+Annual tax / **Puerto Rico incentives** adds [dated ordinary/denied-decree and conditional incentive alternatives](docs/adr/0121-puerto-rico-dated-decree-and-stock-gains.md), with explicit application-date regimes, independent federal/local pre-move stock-gain allocation and guarded unresolved special-tax credits. Tax-only outputs retain unknown compliance costs; they do not imply a funded household relocation.
