@@ -51,11 +51,14 @@ class Ledger:
 
 
 class CombinedLedger:
-    def __init__(self, books):
+    def __init__(self, books, priority=None):
         self.books = books
+        self.priority = priority
 
     def after_receipts(self, wallet, start, end):
         for book in self.books:
+            if self.priority is not None:
+                self.priority(wallet, start, end)
             yield from book.after_receipts(wallet, start, end)
 
     @property
@@ -67,6 +70,7 @@ def make(scenario, tax_ledger=None):
     from wealthlab.portfolio.saving_household import Ledger as SavingLedger
     from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
     from wealthlab.products.life_household import Ledger as LifeLedger
+    from wealthlab.tax.foreign_tax_household import receipt_priority
 
     books: list = [Ledger(scenario)] if scenario.sleeve_plan else []
     if scenario.exchange_fund_plan:
@@ -75,7 +79,7 @@ def make(scenario, tax_ledger=None):
         books.append(LifeLedger(scenario, tax_ledger))
     if scenario.lot_plan and scenario.lot_plan.savings:
         books.append(SavingLedger(scenario, tax_ledger))
-    return CombinedLedger(books) if books else None
+    return CombinedLedger(books, receipt_priority(tax_ledger)) if books else None
 
 
 def completed(ledger):

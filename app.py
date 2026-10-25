@@ -61,7 +61,7 @@ def main():
 
         show()
     elif page == "Cross-border":
-        from wealthlab.ui.foreign_credits import show
+        from wealthlab.ui.cross_border import show
 
         show()
     elif page == "Tax lots":

@@ -80,7 +80,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
         row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
-        row["net_wealth"] -= row.get("tax_position", Decimal(0))
+        row["net_wealth"] -= row.get("tax_position", 0) + row.get("foreign_tax_position", 0)
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))

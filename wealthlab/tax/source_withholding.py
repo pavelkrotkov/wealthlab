@@ -5,8 +5,11 @@ These entered actual amounts do not infer withholding rates or tax eligibility.
 """
 
 from decimal import Decimal
+from typing import Self
 
-from wealthlab.household.records import Money
+from pydantic import model_validator
+
+from wealthlab.household.records import Identifier, Money
 from wealthlab.tax import state_deduction
 from wealthlab.tax.facts import TaxModel
 
@@ -15,10 +18,18 @@ class SourceWithholding(TaxModel):
     gross_cash: Money
     federal_income_withheld: Money = Decimal(0)
     nj_withheld: Money = Decimal(0)
+    foreign_tax_withheld: Money = Decimal(0)
+    foreign_payment_id: Identifier | None = None
+
+    @model_validator(mode="after")
+    def validate_foreign_identity(self) -> Self:
+        if bool(self.foreign_tax_withheld) != bool(self.foreign_payment_id):
+            raise ValueError("Foreign source withholding needs both actual cash and payment ID.")
+        return self
 
     @property
     def total(self):
-        return self.federal_income_withheld + self.nj_withheld
+        return self.federal_income_withheld + self.nj_withheld + self.foreign_tax_withheld
 
 
 def credit(case, source, mode):
@@ -43,4 +54,12 @@ def receipt(item):
         federal_income_withheld=source.federal_income_withheld,
         nj_withheld=source.nj_withheld,
         total_withheld=source.total,
+        foreign_tax_withheld=source.foreign_tax_withheld,
+        foreign_payment_id=source.foreign_payment_id,
     )
+
+
+def validate_foreign_book(item, book):
+    source = item.withholding
+    if source is not None and source.foreign_tax_withheld and book is None:
+        raise ValueError("Foreign source withholding requires the shared foreign tax cash plan.")
