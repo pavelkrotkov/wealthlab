@@ -3,6 +3,7 @@
 from datetime import date
 
 from wealthlab.retirement.medicare_household_inputs import withholding
+from wealthlab.retirement.social_partnership_earnings import validate_work_earnings
 from wealthlab.retirement.social_work_household_wages import wage_rules
 from wealthlab.tax.projection_validation import validate as validate_tax
 
@@ -32,5 +33,4 @@ def validate_opening(plan):
         raise ValueError(
             "Manual/opening W2 amounts need earned-month classification for work tests."
         )
-    if any(i.partnership_se_earnings_primary or i.partnership_se_earnings_spouse for i in incomes):
-        raise ValueError("Partnership SE needs earned-month classification for work tests.")
+    validate_work_earnings(incomes)
