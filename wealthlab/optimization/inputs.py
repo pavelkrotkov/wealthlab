@@ -14,6 +14,8 @@ from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
+from wealthlab.portfolio.rebalance_inputs import RebalancePolicy
+from wealthlab.portfolio.saving_inputs import SavingPolicy
 from wealthlab.retirement.distribution_inputs import WithdrawalOrder
 from wealthlab.tax.facts import TaxModel
 
@@ -32,6 +34,8 @@ class PolicyChoice(AccountControls):
     retirement_dates: dict[Identifier, date] = Field(default_factory=dict)
     sale_policies: list[SalePolicy] | None = None
     harvest_policies: list[HarvestPolicy] | None = None
+    rebalances: list[RebalancePolicy] | None = None
+    savings: list[SavingPolicy] | None = None
     ira_orders: list[WithdrawalOrder] | None = None
     lot_funding_order: list[int] | None = None
     change_guardrail: bool = False

@@ -40,17 +40,32 @@ def apply(data, binding, choice):
 
 
 def lot_changes(data, choice):
-    changes = (choice.sale_policies, choice.harvest_policies, choice.lot_funding_order)
+    changes = (
+        choice.sale_policies,
+        choice.harvest_policies,
+        choice.rebalances,
+        choice.savings,
+        choice.lot_funding_order,
+    )
     if all(value is None for value in changes):
         return
     if data["lot_plan"] is None:
-        raise ValueError("Sale, harvest and funding-order choices require actual linked lots.")
+        raise ValueError(
+            "Sale, harvest, rebalance, saving and funding-order choices require actual linked lots."
+        )
     plan = data["lot_plan"]
-    for key in ("sale_policies", "harvest_policies"):
+    replace_schedules(plan, choice)
+    reorder_funding(plan, choice.lot_funding_order)
+
+
+def replace_schedules(plan, choice):
+    owners = dict(
+        sale_policies=plan["case"], harvest_policies=plan["case"], rebalances=plan, savings=plan
+    )
+    for key, owner in owners.items():
         value = getattr(choice, key)
         if value is not None:
-            plan["case"][key] = [p.model_dump(mode="json") for p in value]
-    reorder_funding(plan, choice.lot_funding_order)
+            owner[key] = [p.model_dump(mode="json") for p in value]
 
 
 def reorder_funding(plan, order):

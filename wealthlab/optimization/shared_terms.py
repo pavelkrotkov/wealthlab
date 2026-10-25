@@ -31,6 +31,14 @@ def validate(case):
         "IRA penalty exception",
     )
 
+    for name in ("rebalances", "savings"):
+        same(
+            schedules(case, name, getattr(lots, name, [])),
+            ("account_id",),
+            ("commission_per_trade",),
+            f"{name} commission",
+        )
+
 
 def schedules(case, name, baseline):
     declared = [getattr(choice, name) for d in case.dimensions for choice in d.choices]
