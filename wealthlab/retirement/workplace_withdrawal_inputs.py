@@ -7,6 +7,7 @@ from typing import Annotated, Literal
 from pydantic import Field, model_validator
 
 from wealthlab.household.records import Identifier, Money, Record
+from wealthlab.retirement.workplace_rmd_inputs import WorkplaceRMDPlan
 from wealthlab.tax.facts import TaxModel
 
 Rate = Annotated[Decimal, Field(ge=0, le=1, max_digits=12, decimal_places=10)]
@@ -37,5 +38,6 @@ class WorkplaceCashOrder(Record):
 
 class WorkplaceCashPlan(TaxModel):
     profiles: dict[Identifier, CashProfile] = Field(min_length=1)
-    orders: list[WorkplaceCashOrder] = Field(min_length=1)
+    orders: list[WorkplaceCashOrder] = Field(default_factory=list)
+    rmd: WorkplaceRMDPlan | None = None
     timing: Literal["first_day_before_employee_deferrals_and_month_end_returns"]

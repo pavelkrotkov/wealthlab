@@ -17,7 +17,7 @@ use their own bounded profile; match, vesting, rollover and corrections remain s
 
 from decimal import Decimal
 
-from wealthlab.retirement import workplace_withdrawals
+from wealthlab.retirement import workplace_rmd, workplace_withdrawals
 from wealthlab.retirement.contribution_rules import workplace_limits
 from wealthlab.retirement.workplace_returns import apply as apply_returns
 from wealthlab.retirement.workplace_tax import events, summarize, tax_amounts
@@ -39,6 +39,7 @@ class Ledger:
         self.withdrawal_log = []
         self.accounts = {a.id: a for a in scenario.accounts}
         self.birth_dates = {m.id: m.birth_date for m in scenario.members}
+        self.rmd = workplace_rmd.make(scenario)
 
     def month(self, wallet, amounts, start, end):
         cash_events, cash_summary = workplace_withdrawals.month(self, wallet, start, end)

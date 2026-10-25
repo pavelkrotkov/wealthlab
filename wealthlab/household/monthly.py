@@ -88,7 +88,11 @@ def metrics(scenario, row, start, end):
         value for key, value in row.items() if key.endswith("_unfunded")
     )
     row["funding_failure"] = (
-        row["funding_shortfall"] > 0 or missed_schedule(row) or row.get("medical_owed", 0) > 0
+        row["funding_shortfall"] > 0
+        or missed_schedule(row)
+        or row.get("medical_owed", 0) > 0
+        or row.get("workplace_rmd_shortfall", 0) > 0
+        or row.get("workplace_rmd_unresolved_prior", 0) > 0
     )
     demand = (
         row["debt_payment"]
