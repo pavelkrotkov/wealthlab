@@ -16,18 +16,29 @@ from wealthlab.ui.uploads import invalid, source
 
 def show():
     st.header("Investment products")
-    workspace = st.selectbox(
-        "Product workbench", ["Long/short economics", "Traditional exchange funds"]
+    workbench = st.selectbox(
+        "Product workbench",
+        ["Long/short economics", "Conditional private fund", "Traditional exchange funds"],
+        key="products_workbench",
     )
-    if workspace == "Traditional exchange funds":
+    if workbench == "Conditional private fund":
+        from wealthlab.ui.private_funds import show as private_funds
+
+        private_funds()
+        return
+    if workbench == "Traditional exchange funds":
         from wealthlab.ui.exchange_fund import show as show_exchange
 
         show_exchange()
         return
+    long_short()
+
+
+def long_short():
     st.subheader("Long/short economics and margin risk")
     st.warning(
         "Pre-tax economic model. This page does not yet calculate fund tax allocations or "
-        "household spending safety. Private-fund terms and household/tax adapters remain open. "
+        "household spending safety. Select Conditional private fund for actual household cash/tax. "
         "Supplied broker rules are assumptions, without inferred provider performance."
     )
     st.caption(

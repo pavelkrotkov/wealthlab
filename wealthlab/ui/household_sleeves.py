@@ -40,6 +40,11 @@ def controls(payload, scenario):
 def display(rows):
     if "sleeve_positions" not in rows[-1]:
         return
+    if any("fund_internal_equity" in r for r in rows[-1].get("sleeve_audit", [])):
+        from wealthlab.ui.private_fund_results import display_household
+
+        display_household(rows)
+        return
     st.subheader("Long-short household cash and recourse debt")
     a, b, c = st.columns(3)
     a.metric("Remaining negative-equity liability", f"${rows[-1]['sleeve_liability']:,.2f}")
