@@ -8,7 +8,7 @@ inventory; unbound positive noncash accounts remain visibly unmeasured.
 
 from decimal import Decimal
 
-from wealthlab.portfolio.household_values import security_values
+from wealthlab.portfolio.household_values import rounding_residual, security_values
 
 ZERO = Decimal(0)
 
@@ -30,7 +30,7 @@ def report(scenario, binding, lots, row):
     known = set(lots.book.accounts) if lots else set()
     known.update(row.get("hsa_investment_accounts", []))
     unmapped_issuers = sorted(set(missing(scenario, row, known)) | sleeve_accounts(row))
-    assets = sum(row["account_balances"].values(), ZERO)
+    assets = gross_assets(lots, row)
     factors = factor_values(binding, values, row)
     mapped = (
         known
@@ -39,6 +39,7 @@ def report(scenario, binding, lots, row):
     )
     return dict(
         market_security_values=values,
+        market_gross_assets=assets,
         market_max_security_weight=issuer_weight(values, assets, unmapped_issuers),
         market_issuer_concentration_complete=not unmapped_issuers,
         market_unmeasured_issuer_accounts=unmapped_issuers,
@@ -116,3 +117,12 @@ def positive_value(account, scenario, row):
         ZERO,
     )
     return max(row["account_balances"][account.id], opening, sleeve, contingent) > 0
+
+
+def gross_assets(lots, row):
+    residual = rounding_residual(lots.book, lots.prices) if lots is not None else ZERO
+    return (
+        sum(row["account_balances"].values(), ZERO)
+        + residual
+        + row.get("hsa_investment_mark_rounding", ZERO)
+    )
