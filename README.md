@@ -91,3 +91,5 @@ Load the synthetic pension with source withholding household for [net receipt, a
 Load the synthetic 401(k) cash withdrawals household for [actual gross plan debits, net receipts and separation-age tax treatment](docs/adr/0047-workplace-cash-withdrawals.md). This ordinary zero-basis profile rejects RMD years and special distributions; broader workplace withdrawals and rollovers remain in progress.
 
 Load the synthetic separate-plan RMD household for [complete plan groups, required/eligible withholding portions and actual December catch-up](docs/adr/0048-workplace-rmd.md). Shortfalls retain explicit contingent excise and unresolved-prior-year status; broader retirement adapters remain in progress.
+
+In Markets, select **Workplace RMDs** for [the same plan requirements on realized paths, explicit illiquidity failures and matched catch-up policies](docs/adr/0049-workplace-rmd-market-paths.md). Required transfers and their shortfalls remain separate from ordinary spending cash.
