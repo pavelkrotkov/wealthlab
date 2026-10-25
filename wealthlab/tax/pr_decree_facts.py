@@ -23,7 +23,7 @@ class Decree(TaxModel):
     effective_from: date | None = None
     valid_until: date | None = None
     residence_since: date | None = None
-    prior_residence_window_2006_2012: Claim = "unset"
+    nonresident_during_2006_2012_window: Claim = "unset"
     six_prior_years_nonresident: Claim = "unset"
     eligibility_history: Claim = "unset"
     compliance: Claim = "unset"

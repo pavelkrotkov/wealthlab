@@ -29,7 +29,7 @@ def test_new_regime_needs_both_historical_eligibility_claims():
     assert not qualification(decree, comparison.annual)["eligible"]
     decree = decree.model_copy(update={"six_prior_years_nonresident": "assumed"})
     assert qualification(decree, comparison.annual)["eligible"]
-    decree = decree.model_copy(update={"prior_residence_window_2006_2012": "unset"})
+    decree = decree.model_copy(update={"nonresident_during_2006_2012_window": "unset"})
     assert not qualification(decree, comparison.annual)["eligible"]
 
 

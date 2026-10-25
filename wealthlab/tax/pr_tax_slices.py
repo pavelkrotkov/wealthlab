@@ -18,8 +18,7 @@ def prepare(comparison, *, incentivized=False):
     assets = {asset.income_index: asset for asset in comparison.gains}
     if len(assets) != len(comparison.gains):
         raise ValueError("Each original receipt can have only one marketable-gain allocation.")
-    if any(index >= len(comparison.annual.income) for index in assets):
-        raise ValueError("Gain allocation references an absent income row.")
+    validate_assets(comparison.annual, assets)
     slices, audits = [], []
     for index, row in enumerate(comparison.annual.income):
         if row.kind == "long_term":
@@ -91,3 +90,11 @@ def validate_sale_residence(comparison, row):
     period = local_period(annual.primary, annual.baseline.policy.year)
     if period is None or not period[0] <= row.received <= period[1]:
         raise ValueError("Supported stock sale must occur during explicit local PR residence.")
+
+
+def validate_assets(annual, assets):
+    for index in assets:
+        if index >= len(annual.income):
+            raise ValueError("Gain allocation references an absent income row.")
+        if annual.income[index].kind != "long_term":
+            raise ValueError("Gain allocation must reference a long_term income row.")

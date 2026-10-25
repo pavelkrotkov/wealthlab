@@ -70,7 +70,7 @@ def claim_values(decree):
         decree.eligibility_history,
         decree.compliance,
         decree.not_revoked,
-        decree.prior_residence_window_2006_2012,
+        decree.nonresident_during_2006_2012_window,
     ]
     if decree.application_date and decree.application_date.year >= 2027:
         claims.append(decree.six_prior_years_nonresident)

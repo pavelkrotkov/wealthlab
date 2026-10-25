@@ -24,7 +24,11 @@ def calculate(comparison, baseline, statuses, *, incentivized=False):
     paid = paid_tax(us, taxable, local_slices)
     pr = local(annual, local_slices, paid)
     payroll = baseline["federal"]["employee_payroll"]
-    us.update(employee_payroll=payroll, total=us["income_tax"] + payroll)
+    us.update(
+        employee_payroll=payroll,
+        additional_medicare=baseline["federal"]["additional_medicare"],
+        total=us["income_tax"] + payroll,
+    )
     total = us["income_tax"] + pr["income_tax"] + payroll
     if annual.pr_income_tax_paid_for_us_credit > pr["income_tax"]:
         raise ValueError("Current-year PR paid-tax credit exceeds calculated PR liability.")

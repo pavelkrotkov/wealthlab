@@ -18,8 +18,9 @@ def show():
     st.caption(
         "Original synthetic assumptions. Application dates select the legacy/2027 regime; "
         "a granted, effective, compliant, unrevoked decree is a separate claim. "
-        "History claims must cover the 2006-2012 residence window and the additional "
-        "post-2026 six-year test. Gains support plain public stock only: no inventory, "
+        "History claims confirm nonresidence from January 17, 2006 through January 17, 2012. "
+        "Post-2026 applications also require six years of nonresidence before moving. "
+        "Gains support plain public stock only: no inventory, "
         "business/real-property connections, pass-through interests or mixed losses. "
         "Asset allocations derive source portions independently of the row's initial labels. "
         "Federal tax-home FMV and local residence FMV/basis remain separate. "

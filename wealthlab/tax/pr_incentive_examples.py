@@ -35,7 +35,7 @@ def legacy_dividends():
         valid_until=date(2035, 12, 31),
         residence_since=date(2025, 1, 1),
         eligibility_history="assumed",
-        prior_residence_window_2006_2012="assumed",
+        nonresident_during_2006_2012_window="assumed",
         compliance="assumed",
         not_revoked="assumed",
         evidence="Original synthetic grant; no actual eligibility finding",
