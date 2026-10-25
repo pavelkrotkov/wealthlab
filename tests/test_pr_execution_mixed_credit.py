@@ -3,7 +3,7 @@
 All US-taxable receipts survive locally at the same basis, so PartIII's net
 exempt income and reduction are zero. A2 taxes ordinary120000 less3500 at
 25251 plus100000 at15%, giving40251. Actual federal paid7419.38 leaves
-PR32831.62; its separate98409.09/216500 limit does not bind that payment.
+PR32831.62; its separate98409.25/216500 limit does not bind that payment.
 """
 
 from decimal import Decimal
