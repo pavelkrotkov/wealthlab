@@ -35,9 +35,9 @@ def test_missing_ira_plan_cannot_make_a_conversion_tax_free():
         compile_candidate(flat(), [PolicyChoice(id="choice", ira_orders=[])])
 
 
-def test_options_still_require_their_own_native_exit_integration():
+def test_options_require_their_own_native_market_binding():
     case = flat().model_copy(update=dict(household=options()))
-    with pytest.raises(ValueError, match="product/wrapper exit integration"):
+    with pytest.raises(ValueError, match="native stock/index market binding"):
         compile_candidate(case, [])
 
 
