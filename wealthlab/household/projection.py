@@ -85,6 +85,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
         row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)
+        row["net_wealth"] -= row.get("drilling_recourse_liability", Decimal(0))
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
