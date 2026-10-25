@@ -43,6 +43,7 @@ def claim_guards(case):
     owners = {row.owner for row in case.income}
     if any(getattr(case, owner).us_citizen not in MET for owner in owners):
         reasons.append("This profile requires an explicit US-citizenship claim for every owner.")
-    if case.pr_wages_reported_on_form_499r2 == "unset":
+    has_wages = any(row.kind == "wages" for row in case.income)
+    if has_wages and case.pr_wages_reported_on_form_499r2 == "unset":
         reasons.append("Confirm or deny the PR wage-informative reporting assumption.")
     return reasons

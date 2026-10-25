@@ -45,6 +45,7 @@ def candidate(case, baseline, statuses):
 def paid_us_tax(us, taxable, recognized_rows):
     # Schedule C Part III reduces paid US tax for US-taxable income excluded
     # locally. The foreign-source limitation is applied separately in local().
+    validate_niit_credit(us, recognized_rows)
     gross = sum((row.federal_amount for row in taxable), Decimal(0))
     eligible = sum((row.federal_amount for row in taxable if row in recognized_rows), Decimal(0))
     ratio = eligible / gross if gross else Decimal(0)
@@ -52,7 +53,17 @@ def paid_us_tax(us, taxable, recognized_rows):
 
 
 def conditional(case, statuses):
-    return (
-        any(status["conditional"] for status in statuses.values())
-        or case.pr_wages_reported_on_form_499r2 == "assumed"
+    wage_assumed = case.pr_wages_reported_on_form_499r2 == "assumed" and any(
+        row.kind == "wages" for row in case.income
     )
+    return any(status["conditional"] for status in statuses.values()) or wage_assumed
+
+
+def validate_niit_credit(us, rows):
+    # Federal FTC exclusion does not settle whether PR credits the US NIIT.
+    # A material PR foreign-credit calculation needs a verified classification.
+    foreign = any(row.pr_source == "US" and row.pr_amount for row in rows)
+    if us["niit"] and foreign:
+        raise ValueError(
+            "PR credit eligibility for US NIIT needs verified treatment; aggregate withheld."
+        )
