@@ -31,3 +31,14 @@ The NJ [February 2026 partnership bulletin](https://www.nj.gov/treasury/taxation
 ## October 24 — market-path implementation reuse
 
 The path workbench reuses the installed pinned NumPy dependency for validated joint normal sampling and numerical summaries. No finance package or new dependency is needed for these explicitly assumed lognormal factors. Historical input, return conventions, provenance and stress overlays remain application responsibilities; neither a Gaussian sampler nor a factor chart establishes household funding success. See [the model and executed checks](adr/0024-paired-market-paths.md).
+
+## October 25 — whole-life illustration reuse
+
+[lifeLib's whole-life reference model](https://lifelib.io/libraries/uslib/products/whole_life/product-spec.html)
+was reviewed for cash value, dividends, loan and nonforfeiture mechanics. Its
+representative contract cannot supply missing terms for an actual policy.
+Use supplied guaranteed/current/stressed schedules, with missing values explicit.
+The already pinned QuantLib supplies dated NPV and Brent solving for money-weighted
+returns; no new dependency is required. See [the implemented audit and numerical
+checks](adr/0100-supplied-whole-life-illustrations.md). Contract tax, actual household
+funding and a separately priced protection comparison remain follow-on work.

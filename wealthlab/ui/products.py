@@ -1,6 +1,7 @@
 """Economic product checks are visible while full tax/household integrations remain open."""
 
 import json
+from importlib import import_module
 
 import streamlit as st
 
@@ -16,20 +17,16 @@ from wealthlab.ui.uploads import invalid, source
 
 def show():
     st.header("Investment products")
-    workbench = st.selectbox(
-        "Product workbench",
-        ["Long/short economics", "Conditional private fund", "Traditional exchange funds"],
-        key="products_workbench",
-    )
-    if workbench == "Conditional private fund":
-        from wealthlab.ui.private_funds import show as private_funds
-
-        private_funds()
-        return
-    if workbench == "Traditional exchange funds":
-        from wealthlab.ui.exchange_fund import show as show_exchange
-
-        show_exchange()
+    workbenches = {
+        "Long/short economics": None,
+        "Conditional private fund": "private_funds",
+        "Traditional exchange funds": "exchange_fund",
+        "Whole-life illustrations": "life_illustrations",
+    }
+    workbench = st.selectbox("Product workbench", workbenches, key="products_workbench")
+    module = workbenches[workbench]
+    if module is not None:
+        import_module(f"wealthlab.ui.{module}").show()
         return
     long_short()
 
