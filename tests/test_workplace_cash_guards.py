@@ -88,3 +88,9 @@ def test_separated_source_cannot_accept_new_employee_deferrals():
     ]
     with pytest.raises(ValueError, match="separated source"):
         validate(Scenario.model_validate(data))
+
+
+def test_1959_owner_before_both_rmd_start_choices_does_not_need_a_choice():
+    validate_profile(CashProfile.model_validate(profile()), date(1959, 7, 1), 2027)
+    with pytest.raises(ValueError, match="1959"):
+        validate_profile(CashProfile.model_validate(profile()), date(1959, 7, 1), 2032)

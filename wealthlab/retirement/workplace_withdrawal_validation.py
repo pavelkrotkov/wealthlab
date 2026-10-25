@@ -36,6 +36,9 @@ def validate_profile(profile, born, final_year):
         raise ValueError("Confirm eligible workplace cash, vested zero basis and complete inputs.")
     if profile.separation_date <= born:
         raise ValueError("Workplace separation must follow the owner's birth date.")
+    # Both conditional 1959 start ages are beyond a projection ending before age 73.
+    if born.year == 1959 and final_year - born.year < 73:
+        return
     owner = SimpleNamespace(birth_date=born, birth_1959_start_age=profile.birth_1959_start_age)
     if final_year - born.year >= start_age(owner):
         raise ValueError("Workplace RMD years require an account-specific RMD profile.")

@@ -38,7 +38,7 @@ this feature does not replace frozen future-year tax law with an invented rate.
 
 The projection rejects this profile if any projected year reaches the source
 owner's RMD start age, using the existing RMD-age helper and its explicit 1959
-choice. RMDs are not eligible rollover distributions and cannot silently use
+choice only when the horizon reaches a potentially affected age. RMDs are not eligible rollover distributions and cannot silently use
 mandatory 20% eligible-distribution withholding. Account-specific RMDs, incoming
 IRA rollovers, separate plan basis, Roth plan clocks and employer match/vesting
 remain required follow-on retirement work. The retirement ticket stays open.
