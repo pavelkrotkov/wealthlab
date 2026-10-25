@@ -26,6 +26,8 @@ def has_fund_facts(observation):
 
 
 def validate(plan):
+    if plan.contribution_quantity == 0 and any(has_fund_facts(o) for o in plan.observations):
+        raise ValueError("Zero contribution cannot retain fund cash, income or basis adjustments.")
     if plan.mode != "direct_sale":
         return
     if any(has_fund_facts(o) for o in plan.observations) and not (
