@@ -22,6 +22,11 @@ reconcile exactly to worldwide ordinary federal facts. No source recognition
 or credit deposits cash. Nonincome foreign taxes and conversion fees retain
 their actual cash cost without becoming income-tax credits or deductions.
 
+The foreign liability year is a historical identity, independent of the actual
+paid-method US credit year. A prior foreign liability paid this year uses this
+year's supported source limit; a prior paid year needs its own carry context
+and is never silently shifted forward.
+
 A refund identifies the original taxpayer/payment, currency, jurisdiction,
 basket and liability year. Its cash uses the receipt-date quote while credit
 reversal uses original-payment FX. Independent native cash and credit caps

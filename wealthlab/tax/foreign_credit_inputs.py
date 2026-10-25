@@ -55,7 +55,7 @@ class CreditTaxCash(TaxModel):
     id: Identifier
     owner_id: Identifier
     country: str = Field(pattern=r"^[A-Z]{2}$")
-    liability_year: int = Field(ge=2025, le=2145)
+    liability_year: int = Field(ge=1900, le=2145)
     tax_type: Literal["income", "wealth", "social", "other"]
     kind: Literal["payment", "withholding", "refund"]
     basket: Basket
