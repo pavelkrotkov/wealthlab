@@ -66,9 +66,9 @@ def point(case, value, need):
         net_surrender_value=surrender,
         net_death_benefit=death,
         protection_shortfall=shortfall(need, death),
-        cash_value_irr=terminal_irr(flows, value.date, net["gross_cash_value"]),
-        surrender_irr=terminal_irr(flows, value.date, surrender),
-        death_irr=terminal_irr(flows, value.date, death),
+        cash_value_irr=terminal_irr(flows, value.date, net["gross_cash_value"], collateral_review),
+        surrender_irr=terminal_irr(flows, value.date, surrender, collateral_review),
+        death_irr=terminal_irr(flows, value.date, death, collateral_review),
         values_confirmed=confirmed,
         loan_contract_review_required=collateral_review,
     )
@@ -78,7 +78,11 @@ def net_value(value, loan):
     return max(ZERO, value - loan) if value is not None and loan is not None else None
 
 
-def terminal_irr(flows, when, terminal):
+def terminal_irr(flows, when, terminal, collateral_review=False):
+    if collateral_review:
+        return dict(
+            rate=None, status="contract review required: loan collateral unknown or exhausted"
+        )
     if terminal is None:
         return dict(rate=None, status="missing value or unconfirmed cash-flow/funding history")
     return irr([*((f.date, cash(f)) for f in flows), (when, terminal)])

@@ -28,6 +28,10 @@ def test_debt_at_cash_value_or_missing_collateral_needs_actual_contract_terms(ca
     assert row["loan_contract_review_required"] is True
     assert row["net_death_benefit"] is None
     assert row["death_irr"]["rate"] is None
+    for key in ("cash_value_irr", "surrender_irr", "death_irr"):
+        assert (
+            row[key]["status"] == "contract review required: loan collateral unknown or exhausted"
+        )
 
 
 @pytest.mark.parametrize(
