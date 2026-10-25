@@ -66,6 +66,7 @@ HIDDEN = [
     "saving_audit",
 ]
 
+
 def display(scenario: Scenario, rows: list[dict]) -> None:
     st.subheader(scenario.name)
     st.caption(
@@ -113,6 +114,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             )
         )
 
+
 def comparison(scenario: Scenario) -> None:
     if st.button("Keep this scenario as comparison baseline"):
         st.session_state["baseline"] = scenario
@@ -128,6 +130,7 @@ def comparison(scenario: Scenario) -> None:
         "Ending wealth change versus baseline · nominal USD",
         f"${after['net_wealth'] - before['net_wealth']:,.2f}",
     )
+
 
 def account_summaries(rows):
     ira_summary(rows)

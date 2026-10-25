@@ -31,11 +31,13 @@ from wealthlab.retirement.social_work_inputs import WorkPolicy
 from wealthlab.retirement.workplace_inputs import WorkplacePlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
+
 class YearToDate(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, allow_inf_nan=False)
     gross_income: Money
     federal_tax_paid: Money
     state_tax_paid: Money
+
 
 class Scenario(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, allow_inf_nan=False)
