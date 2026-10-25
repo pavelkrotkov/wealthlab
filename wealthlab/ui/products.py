@@ -22,6 +22,7 @@ def show():
         "Conditional private fund": "private_funds",
         "Traditional exchange funds": "exchange_fund",
         "Whole-life illustrations": "life_illustrations",
+        "Options overlays": "option_products",
     }
     workbench = st.selectbox("Product workbench", workbenches, key="products_workbench")
     module = workbenches[workbench]
