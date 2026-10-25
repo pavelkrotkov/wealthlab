@@ -48,6 +48,8 @@ def main(argv=None):
         )
         emit(report.encode(result), options)
         return 0
+    except KeyboardInterrupt:
+        return 130
     except ValidationError:
         print(
             "Invalid scenario. Review field diagnostics in the local UI; no report was written.",

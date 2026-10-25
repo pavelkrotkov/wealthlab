@@ -28,3 +28,9 @@ def test_cli_launch_dispatches_only_to_explicit_loopback_launcher():
     with patch("wealthlab.cli.serve", return_value=0) as serve:
         assert cli.main(["serve", "--port", "8502"]) == 0
     serve.assert_called_once_with(8502)
+
+
+def test_control_c_stops_cleanly_without_a_traceback(capsys):
+    with patch("wealthlab.cli.serve", side_effect=KeyboardInterrupt):
+        assert cli.main(["serve"]) == 130
+    assert capsys.readouterr().err == ""
