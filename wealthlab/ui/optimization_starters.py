@@ -12,6 +12,7 @@ from wealthlab.optimization.advisory_example import extend as with_advisory
 from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
+from wealthlab.optimization.drilling_example import confirm_synthetic
 from wealthlab.optimization.drilling_example import extend as with_drilling
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.exchange_example import extend as with_exchange_choices
@@ -68,5 +69,10 @@ def purchases(starter):
 
 def advisory(starter):
     if st.checkbox("Add common sourced advisory AUM fees", key="optimizer_advisory_starter"):
-        return with_advisory(starter)
+        generated = with_advisory(starter)
+        # This composer starts only from original synthetic factories. Finish its
+        # complete illustrative scope after all builders; imported files never enter here.
+        if generated.drilling_offers:
+            return confirm_synthetic(generated.model_dump(mode="json"))
+        return generated
     return starter

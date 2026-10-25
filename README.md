@@ -181,3 +181,5 @@ Optimize compares [complete source-backed QOZ subscription profiles](docs/adr/02
 The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-release-compatibility.md) match actual fee-enabled CLI/UI reports, preserve structured NJ loss carry, re-execute imported audits and retain guarded local output. Visible reproduction JSON uses the same finite typed encoder as exported reports.
 
 [Explicit advisory rate/period methods](docs/adr/0153-explicit-advisory-rate-and-period-methods.md) add source-confirmed whole-base breakpoint rates and supplied fixed annual fractions alongside existing marginal/actual-day defaults. Billing dates, observed valuations, cash priorities and unpaid fee liabilities remain native.
+
+The [combined QOZ/drilling/advisory starter](docs/adr/0211-composed-qoz-advisory-scenarios.md) finishes its original synthetic input scope after all menu builders. Imported or edited private scenarios still require independently sourced matching confirmations.
