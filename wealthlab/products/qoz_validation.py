@@ -23,6 +23,7 @@ def validate(scenario, lots, tax):
         plan.limited_liability_internal_debt_only_assumed_confirmed,
         plan.calls_are_optional_partial_subscriptions_assumed_confirmed,
         plan.nav_priced_common_stock_retarget_on_calls_assumed_confirmed,
+        plan.subscriptions_share_same_day_dividends_assumed_confirmed,
         plan.entity_tax_already_in_returns_assumed_confirmed,
         plan.source_and_product_tax_excluded_elsewhere_assumed_confirmed,
     )

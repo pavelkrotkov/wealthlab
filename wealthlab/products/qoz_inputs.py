@@ -43,6 +43,7 @@ class QOZPlan(TaxModel):
     limited_liability_internal_debt_only_assumed_confirmed: bool
     calls_are_optional_partial_subscriptions_assumed_confirmed: bool
     nav_priced_common_stock_retarget_on_calls_assumed_confirmed: bool
+    subscriptions_share_same_day_dividends_assumed_confirmed: bool
     entity_tax_already_in_returns_assumed_confirmed: bool
     source_and_product_tax_excluded_elsewhere_assumed_confirmed: bool
     terms_source_description: str = Field(min_length=1, max_length=500)

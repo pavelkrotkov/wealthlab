@@ -15,6 +15,7 @@ def validate_dates(scenario, plan, expected):
         raise ValueError("Capital calls must precede the full-interest sale request.")
     validate_records(plan)
     validate_horizon(scenario, plan)
+    validate_legacy_exit(plan)
     validate_inclusion_marks(scenario, plan, expected)
 
 
@@ -49,3 +50,27 @@ def validate_inclusion_marks(scenario, plan, expected):
 def validate_month_boundaries(scenario):
     if scenario.start.day != 1 or scenario.end.day != 1:
         raise ValueError("QOZ requires whole calendar months beginning/ending on the first.")
+
+
+def sale_due(plan, observation):
+    return (
+        observation.date >= plan.sale_requested
+        and not observation.locked
+        and (plan.mode == "liquid_reference" or observation.date >= plan.sale_not_before)
+    )
+
+
+def validate_legacy_exit(plan):
+    if plan.federal != "allowed":
+        return
+    if plan.mode == "liquid_reference":
+        return
+    if not any(call.date.year <= 2026 for call in plan.calls):
+        return
+    for observation in plan.observations:
+        if sale_due(plan, observation):
+            if observation.date.year > 2047:
+                raise ValueError(
+                    "Legacy post-2047 QOF-election eligibility requires another profile."
+                )
+            return

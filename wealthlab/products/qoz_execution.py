@@ -8,6 +8,7 @@ separate even when a sale precedes delayed settlement.
 from wealthlab.products import qoz_economics as economics
 from wealthlab.products import qoz_tax
 from wealthlab.products.long_short_book import ZERO, equity
+from wealthlab.products.qoz_dates import sale_due
 from wealthlab.products.qoz_exit import exit_event
 from wealthlab.products.qoz_units import allocate
 
@@ -34,7 +35,7 @@ def execute(state, observation, wallet, row):
 
 def stock_events(state, observation, dividend, row):
     fund, when = state.economic, observation.date
-    sale = sale_due(state, observation)
+    sale = sale_due(state.plan, observation)
     nav = max(ZERO, equity(fund["book"]))
     result = economics.sell(fund, state.plan, when) if sale else dict(fmv=nav, proceeds=ZERO)
     if sale:
@@ -59,13 +60,3 @@ def stock_events(state, observation, dividend, row):
         if sale:
             events.append(exit_event(lot["tax"], value, paid, when, state.plan))
     return events
-
-
-def sale_due(state, observation):
-    return (
-        observation.date >= state.plan.sale_requested
-        and not observation.locked
-        and (
-            state.plan.mode == "liquid_reference" or observation.date >= state.plan.sale_not_before
-        )
-    )
