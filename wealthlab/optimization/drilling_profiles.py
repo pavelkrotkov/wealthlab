@@ -25,6 +25,7 @@ def validate_offers(household, offers, envelope, search_scope):
 def validate_offer(household, offer, envelope):
     if (
         offer.provenance == "unresolved"
+        or not offer.source.strip()
         or not offer.complete_matched_terms_confirmed
         or offer.source_date > household.start
     ):

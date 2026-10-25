@@ -21,6 +21,7 @@ ALLOWED_PLANS = {
     "life_plan",
     "option_plan",
     "compensation_plan",
+    "drilling_plan",
 }
 
 
@@ -80,6 +81,8 @@ def unsupported_plans(household):
 
 
 def validate_product_paths(household, binding):
+    if household.drilling_plan and binding.drilling is None:
+        raise ValueError("Optimizer drilling requires its native commodity/reference binding.")
     sleeves = (
         {s.account_id for s in household.sleeve_plan.sleeves} if household.sleeve_plan else set()
     )

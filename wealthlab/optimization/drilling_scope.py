@@ -31,10 +31,14 @@ def validate_envelope(household, envelope, search_scope):
 
 
 def validate_confirmation(envelope):
-    if envelope.provenance == "unresolved" or not all(
-        (
-            envelope.all_candidate_employment_income_funding_and_bound_price_paths_confirmed,
-            envelope.supplied_legal_se_qbi_amt_history_limits_recapture_release_facts_confirmed,
+    if (
+        envelope.provenance == "unresolved"
+        or not envelope.source.strip()
+        or not all(
+            (
+                envelope.all_candidate_employment_income_funding_and_bound_price_paths_confirmed,
+                envelope.supplied_legal_se_qbi_amt_history_limits_recapture_release_facts_confirmed,
+            )
         )
     ):
         raise ValueError(

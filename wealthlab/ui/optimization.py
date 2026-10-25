@@ -21,7 +21,9 @@ def show():
         "and employer awards require actual contractual exits. Exchange choices retain the "
         "original source shares and basis. "
         "Life choices use complete supplied premium/event/value paths, including new policies "
-        "funded by actual future premiums. Other product "
+        "funded by actual future premiums. Drilling choices require complete supplied profiles "
+        "and an independent envelope valid for all candidates; full-tax drilling optimization "
+        "is unsupported. Other product "
         "allocation and cross-border controls remain in progress."
     )
     st.info(

@@ -11,6 +11,7 @@ from wealthlab.optimization.account_example import extend as with_accounts
 from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
+from wealthlab.optimization.drilling_example import extend as with_drilling
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.exchange_example import extend as with_exchange_choices
 from wealthlab.optimization.life_example import extend as with_life_paths
@@ -54,4 +55,8 @@ def purchases(starter):
         starter = with_exchange_choices(starter)
     if st.checkbox("Add synthetic new life-policy purchase choices", key="new_life_starter"):
         starter = with_new_life(starter)
+    if st.checkbox(
+        "Add synthetic conditional drilling participation choices", key="drilling_starter"
+    ):
+        starter = with_drilling(starter)
     return starter
