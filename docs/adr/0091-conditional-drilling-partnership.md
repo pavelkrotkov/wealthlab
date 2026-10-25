@@ -56,3 +56,11 @@ shared synthetic wallet with $100,000, the full drilling call executes before an
 unfilled $500 January saving request. Later actual distributions fund $1,000 of
 new share lots. The flat-share case preserves $41,600 before actual tax, with
 both account books and their generic Household audits retained.
+
+The final audit exposes raw executed `terminal_state`: actual `closed` and
+`property_sold` flags, cash, residual property, each creditor, unpaid calls,
+outside/at-risk and tangible bases, plus actual reference cash, exit-pending and
+pending wash losses. Existing reference lots/disposals and future tax events
+remain beside it. A zero property mark or net account balance does not establish
+a sale or a completed tax exit; consumers must verify every applicable state.
+This audit does not change liquidation, tax timing or funding priority.
