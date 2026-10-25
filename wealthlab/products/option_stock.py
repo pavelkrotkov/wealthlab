@@ -1,9 +1,14 @@
-"""Actual strike trades reuse the existing share selection, cash and two-basis lot engine."""
+"""Execute actual strike trades through the tested share/cash/two-basis book.
+
+Tax premium adjustments do not create another cash payment. Rejected broker
+trades preserve owned shares and pending delivery rather than erasing exposure.
+"""
 
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.portfolio.orders import Trade
+from wealthlab.products.option_basis import adjust_basis
 from wealthlab.products.option_math import units
 
 
@@ -32,7 +37,8 @@ def trade_stock(state, leg, mark):
         commission=leg.closing_fee,
     )
     first = len(state.book.disposals)
-    state.book.trade(trade)
+    if not execute(state, trade):
+        return False
     adjust_basis(state, leg, buy, trade.id, first)
     return True
 
@@ -41,27 +47,27 @@ def unwind_stock(state, mark):
     quantity = shares(state)
     if not quantity:
         return True
+    return execute(
+        state,
+        Trade(
+            id="complete_unwind",
+            provenance="assumption",
+            date=mark.date,
+            action="sell",
+            account_id=state.account,
+            security_id="STOCK",
+            quantity=quantity,
+            price=mark.stock,
+            commission=state.case.stock_sale_fee,
+        ),
+    )
+
+
+def execute(state, trade):
+    """Rejected delivery/exit trades retain actual holdings and pending obligations."""
     try:
-        state.book.trade(
-            Trade(
-                id="complete_unwind",
-                provenance="assumption",
-                date=mark.date,
-                action="sell",
-                account_id=state.account,
-                security_id="STOCK",
-                quantity=quantity,
-                price=mark.stock,
-                commission=state.case.stock_sale_fee,
-            )
-        )
+        state.book.trade(trade)
     except ValueError as error:
-        state.failures.append(f"complete_unwind: {error}")
+        state.failures.append(f"{trade.id}: {error}")
         return False
     return True
-
-
-def adjust_basis(state, leg, buy, trade_id, first):
-    from wealthlab.products.option_basis import adjust_basis as adjust
-
-    adjust(state, leg, buy, trade_id, first)

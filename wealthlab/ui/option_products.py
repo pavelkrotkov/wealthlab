@@ -9,6 +9,7 @@ from wealthlab.products.option_engine import run
 from wealthlab.products.option_example import synthetic
 from wealthlab.products.option_inputs import OptionCase
 from wealthlab.products.option_stress import stress
+from wealthlab.ui.product_selections import select as saved_select
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -76,9 +77,9 @@ def display(result):
 def selection():
     """Widget cleanup must not reset the selected contract example on remount."""
     choices = ["Covered call", "Collar", "Four-leg synthetic exposure"]
-    saved = st.session_state.get("option_selected_example", choices[0])
-    strategy = st.selectbox(
-        "Option example", choices, index=choices.index(saved), key="option_example"
+    return saved_select(
+        "Option example",
+        choices,
+        "option_example",
+        default=st.session_state.get("option_selected_example", choices[0]),
     )
-    st.session_state["option_selected_example"] = strategy
-    return strategy

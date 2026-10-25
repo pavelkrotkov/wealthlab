@@ -1,4 +1,8 @@
-"""Economic product checks are visible while full tax/household integrations remain open."""
+"""Route independent product books without losing validated work.
+
+Each workbench preserves its source/editor state across widget cleanup.
+Actual tax and household results retain their separate declared assumptions.
+"""
 
 import json
 from importlib import import_module
@@ -7,11 +11,12 @@ import streamlit as st
 
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
-from wealthlab.markets.stresses import NAMES
 from wealthlab.products.long_short_compare import compare
 from wealthlab.products.long_short_example import synthetic
 from wealthlab.products.long_short_inputs import LongShortCase
 from wealthlab.ui.long_short_results import display
+from wealthlab.ui.product_selections import long_short as selection
+from wealthlab.ui.product_selections import select as saved_select
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -24,7 +29,7 @@ def show():
         "Whole-life illustrations": "life_illustrations",
         "Options overlays": "option_products",
     }
-    workbench = st.selectbox("Product workbench", workbenches, key="products_workbench")
+    workbench = saved_select("Product workbench", list(workbenches), key="products_workbench")
     module = workbenches[workbench]
     if module is not None:
         import_module(f"wealthlab.ui.{module}").show()
@@ -73,21 +78,3 @@ def calculate(edited):
         )
     except (ValueError, KeyError, TypeError) as error:
         invalid(error, "long_short")
-
-
-def selection():
-    """Persist non-widget choices when the product workspace unmounts its controls."""
-    saved = st.session_state.get("long_short_selection", {})
-    modes = ["deterministic", "monte_carlo", "historical", "stress"]
-    names = [*NAMES, "short_squeeze"]
-    mode = st.selectbox(
-        "Product market mode", modes, index=modes.index(saved.get("mode", modes[0]))
-    )
-    stress = st.selectbox(
-        "Product named stress",
-        names,
-        disabled=mode != "stress",
-        index=names.index(saved.get("stress", names[0])),
-    )
-    st.session_state["long_short_selection"] = dict(mode=mode, stress=stress)
-    return mode, stress
