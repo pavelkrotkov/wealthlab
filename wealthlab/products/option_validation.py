@@ -3,6 +3,7 @@
 from wealthlab.portfolio.validation import validate as validate_lots
 from wealthlab.products.option_event_validation import validate_events
 from wealthlab.products.option_leg_validation import validate_leg
+from wealthlab.products.option_purchase_validation import validate as validate_purchase
 
 
 def validate(case):
@@ -21,6 +22,7 @@ def validate(case):
     ):
         raise ValueError("Ordered unique marks must cover the exact opening and ending dates.")
     validate_ids(case)
+    validate_purchase(case)
     for leg in case.legs:
         validate_leg(case, leg, dates)
     validate_events(case, dates)

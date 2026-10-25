@@ -17,6 +17,7 @@ def evidence(state, observed_at):
         observed_at=observed_at.isoformat(),
         timing="after_actual_execution_and_cash_settlement",
         account_id=state.account,
+        stock_trades=[trade.model_dump(mode="json") for trade in state.book.history],
         open_contracts=active,
         stock_lots=lots,
         unopened_contract_ids=unopened,

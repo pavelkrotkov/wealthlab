@@ -21,6 +21,7 @@ def report(state, held, leg_rows):
         terminations=list(state.closed.values()),
         tax=tax,
         disposals=state.book.disposals,
+        stock_trades=[trade.model_dump(mode="json") for trade in state.book.history],
         cash_movements=state.cash_movements,
         failures=state.failures,
         held=held,
