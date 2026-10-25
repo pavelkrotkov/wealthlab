@@ -9,6 +9,7 @@ basis events, so that convention requires a separate adapter.
 
 from wealthlab.household.calendar import months
 from wealthlab.markets.cash_scope import cash_only
+from wealthlab.markets.collectible_scope import validate as validate_collectibles
 from wealthlab.markets.drilling_compile import validate as validate_drilling
 from wealthlab.markets.employer_validation import validate as validate_employers
 from wealthlab.markets.exchange_compile import validate as validate_exchange
@@ -84,6 +85,7 @@ def validate_bindings(scenario, batch, binding):
         raise ValueError("Bind every linked security exactly once.")
     if any(b.factor not in batch.assets for b in binding.securities):
         raise ValueError("Unknown market factor in household security binding.")
+    validate_collectibles(scenario, batch, binding)
 
 
 def validate_inflation(scenario, binding):

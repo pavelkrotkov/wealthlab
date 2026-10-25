@@ -181,3 +181,5 @@ Optimize compares [complete source-backed QOZ subscription profiles](docs/adr/02
 The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-release-compatibility.md) match actual fee-enabled CLI/UI reports, preserve structured NJ loss carry, re-execute imported audits and retain guarded local output. Visible reproduction JSON uses the same finite typed encoder as exported reports.
 
 [Explicit advisory rate/period methods](docs/adr/0153-explicit-advisory-rate-and-period-methods.md) add source-confirmed whole-base breakpoint rates and supplied fixed annual fractions alongside existing marginal/actual-day defaults. Billing dates, observed valuations, cash priorities and unpaid fee liabilities remain native.
+
+Optimize offers an original [gold-as-collectible sale-timing example](docs/adr/0212-gold-collectible-policy-example.md) using actual dated lots, independent federal/NJ bases, zero-yield price paths and completed-sale tax cash. Its classification and future tax rules are explicit assumptions.

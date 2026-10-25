@@ -10,6 +10,7 @@ import streamlit as st
 from wealthlab.optimization.account_example import extend as with_accounts
 from wealthlab.optimization.advisory_example import extend as with_advisory
 from wealthlab.optimization.allocation_example import extend as with_allocations
+from wealthlab.optimization.collectible_example import synthetic as collectible_starter
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.drilling_example import extend as with_drilling
@@ -26,10 +27,23 @@ from wealthlab.ui.optimization_horizon import show as horizon_starter
 
 def show():
     example = st.selectbox(
-        "Synthetic starter", ["Short composable examples", "Full age-100 cash and stock example"]
+        "Synthetic starter",
+        [
+            "Short composable examples",
+            "Full age-100 cash and stock example",
+            "Gold treated as collectible sale timing",
+        ],
     )
     if example == "Full age-100 cash and stock example":
         return horizon_starter()
+    if example == "Gold treated as collectible sale timing":
+        st.caption(
+            "Original synthetic physical-gold classification, not a gold-fund tax ruling. "
+            "Both sale dates share existing lots, separate federal/NJ bases and zero cash yield. "
+            "Entered W-2 wages continue unchanged; this short example "
+            "does not prove age-100 safety."
+        )
+        return collectible_starter()
     checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
     starter = robust() if checks else synthetic()
     for label, extend in (
