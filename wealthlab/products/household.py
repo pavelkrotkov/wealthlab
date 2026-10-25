@@ -37,8 +37,26 @@ class Ledger:
         return events
 
 
+class CombinedLedger:
+    def __init__(self, books):
+        self.books = books
+
+    def after_receipts(self, wallet, start, end):
+        for book in self.books:
+            yield from book.after_receipts(wallet, start, end)
+
+    @property
+    def summary(self):
+        return {key: value for book in self.books for key, value in book.summary.items()}
+
+
 def make(scenario):
-    return Ledger(scenario) if scenario.sleeve_plan else None
+    from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
+
+    books: list = [Ledger(scenario)] if scenario.sleeve_plan else []
+    if scenario.exchange_fund_plan:
+        books.append(ExchangeLedger(scenario))
+    return CombinedLedger(books) if books else None
 
 
 def completed(ledger):
@@ -47,7 +65,15 @@ def completed(ledger):
 
 def finish(ledger, rows):
     if ledger:
-        rows[-1]["sleeve_audit"] = ledger.log
-        rows[-1]["sleeve_tax_assumptions"] = [
-            tax_audit(a) for s in ledger.plan.sleeves for a in s.allocations
-        ]
+        for book in ledger.books:
+            finish_book(book, rows)
+
+
+def finish_book(book, rows):
+    if hasattr(book, "finish"):
+        book.finish(rows)
+        return
+    rows[-1]["sleeve_audit"] = book.log
+    rows[-1]["sleeve_tax_assumptions"] = [
+        tax_audit(a) for s in book.plan.sleeves for a in s.allocations
+    ]
