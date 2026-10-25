@@ -7,6 +7,7 @@ basis rules; denied/deferred tax deductions never silently change basis.
 
 from decimal import Decimal
 
+from wealthlab.markets.wrapper_compile import event_id
 from wealthlab.products.conditional_allocations import audit, events
 from wealthlab.products.household_inputs import SleeveAllocation
 
@@ -61,7 +62,7 @@ class BasisBook:
     def allocation(self, values, when):
         return SleeveAllocation.model_validate(
             dict(
-                id=f"{self.account_id}_cash_exit_{when:%Y%m%d}",
+                id=event_id(self.account_id, when, "fund_cash_exit"),
                 provenance="assumption",
                 date=when,
                 federal={self.contract.federal_capital_character: values["federal"]},
