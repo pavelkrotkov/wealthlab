@@ -1,8 +1,7 @@
 """Reject inconsistent histories rather than inventing continuation or loan terms."""
 
 from wealthlab.products.life_contract_history import validate_dates, validate_events
-
-TERMINAL = {"surrender", "lapse"}
+from wealthlab.products.life_contract_tax import TERMINAL
 
 
 def validate(contract):

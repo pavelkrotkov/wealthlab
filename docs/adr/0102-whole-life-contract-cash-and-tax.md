@@ -69,7 +69,9 @@ oracle; the ruling's secondary-sale examples are not implemented here.
 ## Annual engine reuse and independent NJ assumptions
 
 Each supplied annual baseline is evaluated before and after recognized policy
-income. New federal insurance-income and additional-tax fields remain separate
+income, including years with no events. Event years without a baseline remain
+visible as recognition-only results. An unconfirmed contract profile withholds
+annual conclusions even when no event occurs. New federal insurance-income and additional-tax fields remain separate
 from ordinary pension and retirement additional-tax inputs. Tax-Calculator6.8.5
 maps policy income to the ordinary taxable-pension/annuity return line, but its
 NIIT kernel omits life-contract income. Reuse that same public `NetInvIncTax`
