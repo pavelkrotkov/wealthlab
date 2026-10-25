@@ -1,6 +1,7 @@
 """Export all economic, tax and contract evidence without reusing cash as a tax saving."""
 
 from wealthlab.products.option_deferrals import validate as validate_deferrals
+from wealthlab.products.option_exit_state import evidence
 from wealthlab.products.option_recognition import recognition
 from wealthlab.products.option_tax_rows import stock_recognition
 
@@ -27,4 +28,5 @@ def report(state, held, leg_rows):
         lots=[lot.model_dump(mode="json") for lot in state.book.lots.values()],
         open_legs=list(state.active),
         assumptions=case.model_dump(mode="json"),
+        exit_state=evidence(state, case.holdings.end),
     )
