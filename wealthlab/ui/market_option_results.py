@@ -5,6 +5,7 @@ import json
 import streamlit as st
 
 from wealthlab.ui.household_options import display as household_results
+from wealthlab.ui.product_selections import select as saved_select
 
 
 def display(result, index, rows):
@@ -36,9 +37,9 @@ def display(result, index, rows):
 def selection():
     """Keep the option policy when another account workbench temporarily unmounts it."""
     choices = ["Covered call", "Collar", "Four-leg synthetic exposure"]
-    saved = st.session_state.get("option_market_selection", choices[-1])
-    strategy = st.selectbox(
-        "Option market example", choices, index=choices.index(saved), key="option_market_strategy"
+    return saved_select(
+        "Option market example",
+        choices,
+        "option_market_strategy",
+        default=st.session_state.get("option_market_selection", choices[-1]),
     )
-    st.session_state["option_market_selection"] = strategy
-    return strategy

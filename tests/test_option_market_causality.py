@@ -19,6 +19,8 @@ def test_later_shock_cannot_change_earlier_compiled_option_spots():
         mode="stress", shocks=[dict(name="later", month=6, mark_shocks=dict(stock=-0.5, index=0.2))]
     )
     shocked = compile_marks(scenario, generate(MarketCase.model_validate(data)), binding, 0)
+    assert baseline.option_plan is not None
+    assert shocked.option_plan is not None
     prior = lambda case: [(m.date, m.stock, m.index) for m in case.option_plan.case.marks[:7]]  # noqa: E731
     assert prior(baseline) == prior(shocked)
     assert baseline.option_plan.case.marks[-1].stock != shocked.option_plan.case.marks[-1].stock

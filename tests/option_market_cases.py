@@ -18,3 +18,13 @@ def change(scenario, update):
     data = scenario.model_dump(mode="json")
     update(data)
     return Scenario.model_validate(data)
+
+
+def shocked(strategy, factor, shock):
+    scenario, market, binding = synthetic(strategy=strategy)
+    data = market.model_dump(mode="json")
+    for asset in data["assets"]:
+        asset["expected_annual_mark_return"] = 0
+    data["mode"] = "stress"
+    data["shocks"] = [dict(name="independent shock", month=0, mark_shocks={factor: shock})]
+    return scenario, generate(MarketCase.model_validate(data)), binding

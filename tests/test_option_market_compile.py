@@ -15,7 +15,10 @@ from wealthlab.markets.paths import generate
 
 def test_compiler_replaces_every_mark_with_explicit_fixed_valuation_assumptions():
     scenario, batch, binding = flat()
-    case = compile_marks(scenario, batch, binding, 0).option_plan.case
+    compiled = compile_marks(scenario, batch, binding, 0)
+    assert compiled.option_plan is not None
+    assert binding.options is not None
+    case = compiled.option_plan.case
     assert len(case.marks) == 13
     assert {mark.stock for mark in case.marks} == {Decimal(100)}
     assert {mark.index for mark in case.marks} == {Decimal(100)}

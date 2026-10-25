@@ -4,21 +4,8 @@ A protective stock put cannot fund unrelated index margin or erase an earlier
 required collateral failure after prices subsequently fall.
 """
 
-from tests.option_market_cases import change
+from tests.option_market_cases import change, shocked
 from wealthlab.markets.household_run import run
-from wealthlab.markets.inputs import MarketCase
-from wealthlab.markets.option_example import synthetic
-from wealthlab.markets.paths import generate
-
-
-def shocked(strategy, factor, shock):
-    scenario, market, binding = synthetic(strategy=strategy)
-    data = market.model_dump(mode="json")
-    for asset in data["assets"]:
-        asset["expected_annual_mark_return"] = 0
-    data["mode"] = "stress"
-    data["shocks"] = [dict(name="independent shock", month=0, mark_shocks={factor: shock})]
-    return scenario, generate(MarketCase.model_validate(data)), binding
 
 
 def test_index_loss_and_collateral_can_fail_spending_despite_a_stock_protective_put():
