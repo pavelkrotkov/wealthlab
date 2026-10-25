@@ -18,6 +18,8 @@ from wealthlab.optimization.shared_terms import validate as validate_terms
 FIELDS = (
     "sale_policies",
     "harvest_policies",
+    "rebalances",
+    "savings",
     "ira_orders",
     "lot_funding_order",
     *AccountControls.model_fields,
