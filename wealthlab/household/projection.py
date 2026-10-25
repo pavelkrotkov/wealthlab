@@ -19,6 +19,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.household.validation import validate_resolved
 from wealthlab.portfolio import household_book, household_wash
 from wealthlab.products import household as sleeves
+from wealthlab.products import option_household
 from wealthlab.retirement import (
     education_household,
     hsa_household,
@@ -47,6 +48,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
     hsa = hsa_household.make(scenario)
     education = education_household.make(scenario)
     products = sleeves.make(scenario)
+    options = option_household.make(scenario, market)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
         live, market_events = market.start(scenario, lots, start) if market else (scenario, ())
@@ -70,6 +72,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
             education,
             lots,
             products,
+            options,
         )
         row.update(ira_summary)
         row.update(medicare_household.observe(medicare, tax_ledger, end))
@@ -81,13 +84,14 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-        row["net_wealth"] -= row.get("sleeve_liability", Decimal(0))
+        row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
         observe_market(market, lots, row)
         rows.append(row)
     finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
+    option_household.finish(options, rows)
     return rows
 
 

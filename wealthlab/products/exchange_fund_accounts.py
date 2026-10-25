@@ -7,6 +7,7 @@ The account cannot also fund generic withdrawals against a stale second basis.
 """
 
 from wealthlab.household.calendar import money
+from wealthlab.products.option_exchange_accounts import validate as validate_product_ownership
 
 
 def validate_account(scenario, plan):
@@ -35,6 +36,7 @@ def validate_source(scenario, plan, account):
 
 
 def validate_exclusions(scenario, plan):
+    validate_product_ownership(scenario)
     blocked = {c.destination for c in scenario.contributions}
     blocked |= {s.account_id for s in scenario.tax_plan.funding_sources}
     blocked |= {a.id for a in scenario.lot_plan.case.accounts} if scenario.lot_plan else set()

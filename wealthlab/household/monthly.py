@@ -13,6 +13,7 @@ from wealthlab.household.funding import Wallet
 from wealthlab.household.scenario import Scenario
 from wealthlab.portfolio import household_book
 from wealthlab.products import household as sleeves
+from wealthlab.products import option_household
 from wealthlab.retirement import (
     education_household,
     hsa_household,
@@ -42,6 +43,7 @@ def month(
     education=None,
     lots=None,
     products=None,
+    options=None,
 ) -> dict:
     row = dict(date=start.isoformat(), period_end=end.isoformat(), opening_cash=wallet.cash)
     incomes = flows.earning_items(scenario, start, end)
@@ -62,7 +64,7 @@ def month(
                 end,
                 lambda: required_cash + wrapper_required(education, hsa),
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa, education, products),
+                receipt_hook=receipt_hook(ira, hsa, education, products, options),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
                 additional_nj_wages=payroll.get("hsa_payroll_contributions", Decimal(0)),
             )
@@ -72,6 +74,7 @@ def month(
         education_household.completed(education, tax_ledger, end)
         row.update(household_book.completed(lots))
         row.update(sleeves.completed(products))
+        row.update(option_household.completed(options))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
     row.update(flows.fees(scenario, wallet, start, end, fees_owed))
     row.update(flows.spending(scenario, wallet, start, end, medicare, education, hsa))
@@ -87,12 +90,15 @@ def metrics(scenario, row, start, end):
     row["funding_shortfall"] = row["debt_shortfall"] + sum(
         value for key, value in row.items() if key.endswith("_unfunded")
     )
-    row["funding_failure"] = (
-        row["funding_shortfall"] > 0
-        or missed_schedule(row)
-        or row.get("medical_owed", 0) > 0
-        or row.get("workplace_rmd_shortfall", 0) > 0
-        or row.get("workplace_rmd_unresolved_prior", 0) > 0
+    row["funding_failure"] = any(
+        (
+            row["funding_shortfall"] > 0,
+            missed_schedule(row),
+            row.get("medical_owed", 0) > 0,
+            row.get("option_failed", False),
+            row.get("workplace_rmd_shortfall", 0) > 0,
+            row.get("workplace_rmd_unresolved_prior", 0) > 0,
+        )
     )
     demand = (
         row["debt_payment"]

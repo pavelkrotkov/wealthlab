@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+from wealthlab.markets.option_reporting import outcome as option_outcome
 from wealthlab.markets.rollover_report import summary as rollover_summary
 from wealthlab.markets.roth_cash_report import summary as roth_cash_summary
 from wealthlab.markets.workplace_rmd_report import summary as rmd_summary
@@ -27,23 +28,7 @@ def funding(rows):
 
 
 def product_outcome(rows, funded):
-    names = (
-        "margin_triggered",
-        "margin_unresolved",
-        "negative_equity",
-        "exit_blocked",
-        "constraints_failed",
-    )
-    counts = {
-        f"product_{name}_months": sum(bool(r.get(f"sleeve_{name}")) for r in rows) for name in names
-    }
-    failures = [r for r in rows if r.get("sleeve_constraints_failed")]
-    return dict(
-        **counts,
-        product_feasible=not failures,
-        joint_feasible=funded and not failures,
-        first_product_failure=failures[0]["date"] if failures else None,
-    )
+    return option_outcome(rows, funded)
 
 
 def product_totals(results):

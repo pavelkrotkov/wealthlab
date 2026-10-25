@@ -20,6 +20,7 @@ from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
 from wealthlab.ui.household_lots import display as lot_summary
 from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
+from wealthlab.ui.household_options import display as option_summary
 from wealthlab.ui.household_social_work import display as social_work_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
 from wealthlab.ui.private_fund_household_results import route_household as sleeve_summary
@@ -43,6 +44,10 @@ HIDDEN = [
     "lot_audit",
     "medicare_audit",
     "sleeve_positions",
+    "option_audit",
+    "option_mark_audit",
+    "option_tax_audit",
+    "option_lots",
     "sleeve_audit",
     "sleeve_tax_assumptions",
     "exchange_fund_audit",
@@ -129,3 +134,4 @@ def account_summaries(rows):
     medicare_summary(rows)
     workplace_summary(rows)
     sleeve_summary(rows)
+    option_summary(rows)

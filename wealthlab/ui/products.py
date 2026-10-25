@@ -1,4 +1,8 @@
-"""Economic product checks are visible while full tax/household integrations remain open."""
+"""Route independent product books without losing validated work.
+
+Each workbench preserves its source/editor state across widget cleanup.
+Actual tax and household results retain their separate declared assumptions.
+"""
 
 import json
 from importlib import import_module
@@ -7,11 +11,12 @@ import streamlit as st
 
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
-from wealthlab.markets.stresses import NAMES
 from wealthlab.products.long_short_compare import compare
 from wealthlab.products.long_short_example import synthetic
 from wealthlab.products.long_short_inputs import LongShortCase
 from wealthlab.ui.long_short_results import display
+from wealthlab.ui.product_selections import long_short as selection
+from wealthlab.ui.product_selections import select as saved_select
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -22,8 +27,9 @@ def show():
         "Conditional private fund": "private_funds",
         "Traditional exchange funds": "exchange_fund",
         "Whole-life illustrations": "life_illustrations",
+        "Options overlays": "option_products",
     }
-    workbench = st.selectbox("Product workbench", workbenches, key="products_workbench")
+    workbench = saved_select("Product workbench", list(workbenches), key="products_workbench")
     module = workbenches[workbench]
     if module is not None:
         import_module(f"wealthlab.ui.{module}").show()
@@ -45,12 +51,7 @@ def long_short():
         "Cash yield is not inferred to be tax-free or deductible. Outside cash is a separate "
         "zero-return reserve; it can fund configured calls and receives distributions."
     )
-    mode = st.selectbox(
-        "Product market mode", ["deterministic", "monte_carlo", "historical", "stress"]
-    )
-    stress = st.selectbox(
-        "Product named stress", [*NAMES, "short_squeeze"], disabled=mode != "stress"
-    )
+    mode, stress = selection()
     uploaded = st.file_uploader("Load product economic case JSON", type="json")
     if source(uploaded, json.dumps(synthetic(mode, stress), indent=2), "long_short") is None:
         return

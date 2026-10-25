@@ -1,10 +1,10 @@
 """Required sleeve cash precedes optional HSA/529/IRA deposits, then current taxes/spending."""
 
 
-def receipt_hook(ira, hsa, education=None, products=None):
+def receipt_hook(ira, hsa, education=None, products=None, options=None):
     hooks = [
         book.after_receipts
-        for book in (products, hsa, education, ira)
+        for book in (options, products, hsa, education, ira)
         if hasattr(book, "after_receipts")
     ]
     if not hooks:

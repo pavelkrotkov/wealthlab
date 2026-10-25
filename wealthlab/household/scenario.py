@@ -18,6 +18,7 @@ from wealthlab.household.validation import validate_dates, validate_references
 from wealthlab.portfolio.household_inputs import HouseholdLots
 from wealthlab.products.exchange_fund_inputs import ExchangeFundPlan
 from wealthlab.products.household_inputs import SleevePlan
+from wealthlab.products.option_household_inputs import OptionPlan
 from wealthlab.retirement.education_household_inputs import EducationHouseholdPlan
 from wealthlab.retirement.hsa_household_inputs import HSAPlan
 from wealthlab.retirement.ira_household_inputs import IRAPlan
@@ -67,6 +68,7 @@ class Scenario(BaseModel):
     lot_plan: HouseholdLots | None = None
     sleeve_plan: SleevePlan | None = None
     exchange_fund_plan: ExchangeFundPlan | None = None
+    option_plan: OptionPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
