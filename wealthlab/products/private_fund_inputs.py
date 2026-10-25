@@ -1,7 +1,7 @@
 """Conditional cash-only private-fund terms; sponsor and tax conclusions are supplied inputs."""
 
 from datetime import date
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field
 
@@ -33,7 +33,7 @@ class PrivateFundContract(Record):
     lock_until: date
     dealing: Literal["monthly", "quarterly", "annually"]
     notice_days: int = Field(ge=0, le=3650)
-    gate_fraction: Rate
+    gate_fraction: Annotated[Rate, Field(gt=0)]
     settlement_days: int = Field(ge=0, le=3650)
     federal_opening_basis: Money
     new_jersey_opening_basis: Money

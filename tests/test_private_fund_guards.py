@@ -52,3 +52,8 @@ def test_negative_basis_is_never_silently_clamped():
 def test_notice_outside_projection_is_rejected():
     with pytest.raises(ValueError, match="notices"):
         project(fund(requests=[request(notice="2025-12-01")]))
+
+
+def test_zero_gate_is_rejected_before_any_household_execution():
+    with pytest.raises(ValueError, match="greater than 0"):
+        project(fund(gate_fraction="0"))
