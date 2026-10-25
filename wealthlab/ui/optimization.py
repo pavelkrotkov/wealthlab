@@ -3,6 +3,7 @@
 import streamlit as st
 
 from wealthlab.optimization.account_example import extend as with_accounts
+from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.inputs import PolicySearch
@@ -20,22 +21,15 @@ def show():
         "sale/harvest schedules, IRA/workplace contributions and withdrawals, HSA cash, "
         "529 deposits, saving allocations, rebalancing, taxable funding order and "
         "discretionary guardrails. All choices share capital, essential spending and tax facts. "
-        "Fixed conditional product profiles use actual exits; product allocation choices and "
-        "cross-border search integration are still being built."
+        "Fixed products use actual exits; new sleeve mixes use existing cash and supplied unit "
+        "schedules. Other product allocation and cross-border controls remain in progress."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "
         "two years of cash reserves. The short synthetic example intentionally fails the "
         "horizon constraint. Supply complete annual/market/account schedules for a longer run."
     )
-    include_checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
-    starter = robust() if include_checks else synthetic()
-    if st.checkbox("Add synthetic workplace, HSA and 529 policies"):
-        starter = with_accounts(starter)
-    if st.checkbox("Add synthetic stock/bond diversification policies"):
-        starter = with_diversification(starter)
-    if st.checkbox("Add synthetic conditional products with actual exits"):
-        starter = with_products(starter)
+    starter = starter_case()
     uploaded = st.file_uploader("Load policy search JSON", type="json")
     if source(uploaded, starter.model_dump_json(indent=2), "policy_search") is None:
         return
@@ -50,6 +44,20 @@ def show():
         calculate(edited)
     if "policy_search_result" in st.session_state:
         display(st.session_state["policy_search_result"])
+
+
+def starter_case():
+    checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
+    starter = robust() if checks else synthetic()
+    for label, extend in (
+        ("Add synthetic workplace, HSA and 529 policies", with_accounts),
+        ("Add synthetic stock/bond diversification policies", with_diversification),
+        ("Add synthetic conditional products with actual exits", with_products),
+        ("Add synthetic cash-funded sleeve allocation choices", with_allocations),
+    ):
+        if st.checkbox(label):
+            starter = extend(starter)
+    return starter
 
 
 def calculate(edited):
