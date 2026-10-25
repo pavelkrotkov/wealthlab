@@ -9,6 +9,7 @@ from pydantic import Field
 from wealthlab.household.records import Identifier, Record
 from wealthlab.products.long_short_inputs import LongShortCase
 from wealthlab.products.loss_timing import LossTiming
+from wealthlab.products.private_fund_inputs import PrivateFundContract
 from wealthlab.tax.facts import FederalIncome, TaxModel
 from wealthlab.tax.nj_facts import NJIncome
 
@@ -35,6 +36,7 @@ class SleeveAllocation(Record):
 
 class HouseholdSleeve(Record):
     account_id: Identifier
+    private_fund_contract: PrivateFundContract | None = None
     case: LongShortCase
     observations: list[SleeveObservation] = Field(min_length=1)
     allocations: list[SleeveAllocation] = Field(default_factory=list)

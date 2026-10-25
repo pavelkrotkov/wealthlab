@@ -10,7 +10,6 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
-from wealthlab.ui.household_sleeves import display as sleeve_results
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.hsa_invested_results import display as hsa_results
 from wealthlab.ui.lot_policy_results import display as policy_results
@@ -19,6 +18,7 @@ from wealthlab.ui.market_funding_results import display as funding_results
 from wealthlab.ui.market_hsa_payroll import display as payroll_results
 from wealthlab.ui.market_medical_results import display as medical_results
 from wealthlab.ui.medical_bills import display as bill_results
+from wealthlab.ui.private_fund_household_results import route_household as sleeve_results
 from wealthlab.ui.results import HIDDEN
 
 

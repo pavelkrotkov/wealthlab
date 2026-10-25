@@ -3,6 +3,7 @@
 from wealthlab.products.household_accounts import excluded_accounts, validate_account
 from wealthlab.products.household_records import validate_dates, validate_records
 from wealthlab.products.household_tax import validate as validate_allocations
+from wealthlab.products.private_fund_validation import validate as validate_fund
 from wealthlab.tax.projection_validation import validate as validate_tax
 
 
@@ -18,6 +19,7 @@ def validate(scenario):
         validate_account(sleeve, accounts, forbidden)
         validate_dates(sleeve, scenario)
         validate_allocations(sleeve, scenario)
+        validate_fund(sleeve, scenario)
 
 
 def validate_scope(plan, scenario):

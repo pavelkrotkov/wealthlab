@@ -117,6 +117,8 @@ Acceptance:
 - Exposure and losses are economically linked; user-prescribed loss schedules are labelled assumptions rather than generated alpha.
 - Leverage and liquidity failures feed household safety. No provider return or tax representation is implied.
 
+Conditional private-fund implementation: [ADR 0060](adr/0060-conditional-private-fund-contracts.md) covers actual household dealing/settlement, investor liability assumptions, separate supplied outside basis and cash-only exit taxes, plus a paired UI consumer. General legal eligibility, automatic K-1/basis reconstruction and excluded contract/tax profiles remain outside this bounded implementation.
+
 ## 09 — Options overlays and synthetic exposure
 
 Build date-specific covered-call, collar and four-leg synthetic exposure scenarios with leg-level P&L and household cash needs.
