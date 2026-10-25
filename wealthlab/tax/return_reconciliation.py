@@ -19,6 +19,11 @@ ZERO = Decimal(0)
 
 def revise(ledger, year, amended, when):
     validate_revision(year, amended, when)
+    return apply_revision(ledger, year, amended, when)
+
+
+def apply_revision(ledger, year, amended, when):
+    """Apply a revision only after the owning consumer validates its observation profile."""
     original = ledger.closed_returns[year]
     updated = replace(
         original, case=amended, result=evaluate(amended), net_paid=dict(original.net_paid)
@@ -89,7 +94,7 @@ def current_case(current, position, when, plan):
             )
         return position.case, ZERO
     if current.policy.year != when.year:
-        raise ValueError("January income corrections need the corresponding current tax year.")
+        raise ValueError("Income corrections need the corresponding current tax year.")
     fed = current.federal_income.model_dump()
     fed.update(
         short_carry=position.result["federal"]["short_carry"],
