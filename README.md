@@ -183,3 +183,5 @@ The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-r
 [Explicit advisory rate/period methods](docs/adr/0153-explicit-advisory-rate-and-period-methods.md) add source-confirmed whole-base breakpoint rates and supplied fixed annual fractions alongside existing marginal/actual-day defaults. Billing dates, observed valuations, cash priorities and unpaid fee liabilities remain native.
 
 The [combined QOZ/drilling/advisory starter](docs/adr/0211-composed-qoz-advisory-scenarios.md) finishes its original synthetic input scope after all menu builders. Imported or edited private scenarios still require independently sourced matching confirmations.
+
+Optimize also executes [native dated tax-budget sale choices](docs/adr/0213-native-tax-budget-policy-integration.md): forecast limits guide sales while actual gains, taxes, paid cash and complete exits remain independently audited.

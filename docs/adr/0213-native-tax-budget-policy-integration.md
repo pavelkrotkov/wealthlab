@@ -1,0 +1,7 @@
+# Native tax-budget sale choices in the combined optimizer
+
+The integration preserves original PR151 ancestry and its dated household forecast adapter. Native sale policies now accept tax-budget decisions in the combined household/Markets execution. The existing optimizer already replaces complete sale-policy schedules; it needs no second forecast, tax engine, cash book or new choice schema.
+
+An independent two-year check compares a sourced500 estimated-budget sale followed by final liquidation against final liquidation alone. Both retain11000 original capital and end with11000 actual cash after completed exits, with zero actual federal/NJ tax. The first policy sells49.7618shares; actual federal gain2488.09 belongs to2026 and remaining2511.91 to2027. The forecast200000bonus never arrives and never enters actual income or cash. Both choices retain the same dated forecast source and separate original bases. The complete two-year horizon satisfies the configured age50 example boundary; a shorter one-year horizon correctly fails that constraint.
+
+Forty-two native forecast, carry, January reconciliation, cash funding, guard, UI and optimizer checks pass. Strict global metrics cover1619first-party modules with unchanged limits, and Ruff/format/type checks pass. Four warnings come from the installed Streamlit/Pandas chart adapter; no financial check failed. Full combined-suite coverage, current-head CI and J-Bot review remain release requirements.
