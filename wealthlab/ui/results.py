@@ -52,6 +52,7 @@ HIDDEN = [
     "sleeve_audit",
     "sleeve_tax_assumptions",
     "exchange_fund_audit",
+    "qoz_audit",
     "workplace_audit",
     "workplace_market_audit",
     "workplace_withdrawal_audit",
@@ -64,7 +65,6 @@ HIDDEN = [
     "life_policy_audit",
     "saving_audit",
 ]
-
 
 def display(scenario: Scenario, rows: list[dict]) -> None:
     st.subheader(scenario.name)
@@ -109,9 +109,9 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 employer_events=rows[-1].get("employer_event_log", []),
                 exchange_fund=rows[-1].get("exchange_fund_audit"),
                 life_policies=rows[-1].get("life_policy_audit"),
+                qoz=rows[-1].get("qoz_audit"),
             )
         )
-
 
 def comparison(scenario: Scenario) -> None:
     if st.button("Keep this scenario as comparison baseline"):
@@ -128,7 +128,6 @@ def comparison(scenario: Scenario) -> None:
         "Ending wealth change versus baseline · nominal USD",
         f"${after['net_wealth'] - before['net_wealth']:,.2f}",
     )
-
 
 def account_summaries(rows):
     ira_summary(rows)

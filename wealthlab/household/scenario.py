@@ -21,6 +21,7 @@ from wealthlab.products.household_inputs import SleevePlan
 from wealthlab.products.life_household_inputs import LifeHouseholdPlan
 from wealthlab.products.life_household_records import validate_ownership as validate_life_ownership
 from wealthlab.products.option_household_inputs import OptionPlan
+from wealthlab.products.qoz_inputs import QOZPlan
 from wealthlab.retirement.education_household_inputs import EducationHouseholdPlan
 from wealthlab.retirement.hsa_household_inputs import HSAPlan
 from wealthlab.retirement.ira_household_inputs import IRAPlan
@@ -30,13 +31,11 @@ from wealthlab.retirement.social_work_inputs import WorkPolicy
 from wealthlab.retirement.workplace_inputs import WorkplacePlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
-
 class YearToDate(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, allow_inf_nan=False)
     gross_income: Money
     federal_tax_paid: Money
     state_tax_paid: Money
-
 
 class Scenario(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, allow_inf_nan=False)
@@ -72,6 +71,7 @@ class Scenario(BaseModel):
     exchange_fund_plan: ExchangeFundPlan | None = None
     option_plan: OptionPlan | None = None
     life_plan: LifeHouseholdPlan | None = None
+    qoz_plan: QOZPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
