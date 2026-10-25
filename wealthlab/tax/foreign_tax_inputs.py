@@ -79,4 +79,7 @@ class ForeignTaxPlan(TaxModel):
     refunds: list[ForeignObservedTax] = Field(default_factory=list)
     credit_profiles: list[ForeignCreditCase] = Field(min_length=1)
     allow_household_sales: bool = False
+    prior_return_redetermination: Claim = "unresolved"
+    redetermination_other_costs_complete_confirmed: bool = False
+    redetermination_source: str = Field(default="", max_length=500)
     source: str = Field(min_length=1, max_length=500)

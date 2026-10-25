@@ -7,16 +7,23 @@ native balances and refreshes only this book's federal credit facts.
 Actual bank cash, foreign levy translation and the country-recognized applied
 amount remain distinct. The latter changes only its assessment position; it
 does not withdraw a second payment or select US creditability.
+
+Later refunds can revise original US returns and consumed carry vintages.
+Known US arrears precede foreign and optional payments; unknown incidental
+costs remain a funding limitation instead of erasing the known tax principal.
 """
 
 from datetime import timedelta
 from decimal import Decimal
 from functools import partial
 
+from wealthlab.tax import prior_payments
 from wealthlab.tax.foreign_tax_credits import carry_reasons, opening_carries, refresh
 from wealthlab.tax.foreign_tax_execution import pay_due
 from wealthlab.tax.foreign_tax_positions import position_reasons, snapshot
 from wealthlab.tax.foreign_tax_recognition import supplied
+from wealthlab.tax.foreign_tax_redeterminations import cost_reasons
+from wealthlab.tax.foreign_tax_redeterminations import reconcile as redetermine
 from wealthlab.tax.foreign_tax_refunds import receive_refunds
 from wealthlab.tax.foreign_tax_reporting import report
 from wealthlab.tax.foreign_tax_sources import history, payment_record
@@ -43,6 +50,12 @@ class ForeignTaxBook:
         self.month = None
         self.sales_observed = ZERO
         self.retrying = False
+        self.projection_start = scenario.start
+        self.redetermined_refunds = set()
+        self.revised_years = set()
+        self.redetermination_unresolved = []
+        self.month_redeterminations = []
+        self.domestic_prior_paid = ZERO
 
     def observed_ids(self):
         return {r.id for _, r in self.payments}
@@ -64,6 +77,7 @@ class ForeignTaxBook:
 
     def before_optional(self, ledger, wallet, start, end):
         self.month, self.month_records = (start, end), []
+        self.month_redeterminations, self.domestic_prior_paid = [], ZERO
         receive_refunds(self, wallet, start, end)
         self.retry(ledger, wallet, start, end)
 
@@ -73,6 +87,8 @@ class ForeignTaxBook:
         self.retrying = True
         try:
             when = end - timedelta(days=1)
+            redetermine(self, ledger, when)
+            self.domestic_prior_paid += prior_payments.pay(ledger, wallet)
             refresh(self, ledger, when)
             pay_due(self, ledger, wallet, start, end, when)
             refresh(self, ledger, when)
@@ -84,6 +100,7 @@ class ForeignTaxBook:
         result = refresh(self, ledger, when)
         self.sales_observed += ledger.funding_context["proceeds"]
         unresolved = list(result["unresolved"]) + carry_reasons(self, when.year)
+        unresolved.extend(cost_reasons(self))
         if self.sales_observed:
             unresolved.append(
                 "Actual funding sales require independent foreign gain/source/basis classification."

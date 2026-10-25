@@ -48,8 +48,10 @@ def excluded_tax_reasons(case):
     if case.annual.pr_federal is None:
         return []
     permitted = {r.id for r in included(case)}
+    records = {r.id: r for r in case.tax_cash}
     for payment in case.tax_cash:
-        if payment.value.date.year != case.annual.policy.year:
+        original = records[payment.reverses_id] if payment.kind == "refund" else payment
+        if original.value.date.year != case.annual.policy.year:
             continue
         if positive_excluded_tax(payment, permitted):
             return ["PR-excluded or historical unverified income cannot generate US FTC/carry."]
