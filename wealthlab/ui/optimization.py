@@ -7,6 +7,7 @@ from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.inputs import PolicySearch
+from wealthlab.optimization.life_example import extend as with_life_paths
 from wealthlab.optimization.product_example import extend as with_products
 from wealthlab.optimization.robustness_example import synthetic as robust
 from wealthlab.optimization.search import search
@@ -22,7 +23,8 @@ def show():
         "529 deposits, saving allocations, rebalancing, taxable funding order and "
         "discretionary guardrails. All choices share capital, essential spending and tax facts. "
         "Fixed products use actual exits; new sleeve mixes use existing cash and supplied unit "
-        "schedules. Other product allocation and cross-border controls remain in progress."
+        "schedules. Life choices use complete supplied premium/event/value paths; other product "
+        "allocation and cross-border controls remain in progress."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "
@@ -54,6 +56,7 @@ def starter_case():
         ("Add synthetic stock/bond diversification policies", with_diversification),
         ("Add synthetic conditional products with actual exits", with_products),
         ("Add synthetic cash-funded sleeve allocation choices", with_allocations),
+        ("Add synthetic complete life-policy funding paths", with_life_paths),
     ):
         if st.checkbox(label):
             starter = extend(starter)
