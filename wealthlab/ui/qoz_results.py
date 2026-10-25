@@ -15,7 +15,8 @@ def display(result):
         "These are conditional ending-wealth results, not fully liquidated rankings when "
         "NAV or settlement receivables remain. The liquid policy has disclosed leverage, "
         "cost and liquidity differences; the three federal tax policies share one contract. "
-        "Timely exit retains fund leverage/fee/carry rates and return observations, changing "
+        "Timely exit matches the named allowed case: same federal election, fund leverage, "
+        "fee/carry rates and return observations, changing "
         "only the sale constraint and settlement delay."
     )
     for name, rows in result["rows"].items():

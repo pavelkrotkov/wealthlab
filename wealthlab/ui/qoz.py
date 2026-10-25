@@ -17,7 +17,8 @@ def show():
         "Federal denied / deferral without the ten-year election / conditional ten-year "
         "election share the same "
         "contract economics. NJ has independent gain/basis and supplied limits; it cannot "
-        "grant a federal election that this policy denies. Timely exit changes only "
+        "grant a federal election that this policy denies. Timely exit matches the named "
+        "allowed case and changes only "
         "the exit/settlement constraint while retaining fund return, leverage and cost terms."
     )
     st.caption(
