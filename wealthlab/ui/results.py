@@ -44,6 +44,7 @@ HIDDEN = [
     "sleeve_positions",
     "sleeve_audit",
     "sleeve_tax_assumptions",
+    "exchange_fund_audit",
     "workplace_audit",
     "workplace_market_audit",
     "workplace_withdrawal_audit",
@@ -94,6 +95,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 ytd=scenario.ytd.model_dump(mode="json"),
                 employer_tranches=rows[-1].get("employer_tranches", []),
                 employer_events=rows[-1].get("employer_event_log", []),
+                exchange_fund=rows[-1].get("exchange_fund_audit"),
             )
         )
 
