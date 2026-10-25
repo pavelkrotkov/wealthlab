@@ -6,6 +6,8 @@ from threading import RLock
 import pandas as pd
 from taxcalc import Calculator, Policy, Records
 
+from wealthlab.tax.insurance_niit import include
+
 # ponytail: one local-process lock; batch records if simulations need parallel throughput.
 LOCK = RLock()
 
@@ -27,7 +29,9 @@ def engine(year: int) -> Calculator:
     return calc
 
 
-def values(data: dict, year: int, outputs: tuple[str, ...]) -> dict[str, float]:
+def values(
+    data: dict, year: int, outputs: tuple[str, ...], insurance_niit: float = 0
+) -> dict[str, float]:
     """Fresh Records runs package validation and rebuilds derived input fields.
 
     Replace read AND calculated arrays, including filing-unit size, random credit
@@ -40,4 +44,5 @@ def values(data: dict, year: int, outputs: tuple[str, ...]) -> dict[str, float]:
         for name in fresh.USABLE_READ_VARS | fresh.CALCULATED_VARS:
             calc.array(name, getattr(fresh, name).copy())
         calc.calc_all(zero_out_calc_vars=True)
-        return {name: float(calc.array(name)[0]) for name in outputs}
+        result = {name: float(calc.array(name)[0]) for name in outputs}
+        return include(fresh, calc, year, insurance_niit, result)

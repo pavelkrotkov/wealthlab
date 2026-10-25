@@ -66,6 +66,8 @@ def show():
         "Qualified dividends are included in total dividends; collections are JSON. "
         "Ordinary noninvestment income is a supplied positive classification, excluding "
         "wages, investments, retirement and business income; no eligibility is inferred. "
+        "Insurance ordinary income is supplied recognized policy income subject to NIIT; "
+        "insurance additional tax is an entered liability, without inferred MEC eligibility. "
         "Positive balances are due, negative balances are overpayments. No payment is sent."
     )
     try:
