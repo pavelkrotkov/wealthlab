@@ -22,11 +22,15 @@ def fund(ledger, wallet, additional, start, end):
         raise ValueError("Required product funding needs the active household tax month.")
     if additional < 0:
         raise ValueError("Additional required cash cannot be negative.")
-    required = context["required"]
-    spending = required() if callable(required) else required
-    sold = ledger.funding.fund(
-        ledger, wallet, spending + additional, context["amounts"], start, end
-    )
+    # Funding compares gross cash with the unchanged complete bill quote. Keeping
+    # the optional-deposit reserve here would either double count it or clip a
+    # reserve larger than cash. Restore that same encumbrance before returning.
+    with wallet.reserving(ZERO):
+        required = context["required"]
+        spending = required() if callable(required) else required
+        sold = ledger.funding.fund(
+            ledger, wallet, spending + additional, context["amounts"], start, end
+        )
     context["proceeds"] += sold
     return sold
 

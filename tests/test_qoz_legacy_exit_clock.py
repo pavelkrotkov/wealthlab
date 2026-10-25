@@ -1,6 +1,6 @@
-"""Legacy designation-expiry continuation cannot be assumed beyond the2047 safe harbor.
+"""Legacy designation-expiry continuation cannot be assumed beyond the 2047 safe harbor.
 
-The existing regulation1.1400Z2(c)-1(c) limits its continuation rule. It does
+The existing regulation 1.1400Z2(c)-1(c) limits its continuation rule. It does
 not prove that every later legacy election is legally denied, so this profile
 fails closed instead of silently granting or categorically denying the benefit.
 """

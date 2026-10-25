@@ -21,10 +21,12 @@ def show():
         "and employer awards require actual contractual exits. Exchange choices retain the "
         "original source shares and basis. "
         "Life choices use complete supplied premium/event/value paths, including new policies "
-        "funded by actual future premiums. Drilling choices require complete supplied profiles "
-        "and an independent envelope valid for all candidates; full-tax drilling optimization "
-        "is unsupported. QOZ choices retain source stock and shared eligibility assumptions; "
-        "actual source sales, subscriptions, tax revisions and stock settlement execute natively. "
+        "funded by actual future premiums. Common sourced advisory fee contracts use each "
+        "candidate's actual native account values and cash; fee assumptions are not choices. "
+        "Drilling choices require complete supplied profiles and an independent envelope "
+        "valid for all candidates; full-tax drilling optimization is unsupported. "
+        "QOZ choices retain source stock and shared eligibility assumptions; actual source "
+        "sales, subscriptions, tax revisions and stock settlement execute natively. "
         "Cross-border controls remain in progress."
     )
     st.info(

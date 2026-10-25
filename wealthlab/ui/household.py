@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from wealthlab.employment.compensation_example import synthetic as compensation_example
 from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
+from wealthlab.household.advisory_advance_example import synthetic as advisory_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.portfolio.household_example import synthetic as lot_example
@@ -79,6 +80,7 @@ def show():
 
 def examples():
     choices = (
+        ("Load synthetic observed advance advisory fees", advisory_example),
         ("Load synthetic long-short household", sleeve_example),
         ("Load synthetic actual option household", option_example),
         ("Load synthetic whole-life household", life_example),

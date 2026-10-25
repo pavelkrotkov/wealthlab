@@ -6,6 +6,7 @@ from statistics import median
 
 from wealthlab.markets.household_report import wilson
 from wealthlab.optimization.account_exits import hsa_closed, lots_closed
+from wealthlab.optimization.advisory_fees import cleared as advisory_cleared
 from wealthlab.optimization.metrics import financial_metrics
 from wealthlab.optimization.product_exits import complete as products_closed
 
@@ -39,15 +40,20 @@ def assess(case, household, result, sampled=True):
 def completed_exit(household, rows):
     # Supplied/native exits must actually execute. An exit request or high marked
     # value cannot stand in for disposal, loan satisfaction or recognized tax.
-    cash = {a.id for a in household.accounts if a.wrapper == "cash"}
-    balances = rows[-1]["account_balances"]
-    lots = rows[-1].get("lot_audit", {}).get("lots", [])
+    final = rows[-1]
+    lots = final.get("lot_audit", {}).get("lots", [])
     return (
-        all(value == 0 for key, value in balances.items() if key not in cash)
+        balances_closed(household, final)
         and lots_closed(lots)
-        and hsa_closed(household, rows[-1])
-        and products_closed(household, rows[-1])
+        and hsa_closed(household, final)
+        and products_closed(household, final)
+        and advisory_cleared(household, final)
     )
+
+
+def balances_closed(household, row):
+    cash = {a.id for a in household.accounts if a.wrapper == "cash"}
+    return all(value == 0 for key, value in row["account_balances"].items() if key not in cash)
 
 
 def constraints(case, result, exits, funded, reserved):
