@@ -44,6 +44,7 @@ def main():
         [
             "Household",
             "Annual tax",
+            "Cross-border",
             "Tax lots",
             "Retirement",
             "Markets",
@@ -57,6 +58,10 @@ def main():
         show()
     elif page == "Annual tax":
         from wealthlab.ui.tax import show
+
+        show()
+    elif page == "Cross-border":
+        from wealthlab.ui.foreign_credits import show
 
         show()
     elif page == "Tax lots":

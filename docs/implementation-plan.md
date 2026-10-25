@@ -193,6 +193,8 @@ Acceptance:
 
 Compare dated moves among supported jurisdictions without counting tax credits or exemptions twice.
 
+Delivered foundation: [dated paid-tax FX, ordinary source/basket limits and native US credit order](adr/0064-dated-foreign-credit-facts.md), with editable UI, actual cash audit and original carry vintages. Person residence, jurisdiction adapters, actual foreign-tax household funding and original-return redeterminations remain subsequent layers; this foundation does not complete the ticket.
+
 Acceptance:
 - Person-specific status, sourcing, residency periods, treaty assumptions, foreign tax credit baskets/timing and FX are explicit and validated.
 - Full-year versus part-year treatment follows each supported jurisdiction rather than a global December-31 switch.
