@@ -10,6 +10,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.inputs import MarketCase
+from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
 from wealthlab.retirement.distribution_inputs import WithdrawalOrder
@@ -60,6 +61,7 @@ class PolicySearch(TaxModel):
     binding: HouseholdBinding
     training: MarketCase
     validation: MarketCase
+    robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
     dimensions: list[Dimension] = Field(min_length=1, max_length=8)
     targets: SearchTargets = Field(default_factory=SearchTargets)
     maximum_candidates: int = Field(default=128, ge=1, le=512)
