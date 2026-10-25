@@ -7,6 +7,7 @@ permissions without changing their fees, basis, security or sale selection."""
 
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
+from wealthlab.optimization.account_controls import apply as account_changes
 from wealthlab.optimization.scope import validate
 
 
@@ -26,6 +27,7 @@ def compile_candidate(case, selection):
 
 def apply(data, binding, choice):
     retirement(data, choice)
+    account_changes(data, choice)
     if choice.ira_orders is not None:
         if data["ira_plan"] is None:
             raise ValueError("IRA schedule choices require an existing configured IRA plan.")

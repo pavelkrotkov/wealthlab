@@ -9,12 +9,19 @@ there is no implicit last-write-wins ordering across unrelated policies."""
 from math import prod
 
 from wealthlab.household.calendar import months
+from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.market_validation import validate_markets
 from wealthlab.optimization.robustness_inputs import projection_paths
 from wealthlab.optimization.robustness_inputs import validate as validate_robustness
 from wealthlab.optimization.shared_terms import validate as validate_terms
 
-FIELDS = ("sale_policies", "harvest_policies", "ira_orders", "lot_funding_order")
+FIELDS = (
+    "sale_policies",
+    "harvest_policies",
+    "ira_orders",
+    "lot_funding_order",
+    *AccountControls.model_fields,
+)
 
 
 def choices(dimension):
