@@ -8,6 +8,7 @@ permissions without changing their fees, basis, security or sale selection."""
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.optimization import (
+    advisory_fees,
     exchange_paths,
     life_paths,
     new_life_controls,
@@ -24,6 +25,7 @@ from wealthlab.optimization.sleeve_allocations import selections
 
 def compile_candidate(case, selection):
     validate(case.household, case.binding)
+    advisory_fees.validate(case)
     validate_allocations(case)
     life_paths.validate(case)
     exchange_paths.validate(case)
@@ -45,7 +47,9 @@ def compile_candidate(case, selection):
         data, binding, case.option_opportunity, option_allocations.selected(selection)
     )
     new_life_offers.apply(data, case.new_life_opportunities, new_life_controls.selected(selection))
-    return Scenario.model_validate(data), HouseholdBinding.model_validate(binding)
+    candidate = Scenario.model_validate(data)
+    advisory_fees.preserved(case.household, candidate)
+    return candidate, HouseholdBinding.model_validate(binding)
 
 
 def apply(data, binding, choice):

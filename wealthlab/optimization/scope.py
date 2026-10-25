@@ -21,6 +21,7 @@ ALLOWED_PLANS = {
     "life_plan",
     "option_plan",
     "compensation_plan",
+    "advisory_fee_plan",
 }
 
 

@@ -13,7 +13,10 @@ def display(result):
     st.caption(
         f"Evaluated {result['evaluated_candidates']} of {result['grid_candidates']} allowed "
         "combinations. This is the best evaluated feasible candidate, not a global optimum. "
-        "Sampling intervals measure Monte Carlo sampling uncertainty, not model correctness."
+        "Sampling intervals measure Monte Carlo sampling uncertainty, not model correctness. "
+        "Advisory columns distinguish actual assessments, paid cash and ending debt. "
+        "All candidates retain the same sourced fee contract and observe their own native "
+        "balances; no precomputed AUM or optional zero-fee contract is substituted."
     )
     frame = pd.DataFrame(result["candidates"])
     st.dataframe(frame, hide_index=True)

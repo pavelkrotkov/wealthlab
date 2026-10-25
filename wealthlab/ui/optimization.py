@@ -21,7 +21,9 @@ def show():
         "and employer awards require actual contractual exits. Exchange choices retain the "
         "original source shares and basis. "
         "Life choices use complete supplied premium/event/value paths, including new policies "
-        "funded by actual future premiums. Other product "
+        "funded by actual future premiums. Common sourced advisory fee contracts use each "
+        "candidate's actual native account values and cash; fee assumptions are not choices. "
+        "Other product "
         "allocation and cross-border controls remain in progress."
     )
     st.info(

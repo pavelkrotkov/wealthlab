@@ -8,6 +8,7 @@ scenarios continue through the separate JSON import/editor without modification.
 import streamlit as st
 
 from wealthlab.optimization.account_example import extend as with_accounts
+from wealthlab.optimization.advisory_example import extend as with_advisory
 from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
@@ -39,7 +40,7 @@ def show():
     ):
         if st.checkbox(label, key=label):
             starter = extend(starter)
-    return purchases(starter)
+    return advisory(purchases(starter))
 
 
 def purchases(starter):
@@ -54,4 +55,10 @@ def purchases(starter):
         starter = with_exchange_choices(starter)
     if st.checkbox("Add synthetic new life-policy purchase choices", key="new_life_starter"):
         starter = with_new_life(starter)
+    return starter
+
+
+def advisory(starter):
+    if st.checkbox("Add common sourced advisory AUM fees", key="optimizer_advisory_starter"):
+        return with_advisory(starter)
     return starter
