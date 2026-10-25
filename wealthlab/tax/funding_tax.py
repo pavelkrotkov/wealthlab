@@ -25,7 +25,7 @@ def due(case, ledger, amounts, start, end) -> Decimal:
         case, ledger.outstanding["new_jersey"], ledger.plan.state_deduction_mode
     )
     result = evaluate(case)
-    withholding = payments.withholding_request(amounts, ledger.plan, result, start, end)
+    withholding = payments.ledger_request(ledger, amounts, result, start, end)
     federal_cash = withholding["employee_payroll_withheld"] + withholding["federal_income_withheld"]
     federal_cash += withholding["federal_estimates"]
     nj_cash = withholding["nj_withheld"] + withholding["nj_estimates"]

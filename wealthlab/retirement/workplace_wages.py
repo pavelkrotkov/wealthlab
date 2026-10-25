@@ -5,6 +5,8 @@ capacity test. This complete-year bridge therefore requires dated wage
 streams instead; the pre-existing employment adapter can generate them.
 """
 
+from decimal import Decimal
+
 
 def validate_wages(scenario):
     plan = scenario.tax_plan
@@ -43,3 +45,17 @@ def wage_facts(federal, nj):
             nj.wages,
         )
     )
+
+
+def gross_wages(amounts, rules, members):
+    return {
+        owner: sum(
+            (
+                amounts[r.income_id]
+                for r in rules
+                if r.federal == ("wages_primary" if i == 0 else "wages_spouse")
+            ),
+            Decimal(0),
+        )
+        for i, owner in enumerate(members)
+    }

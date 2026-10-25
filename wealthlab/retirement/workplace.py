@@ -21,6 +21,7 @@ from wealthlab.retirement.contribution_rules import workplace_limits
 from wealthlab.retirement.workplace_returns import apply as apply_returns
 from wealthlab.retirement.workplace_tax import events, summarize, tax_amounts
 from wealthlab.retirement.workplace_validation import validate
+from wealthlab.retirement.workplace_wages import gross_wages
 
 ZERO = Decimal(0)
 
@@ -38,7 +39,7 @@ class Ledger:
     def month(self, wallet, amounts, start, end):
         context = next(y for y in self.plan.years if y.year == start.year)
         people = {p.id: p for p in context.contributors}
-        remaining = {owner: self.wages(amounts, owner) for owner in self.members}
+        remaining = gross_wages(amounts, self.rules, self.members)
         excluded = dict.fromkeys(self.members, ZERO)
         rows = []
         for order in sorted(self.plan.orders, key=lambda o: o.date):
@@ -47,6 +48,7 @@ class Ledger:
                 rows.append(row)
                 if order.kind == "pretax_401k":
                     excluded[order.owner] += row["funded"]
+        self.remaining_wages = remaining
         self.log.extend(rows)
         summary = summarize(rows)
         summary["workplace_market_change"] = apply_returns(
@@ -57,10 +59,6 @@ class Ledger:
             events(self.members, excluded, start),
             summary,
         )
-
-    def wages(self, amounts, owner):
-        field = "wages_primary" if self.members.index(owner) == 0 else "wages_spouse"
-        return sum((amounts[r.income_id] for r in self.rules if r.federal == field), ZERO)
 
     def fund(self, context, person, order, wallet, remaining):
         used = self.used.setdefault((context.year, person.id), dict(total=ZERO, pretax=ZERO))

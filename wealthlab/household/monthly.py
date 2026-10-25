@@ -22,6 +22,7 @@ from wealthlab.retirement import (
 )
 from wealthlab.retirement.household_receipts import receipt_hook
 from wealthlab.retirement.household_receipts import required as wrapper_required
+from wealthlab.retirement.hsa_payroll import month as hsa_payroll
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -48,6 +49,8 @@ def month(
     wallet.deposit(row["income"])
     taxable, employee_events, contributions = workplace.month(employee, wallet, incomes, start, end)
     row.update(contributions)
+    taxable, payroll = hsa_payroll(hsa, employee, wallet, incomes, taxable, start, end)
+    row.update(payroll)
     if tax_ledger is not None:
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
         required_cash += medicare_household.required(medicare)
@@ -61,6 +64,7 @@ def month(
                 [*extra_events, *employee_events],
                 receipt_hook=receipt_hook(ira, hsa, education, products),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
+                additional_nj_wages=payroll.get("hsa_payroll_contributions", Decimal(0)),
             )
         )
         row.update(tax_ledger.close(wallet, start, end))

@@ -49,6 +49,8 @@ def paired(left, right):
         dict(
             path=a["path"],
             funded_change=int(b["funded"]) - int(a["funded"]),
+            reported_tax_liability_change=b["reported_tax_liability"] - a["reported_tax_liability"],
+            net_cash_taxes_paid_change=b["net_cash_taxes_paid"] - a["net_cash_taxes_paid"],
             joint_feasible_change=int(b["joint_feasible"]) - int(a["joint_feasible"]),
             real_wealth_change=b["ending_real_wealth"] - a["ending_real_wealth"],
             discretionary_reduction_change=b["discretionary_spending_reduction"]

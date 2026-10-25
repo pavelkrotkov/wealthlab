@@ -6,6 +6,7 @@ import streamlit as st
 
 from wealthlab.retirement.hsa_household_template import template
 from wealthlab.ui.hsa_invested_results import display as invested_metrics
+from wealthlab.ui.hsa_payroll_results import display as payroll_metrics
 from wealthlab.ui.medical_bills import display as medical_summary
 
 
@@ -31,7 +32,11 @@ def controls(payload, scenario):
             "Exclude generated investment income from other tax inputs. Linked recipient NJ "
             "fractions must be zero in this profile. Confirm remaining accounts are cash-only "
             "and clear the all-cash confirmation. Corrections remain unsupported. "
-            "Salary reduction is not modeled as a personal deposit. "
+            "Optional confirmed section125 payroll uses first-day monthly orders, after funded "
+            "employee401k elections. Only current owner wages, annual HSA room and actual cash "
+            "can fund salary reductions; no second personal deduction is taken. Conditional NJ "
+            "taxable salary remains in liability and withholding. This excludes partners, "
+            "ineligible S-corporation owners and unknown other payroll reductions. "
             "NJ bank treatment is a confirmed scenario assumption: no personal deduction, "
             "current taxable bank interest and employer funding added to NJ wages. Exclude "
             "that same employer amount from other wage inputs. Do not infer state treatment "
@@ -58,6 +63,7 @@ def display(rows):
         f"${sum(r['hsa_qualified_reimbursements'] for r in rows):,.2f}",
     )
     c.metric("Unfilled HSA requests", f"${sum(r['hsa_unfilled_requests'] for r in rows):,.2f}")
+    payroll_metrics(rows)
     distribution_metrics(rows)
     invested_metrics(rows)
     medical_summary(rows)

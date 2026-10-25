@@ -4,6 +4,8 @@ import json
 
 import streamlit as st
 
+from wealthlab.tax.household_reporting import annual_results
+from wealthlab.tax.household_reporting import revisions as return_revisions
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -11,9 +13,8 @@ def display(rows: list[dict]) -> None:
     if "annual_tax" not in rows[-1]:
         st.info("Taxes are omitted. Enable household tax assumptions to include them.")
         return
-    annual = {row["date"][:4]: row["annual_tax"] for row in rows}
-    revisions = rows[-1].get("lot_audit", {}).get("return_reconciliations", [])
-    annual.update({str(r["year"]): r["final_result"] for r in revisions})
+    annual = annual_results(rows)
+    revisions = return_revisions(rows)
     records = [
         dict(
             year=year,

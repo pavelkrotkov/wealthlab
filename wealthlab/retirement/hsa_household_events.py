@@ -27,3 +27,14 @@ def apply(ledger, start, end):
     if investments is not None:
         investments.advance(book, end - timedelta(days=1))
     ledger.medical.retry(book)
+
+
+def sync_wallet(ledger, wallet):
+    difference = ledger.book["cash"] - wallet.cash
+    if difference >= 0:
+        wallet.deposit(difference)
+    else:
+        wallet.pay(-difference)
+    wallet.balances.update(ledger.book["balances"])
+    if ledger.investments is not None:
+        ledger.investments.wallet(wallet)

@@ -81,3 +81,7 @@ Retirement / **HSA investments** adds [dated inside-HSA lot accounting](docs/adr
 Load **synthetic invested HSA household** for [actual medical and withdrawal funding from permitted share sales](docs/adr/0042-household-invested-hsa.md), separate marked assets and cash, actual conditional NJ recognition and carried basis/fee obligations. Payroll funding and automatic medical deductions remain separate work.
 
 Markets / Household funding / **Invested HSA** runs [actual positions, yield, sale locks, medical funding and conditional NJ recognition on shared realized paths](docs/adr/0043-invested-hsa-market-paths.md). Price appreciation stays distinct from taxable realized gains and cash income.
+
+Load **synthetic payroll HSA household** for [qualifying section125 salary reductions sharing actual wages, employee401k room and HSA eligibility](docs/adr/0044-household-payroll-hsa.md). Salary reductions, personal deductions and external employer funding remain distinct; conditional NJ liability and withholding use independent wage treatment.
+
+Markets / Household funding / **HSA payroll and employment** adds [automatic matched salary-versus-personal funding controls under observed employer shocks](docs/adr/0045-hsa-funding-employment-comparison.md). Actual funded deposits, reported taxes, dated payments/refunds and cash availability remain separate; the control uses submitted inputs and the same realized paths.

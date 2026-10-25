@@ -15,6 +15,7 @@ from wealthlab.retirement.education_household_example import synthetic as educat
 from wealthlab.retirement.hsa_distribution_example import synthetic as hsa_distribution_example
 from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
 from wealthlab.retirement.hsa_invested_example import synthetic as hsa_invested_example
+from wealthlab.retirement.hsa_payroll_example import synthetic as hsa_payroll_example
 from wealthlab.retirement.ira_deposit_household_example import synthetic as ira_deposit_example
 from wealthlab.retirement.ira_household_example import synthetic as ira_example
 from wealthlab.retirement.medical_bill_example import synthetic as medical_example
@@ -76,6 +77,7 @@ def examples():
         ("Load synthetic IRA household", ira_example),
         ("Load synthetic IRA contribution household", ira_deposit_example),
         ("Load synthetic cash HSA household", hsa_example),
+        ("Load synthetic payroll HSA household", hsa_payroll_example),
         ("Load synthetic invested HSA household", hsa_invested_example),
         ("Load synthetic nonqualified HSA household", hsa_distribution_example),
         ("Load synthetic current medical bills", medical_example),
