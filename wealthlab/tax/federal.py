@@ -8,10 +8,13 @@ from wealthlab.tax.facts import Deductions, FederalIncome
 from wealthlab.tax.federal_engine import values as engine_values
 from wealthlab.tax.filing import Filing
 from wealthlab.tax.mapping import record
+from wealthlab.tax.partnership import report as partnership_report
 from wealthlab.tax.policy import TaxPolicy
 
 OUTPUTS = (
     "iitax",
+    "setax",
+    "c03260",
     "c09200",
     "ptax_was",
     "ptax_amc",
@@ -34,7 +37,9 @@ def calculate(
     filing: Filing, income: FederalIncome, deductions: Deductions, policy: TaxPolicy
 ) -> dict:
     year, scale, label = policy.valuation()
-    if filing.status != "joint" and (income.wages_spouse or income.deferrals_spouse):
+    if filing.status != "joint" and any(
+        (income.wages_spouse, income.deferrals_spouse, income.partnership_se_earnings_spouse)
+    ):
         raise ValueError("Spouse wage inputs are supported only on joint returns.")
     raw = engine_values(
         record(filing, income, deductions, scale),
@@ -88,5 +93,6 @@ def breakdown(values: dict, income: FederalIncome, label: str) -> dict:
             if income.ordinary_noninvestment_income
             else None
         ),
+        partnership=partnership_report(income, values),
         policy=label,
     )

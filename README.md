@@ -128,3 +128,6 @@ Load **synthetic whole-life household** in Household for [actual required premiu
 Products / **Whole life versus liquid saving** compares [matched limited/longer premium schedules or an existing policy with liquid saving and independently priced term cover](docs/adr/0104-insurance-and-liquid-saving-alternatives.md). All alternatives retain the same household capital, spending, tax background and realized market paths. Actual shares, surrender taxes, cash reserves, retirement premiums and protection gaps are reported separately. Marked wealth excludes unexecuted future exit taxes; short synthetic examples are not retirement-safety conclusions. Individual alternatives export directly to Household.
 
 Load **synthetic scheduled liquid saving** in Household to edit actual month-end investment budgets, commissions, allocations and cash buffers in the linked-lot form. Unfilled optional saving remains distinct from required-payment failures.
+
+
+The Annual tax workbench now separates [supplied nonpassive partnership income, self-employment earnings, eligible QBI and AMT additions](docs/adr/0090-supplied-partnership-tax-facts.md). These prelimited numerical inputs preserve distinct NIIT and payroll treatment; they do not infer working-interest, IDC, QBI or other eligibility. The conditional drilling consumer remains in development.
