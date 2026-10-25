@@ -25,3 +25,12 @@ The old pre-FRA no-work bridge now includes supplied positive partnership SE ear
 Checked October 25, 2026: [Tax-Calculator input documentation](https://taxcalc.pslmodels.org/guide/input-vars/) describes `e02000`, `e26270`, `k1bx14p/s`, QBI wages/property and `cmbtp`. The pinned installed implementation supplies the exact numerical behavior above. [2025 IRS K-1 instructions](https://www.irs.gov/instructions/i1065sk1) separately report self-employment earnings and qualified-business-income information. [2025 Publication 925](https://www.irs.gov/publications/p925), also located/read through the existing local tax-reference collection, separates basis/at-risk limits from passive limits and describes the oil/gas working-interest exception with its liability conditions. These sources do not qualify a particular product. [2025 Form 6251 instructions](https://www.irs.gov/instructions/i6251) support the independent current-AMT check.
 
 Checks compare passive/nonpassive gains and losses with identical AGI and independently expected NIIT; verify separately supplied QBI; reconcile $10,000 box-14 earnings to SE tax and its deduction; exercise the Social Security wage cap and additional Medicare; reconcile the 2025 single-filer AMT exemption/rate example; and verify cache isolation plus actual Annual tax form submission. No gross deduction times a headline rate is deposited as tax-saving cash.
+
+For checkout-local review of this deliberate adapter, the pinned [6.8.5 `TaxInc` implementation](https://github.com/PSLmodels/Tax-Calculator/blob/6.8.5/taxcalc/calcfunctions.py#L1905-L1916) builds:
+
+```python
+qbinc = max(0., e00900 - c03260 - e03300 - e03270
+            + e26270 + e02100 + e27200)
+```
+
+Its [NIIT implementation](https://github.com/PSLmodels/Tax-Calculator/blob/6.8.5/taxcalc/calcfunctions.py#L2864-L2867) uses `line4c = e02000 - e26270` when `NIIT_PT_taxed` is false. The integration oracles in `tests/test_partnership_tax_channels.py` and `tests/test_partnership_se_amt.py` exercise the real pinned calculator with equal-AGI passive/nonpassive inputs, zero/positive QBI and independent SE/AMT channels. These independently expected results, rather than a test mirroring package source, constrain this version-specific adapter.
