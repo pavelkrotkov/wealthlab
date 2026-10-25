@@ -8,13 +8,22 @@ from wealthlab.products.exchange_fund_trades import sell
 
 
 def requested(ledger, request, prices, wallet, row):
-    if request.action == "redeem" and ledger.active:
-        if request.date < ledger.plan.liquid_after:
-            return early(ledger, request, wallet, row)
-        return release(ledger, request.date, prices, wallet, row)
-    if request.action == "sell_liquid":
-        return [sell(ledger.book, ledger.plan, prices, request.date, request.id)]
-    return []
+    if request.action == "redeem":
+        return redeem(ledger, request, prices, wallet, row)
+    return [sell(ledger.book, ledger.plan, prices, request.date, request.id)]
+
+
+def redeem(ledger, request, prices, wallet, row):
+    if ledger.plan.mode == "direct_sale":
+        # The reference already owns the actual basket; no partnership interest exists.
+        row["direct_basket_already_owned_requests"] += 1
+        return []
+    if not ledger.active:
+        row["inactive_fund_redemption_requests"] += 1
+        return []
+    if request.date < ledger.plan.liquid_after:
+        return early(ledger, request, wallet, row)
+    return release(ledger, request.date, prices, wallet, row)
 
 
 def early(ledger, request, wallet, row):

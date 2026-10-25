@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 from wealthlab.products.exchange_fund_accounts import validate_account
 from wealthlab.products.exchange_fund_basket_validation import validate_basket
+from wealthlab.products.exchange_fund_direct import validate as validate_direct
 from wealthlab.products.exchange_fund_records import allocations, validate_records
 from wealthlab.products.household_tax import validate as validate_allocations
 from wealthlab.tax.projection_validation import validate as validate_tax
@@ -31,6 +32,7 @@ def validate(scenario):
     ]
     if "unconfirmed" in treatments:
         raise ValueError("Unconfirmed exchange tax treatment blocks calculation.")
+    validate_direct(plan)
     validate_account(scenario, plan)
     validate_records(scenario, plan)
     validate_basket(plan)

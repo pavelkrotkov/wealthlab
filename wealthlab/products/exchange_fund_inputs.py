@@ -65,4 +65,5 @@ class ExchangeFundPlan(TaxModel):
     all_terms_tax_and_basis_assumptions_confirmed: bool
     other_tax_inputs_exclude_product_confirmed: bool
     no_external_substantially_identical_trades_confirmed: bool
+    fund_specific_flows_excluded_from_direct_sale_confirmed: bool = False
     mode: Literal["exchange", "direct_sale"] = "exchange"

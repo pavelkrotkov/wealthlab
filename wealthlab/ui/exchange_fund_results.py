@@ -6,6 +6,7 @@ import streamlit as st
 
 
 def display(result):
+    policy_disclosure(result)
     st.dataframe([dict(policy=name, **values) for name, values in result["outcomes"].items()])
     for name, rows in result["rows"].items():
         st.write(name)
@@ -37,3 +38,12 @@ def display(result):
         file_name="exchange-fund-comparison.json",
         mime="application/json",
     )
+
+
+def policy_disclosure(result):
+    if result.get("fund_specific_exclusions_confirmed"):
+        st.warning(
+            "Explicit policy difference: fund cash/K-1/basis inputs are excluded from "
+            "direct shares and itemized in the monthly audit. Direct redeem requests "
+            "acknowledge already owned basket shares; sell_liquid raises actual cash."
+        )

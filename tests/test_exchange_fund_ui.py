@@ -51,11 +51,16 @@ def test_generated_price_form_requires_explicit_replacement_confirmation():
     assert app.error
     assert "Confirm replacing" in app.error[0].value
     data["replace_observations_with_market_confirmed"] = True
+    data["scenario"]["exchange_fund_plan"][
+        "fund_specific_flows_excluded_from_direct_sale_confirmed"
+    ] = True
+    data["scenario"]["exchange_fund_plan"]["observations"][0]["distribution"] = "1000"
     app.text_area(key="exchange_fund_editor").set_value(json.dumps(data))
     submit(app)
     assert not app.error
     assert not app.exception
     assert app.session_state["exchange_fund_result"]["submitted_input"]["market"]["seed"] == 42
+    assert any("Explicit policy difference" in item.value for item in app.warning)
 
 
 def submit(app):

@@ -2,6 +2,7 @@
 
 from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
+from wealthlab.products.exchange_fund_direct import validate as validate_direct
 
 
 def compare(scenario: Scenario):
@@ -14,11 +15,13 @@ def compare(scenario: Scenario):
     exchange = scenario.model_copy(
         update={"exchange_fund_plan": plan.model_copy(update={"mode": "exchange"})}
     )
+    validate_direct(direct.exchange_fund_plan)
     rows = {"exchange": project(exchange), "direct_sale": project(direct)}
     return dict(
         rows=rows,
         outcomes={name: outcome(items) for name, items in rows.items()},
         input=scenario.model_dump(mode="json"),
+        fund_specific_exclusions_confirmed=plan.fund_specific_flows_excluded_from_direct_sale_confirmed,
     )
 
 

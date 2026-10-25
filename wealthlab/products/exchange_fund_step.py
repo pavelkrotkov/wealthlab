@@ -2,6 +2,7 @@
 
 from wealthlab.household.calendar import money
 from wealthlab.products import exchange_fund_lots as lots
+from wealthlab.products.exchange_fund_direct import audit as direct_audit
 from wealthlab.products.exchange_fund_redemption import requested
 from wealthlab.products.exchange_fund_trades import marked
 
@@ -16,6 +17,7 @@ def advance(ledger, observation, wallet):
         early_cash=lots.ZERO,
         basket_cash=lots.ZERO,
     )
+    row.update(direct_audit(ledger.plan, observation))
     if ledger.active:
         grow(ledger, observation, row)
         distribute(ledger, observation, wallet, row)
@@ -92,7 +94,8 @@ def execute_requests(ledger, observation, wallet, row):
     events = []
     for request in ledger.plan.requests:
         if request.date == observation.date:
-            if observation.locked:
+            direct_ownership = ledger.plan.mode == "direct_sale" and request.action == "redeem"
+            if observation.locked and not direct_ownership:
                 row["denied_redemptions"] += 1
             else:
                 events.extend(requested(ledger, request, observation.prices, wallet, row))
