@@ -159,3 +159,5 @@ Combined projections preserve [canonical QOZ source-year tax revisions and requi
 Optimize accepts [native option and employer contracts](docs/adr/0201-native-option-employer-search.md) on shared market paths, with actual cash/tax exits and separately supplied termination evidence.
 
 Optimize compares [new option units funded from existing cash](docs/adr/0202-new-option-allocation-search.md), with actual share acquisition, explicit bounds/locks, native tax exits and unchanged starting wealth.
+
+Optimize compares [retained, partial/full exchange contributions and direct sale](docs/adr/0203-exchange-contribution-path-search.md) using the same original stock and independent basis, complete supplied profiles, actual source/basket exits and preserved liquidity locks.

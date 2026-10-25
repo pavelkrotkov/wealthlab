@@ -12,6 +12,7 @@ from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.example import synthetic
+from wealthlab.optimization.exchange_example import extend as with_exchange_choices
 from wealthlab.optimization.life_example import extend as with_life_paths
 from wealthlab.optimization.option_allocation_example import extend as with_new_options
 from wealthlab.optimization.product_example import extend as with_products
@@ -35,12 +36,15 @@ def show():
         ("Add synthetic complete life-policy funding paths", with_life_paths),
         ("Add synthetic options and employer contract exits", with_contracts),
     ):
-        if st.checkbox(label):
+        if st.checkbox(label, key=label):
             starter = extend(starter)
     new_options = st.checkbox(
         "Add synthetic cash-funded option allocation choices",
         disabled=starter.household.option_plan is not None,
+        key="new_option_allocation_starter",
     )
     if new_options and starter.household.option_plan is None:
         starter = with_new_options(starter)
+    if st.checkbox("Add synthetic exchange-fund contribution choices", key="exchange_path_starter"):
+        starter = with_exchange_choices(starter)
     return starter

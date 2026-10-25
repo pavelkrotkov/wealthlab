@@ -18,7 +18,8 @@ def show():
         "discretionary guardrails. All choices share capital, essential spending and tax facts. "
         "Fixed products use actual exits; new sleeve mixes use existing cash and supplied unit "
         "schedules. New option units buy actual shares from existing cash. Fixed options "
-        "and employer awards require actual contractual exits. "
+        "and employer awards require actual contractual exits. Exchange choices retain the "
+        "original source shares and basis. "
         "Life choices use complete supplied premium/event/value paths; other product "
         "allocation and cross-border controls remain in progress."
     )
