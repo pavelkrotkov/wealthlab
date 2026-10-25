@@ -15,6 +15,7 @@ def dividends(state, mark):
 def terminations(state, mark, *, same_day):
     events = {event.leg_id: event for event in state.case.events}
     for leg in list(state.active.values()):
+        validate_pending_delivery(leg, mark)
         if (leg.opened == mark.date) != same_day:
             continue
         event = events.get(leg.id)
@@ -22,3 +23,10 @@ def terminations(state, mark, *, same_day):
             finish(state, leg, mark, event.action, event.close_price)
         elif leg.expiry == mark.date:
             finish(state, leg, mark, "expire")
+
+
+def validate_pending_delivery(leg, mark):
+    if leg.expiry < mark.date:
+        raise ValueError(
+            "Pending expired physical delivery requires settlement resolution before later marks."
+        )

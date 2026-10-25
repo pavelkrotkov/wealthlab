@@ -51,3 +51,15 @@ def test_roll_closes_old_leg_at_supplied_quote_and_pays_new_premium_once():
     result = run(parse(data))
     assert sum(row["pnl"] for row in result["terminations"]) == Decimal(1400)
     assert result["ending"]["cash"] == 11400
+
+
+def test_failed_expired_delivery_cannot_be_repriced_as_a_live_option_later():
+    import pytest
+
+    data = one_leg(physical=True)
+    data["holdings"]["accounts"][0]["cash"] = "500"
+    data["holdings"]["end"] = "2026-02-01"
+    data["outside_cash"] = "0"
+    data["marks"].append(dict(data["marks"][-1], date="2026-02-01", stock="70"))
+    with pytest.raises(ValueError, match="Pending expired physical delivery"):
+        run(parse(data))
