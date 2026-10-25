@@ -62,3 +62,16 @@ def test_early_sale_includes_original_gain_and_retains_new_short_term_gain():
     sale = exit_event(book, D(120000), D(119000), date(2027, 12, 31), PLAN)
     assert sale.federal.short_term == D(19000)
     assert sale.cash_received == 0
+
+
+def test_ten_year_stock_loss_retains_basis_without_claiming_an_fmv_election():
+    book = opening(
+        D(100000), dict(federal=D(100000), new_jersey=D(100000)), date(2027, 1, 31), "long_term"
+    )
+    include(book, D(120000), date(2032, 1, 31), PLAN)
+    sale = exit_event(book, D(80000), D(79000), date(2037, 1, 31), PLAN)
+    # Retain the $100k included-gain basis; $79k actual proceeds realizes a $21k loss.
+    assert sale.federal.long_term == D(-21000)
+    federal = next(r for r in book["log"] if r["event"] == "full_stock_sale")
+    assert federal["basis"] == D(100000)
+    assert federal["ten_year_election"] is False

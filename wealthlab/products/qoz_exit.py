@@ -15,7 +15,7 @@ def exit_event(tax, nav, proceeds, when, plan):
     values = {}
     for jurisdiction, book in tax["jurisdictions"].items():
         fmv = money(nav * book["elected"] / tax["funded"])
-        step = elects_fmv(tax, book, when, plan, jurisdiction)
+        step = elects_fmv(tax, book, when, plan, jurisdiction) and fmv > book["basis"]
         if step:
             book["basis"] = max(book["basis"], fmv)
         basis = book["basis"] + book["ordinary_basis"]
