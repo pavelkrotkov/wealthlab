@@ -5,6 +5,7 @@ months, including its debt, while the available cash comes from the current
 household wallet rather than a separate synthetic investor reserve.
 """
 
+from wealthlab.household import advisory_household
 from wealthlab.products.conditional_allocations import audit as tax_audit
 from wealthlab.products.conditional_allocations import events as tax_events
 from wealthlab.products.household_cash import execute
@@ -51,8 +52,8 @@ class Ledger:
 
 
 class CombinedLedger:
-    def __init__(self, books):
-        self.books = books
+    def __init__(self, books, advisory=None):
+        self.books, self.advisory = books, advisory
 
     def after_receipts(self, wallet, start, end):
         for book in self.books:
@@ -77,9 +78,10 @@ def make(scenario, tax_ledger=None, lots=None):
         from wealthlab.products.qoz_household import Ledger as QOZLedger
 
         books.append(QOZLedger(scenario, lots, tax_ledger))
+    advisory = advisory_household.attach(books, scenario)
     if scenario.lot_plan and scenario.lot_plan.savings:
         books.append(SavingLedger(scenario, tax_ledger))
-    return CombinedLedger(books) if books else None
+    return CombinedLedger(books, advisory) if books else None
 
 
 def completed(ledger):

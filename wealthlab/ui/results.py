@@ -12,6 +12,7 @@ from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.household_advisory import display as advisory_summary
 from wealthlab.ui.household_education import display as education_summary
 from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
@@ -28,6 +29,8 @@ from wealthlab.ui.private_fund_household_results import route_household as sleev
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [
+    "advisory_fee_assessments",
+    "advisory_fee_audit",
     "account_balances",
     "debt_balances",
     "annual_tax",
@@ -90,6 +93,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     )
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
+    advisory_summary(rows)
     tax_summary(rows)
     social_work_summary(rows)
     compensation_summary(rows)
@@ -111,6 +115,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 exchange_fund=rows[-1].get("exchange_fund_audit"),
                 life_policies=rows[-1].get("life_policy_audit"),
                 qoz=rows[-1].get("qoz_audit"),
+                advisory_fees=rows[-1].get("advisory_fee_audit"),
             )
         )
 
