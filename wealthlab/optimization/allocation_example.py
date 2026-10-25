@@ -36,6 +36,8 @@ def opportunity(case, private):
     unit = sleeve(case.household, case.training.assets[0].id, private)
     unit = namespaced(unit, identity)
     unit["account_id"] = identity
+    if unit["private_fund_contract"] is not None:
+        unit["private_fund_contract"]["ordinary_holding_period_assumed_confirmed"] = True
     return dict(
         id=identity,
         provenance="illustration",

@@ -39,7 +39,7 @@ def validate_item(item, case):
         raise ValueError(
             "Confirm opening cash purchase and proportional dollar schedule assumptions."
         )
-    validate_purchase_basis(item.unit)
+    validate_purchase_basis(item.unit, case.household.start)
     validate_source(item, case)
 
 
@@ -72,8 +72,12 @@ def control_keys(choice):
     return {"sleeve_units:" + key for key in choice.sleeve_units or {}}
 
 
-def validate_purchase_basis(unit):
+def validate_purchase_basis(unit, start):
     contract = unit.private_fund_contract
+    if contract is not None and contract.federal_holding_start not in (None, start):
+        raise ValueError("A new cash fund cannot inherit a different historical holding start.")
+    if contract is not None and not contract.ordinary_holding_period_assumed_confirmed:
+        raise ValueError("New cash fund units require confirmed ordinary holding-period treatment.")
     if contract is not None and (
         contract.federal_opening_basis != unit.case.opening_equity
         or contract.new_jersey_opening_basis != unit.case.opening_equity

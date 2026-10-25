@@ -44,7 +44,7 @@ def purchase(data, binding, opportunity, count):
         raise ValueError("Opening sleeve purchases cannot exceed available source cash.")
     source["balance"] = str(available - amount)
     data["accounts"].append(account(opportunity, amount))
-    add_sleeve(data, sleeve.model_dump(mode="json"))
+    add_sleeve(data, acquired(sleeve, data["start"]))
     binding["sleeves"].append(sleeve.account_id)
     binding["replace_sleeve_observations_confirmed"] = True
 
@@ -85,3 +85,12 @@ def audit(before, after):
             if a.id in original and a.wrapper == "cash"
         },
     )
+
+
+def acquired(sleeve, when):
+    data = sleeve.model_dump(mode="json")
+    if data["private_fund_contract"] is not None:
+        data["private_fund_contract"].update(
+            federal_holding_start=when, federal_capital_character=None
+        )
+    return data
