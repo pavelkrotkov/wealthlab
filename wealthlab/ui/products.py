@@ -16,6 +16,14 @@ from wealthlab.ui.uploads import invalid, source
 
 def show():
     st.header("Investment products")
+    workspace = st.selectbox(
+        "Product workbench", ["Long/short economics", "Traditional exchange funds"]
+    )
+    if workspace == "Traditional exchange funds":
+        from wealthlab.ui.exchange_fund import show as show_exchange
+
+        show_exchange()
+        return
     st.subheader("Long/short economics and margin risk")
     st.warning(
         "Pre-tax economic model. This page does not yet calculate fund tax allocations or "
