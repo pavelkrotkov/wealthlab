@@ -11,6 +11,7 @@ from wealthlab.products.household_cash import execute
 from wealthlab.products.household_reporting import summarize
 from wealthlab.products.household_validation import validate
 from wealthlab.products.long_short_book import opening
+from wealthlab.products.private_fund_household import FundLedger
 
 
 class Ledger:
@@ -22,6 +23,9 @@ class Ledger:
             s.account_id: [e for a in s.allocations for e in tax_events(a)]
             for s in self.plan.sleeves
         }
+        self.funds = {
+            s.account_id: FundLedger(s) for s in self.plan.sleeves if s.private_fund_contract
+        }
         self.month = 0
         self.log = []
         self.summary = {}
@@ -29,7 +33,16 @@ class Ledger:
     def after_receipts(self, wallet, start, end):
         audits, events = [], []
         for sleeve in self.plan.sleeves:
-            audits.append(execute(self.books[sleeve.account_id], sleeve, self.month, wallet, end))
+            if sleeve.account_id in self.funds:
+                row, fund_events = self.funds[sleeve.account_id].execute(
+                    self.month, wallet, start, end
+                )
+                audits.append(row)
+                events.extend(fund_events)
+            else:
+                audits.append(
+                    execute(self.books[sleeve.account_id], sleeve, self.month, wallet, end)
+                )
             events.extend(a for a in self.allocations[sleeve.account_id] if start <= a.date < end)
         self.log.extend(audits)
         self.summary = summarize(audits)

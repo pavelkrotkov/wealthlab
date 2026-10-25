@@ -11,7 +11,7 @@ def classify(row):
     flags = dict(
         margin_triggered=bool(any_stage(row, "margin_requested")),
         margin_unresolved=bool(any_stage(row, "margin_exit_blocked")),
-        negative_equity=row["equity"] < 0,
+        negative_equity=row.get("fund_internal_equity", row["equity"]) < 0,
         exit_blocked=row.get("terminal_exit_blocked", False),
     )
     flags["constraints_failed"] = any(flags[k] for k in flags if k != "margin_triggered")
