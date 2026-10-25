@@ -24,15 +24,16 @@ from wealthlab.retirement import (
     hsa_household,
     ira_household,
     medicare_household,
+    social_work_household,
     workplace,
     workplace_rollovers,
 )
-from wealthlab.retirement.social_household import prepare
+from wealthlab.retirement.social_household import prepare_with_work as prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
 def project(scenario: Scenario, market=None) -> list[dict]:
-    scenario = prepare(prepare_compensation(prepare_employment(scenario)))
+    scenario, social = prepare(prepare_compensation(prepare_employment(scenario)))
     validate_resolved(scenario)
     wallet = Wallet(scenario)
     debt_balances = debts.opening_debts(scenario)
@@ -81,6 +82,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
         row["net_wealth"] -= row.get("sleeve_liability", Decimal(0))
+        social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
         observe_market(market, lots, row)

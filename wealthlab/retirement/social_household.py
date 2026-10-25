@@ -9,16 +9,25 @@ from datetime import date
 
 from wealthlab.household.schedules import Income
 from wealthlab.retirement.medicare_household_inputs import withholding
-from wealthlab.retirement.social import run
 from wealthlab.retirement.social_dates import shift
 from wealthlab.retirement.social_household_validation import validate
 from wealthlab.tax.projection_inputs import IncomeRule
 
 
-def prepare(scenario):
+def prepare_with_work(scenario):
+    from wealthlab.retirement.social_work_household import calculate
+
+    result = calculate(scenario)
+    return prepare(scenario, result), result
+
+
+def prepare(scenario, result=None):
     if scenario.social_security is None:
         return scenario
-    result = run(scenario.social_security)
+    if result is None:
+        from wealthlab.retirement.social_work_household import calculate
+
+        result = calculate(scenario)
     validate(scenario, result)
     if withholding(scenario):
         return scenario
@@ -46,7 +55,12 @@ def prepare(scenario):
         update=dict(income_rules=[*scenario.tax_plan.income_rules, *rules])
     )
     payload = scenario.model_dump()
-    payload.update(incomes=[*scenario.incomes, *incomes], tax_plan=plan, social_security=None)
+    payload.update(
+        incomes=[*scenario.incomes, *incomes],
+        tax_plan=plan,
+        social_security=None,
+        social_work_plan=None,
+    )
     return type(scenario).model_validate(payload)
 
 
