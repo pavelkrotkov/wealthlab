@@ -43,3 +43,12 @@ def test_leveraged_reference_is_rejected():
     data["reference"]["sleeve_plan"]["sleeves"][0]["case"]["long_multiple"] = "1.1"
     with pytest.raises(ValueError, match="unlevered reference"):
         run(data)
+
+
+def test_reference_retains_an_actual_unlevered_investment_after_paying_entry_costs():
+    result = run(synthetic())
+    audit = result["reference"]["details"][0]["rows"][-1]["sleeve_audit"]
+    assert audit[0]["long_value"] > 0
+    assert audit[0]["financing_loan"] == 0
+    assert not audit[0]["entry_forced_liquidation"]
+    assert audit[1]["long_price_pnl"] > 0

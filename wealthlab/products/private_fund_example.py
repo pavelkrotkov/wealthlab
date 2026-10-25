@@ -17,7 +17,7 @@ def synthetic(mode="deterministic", stress="early_crash"):
     reference["name"] = "Synthetic liquid unlevered cash-distribution tax proxy"
     reference_sleeve = reference["sleeve_plan"]["sleeves"][0]
     reference_sleeve["case"].update(
-        long_multiple="1",
+        long_multiple=".99",
         short_multiple="0",
         annual_manager_fee=".0005",
         annual_borrow_rate="0",
