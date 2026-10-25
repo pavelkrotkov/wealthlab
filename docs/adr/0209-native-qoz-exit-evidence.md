@@ -1,0 +1,9 @@
+# Preserve native QOZ shareholder exit evidence for policy search
+
+The native final QOZ audit now includes the executed economic stock-sale flag, actual settlement receivable and settlement date, or explicit absence of an economic book when no optional subscription was funded. Original calls, stock tax tranches, entity assets/debt, source-year revisions and actual cash movements remain intact. This is an additive audit field, without new projection or tax calculations.
+
+The optimizer exit helper requires actual stock disposal, settled cash, exhausted independent jurisdictional stock bases and recognition of any elected original gain. Marked-zero but unsold stock stays open. A zero-account/no-book case also needs a complete matching set of actual zero-funded call audits and no stock tranches. Missing, malformed, nonfinite or subcent residual evidence fails closed.
+
+Under the explicitly supplied limited-liability/internal-debt-only profile, an actual zero-proceeds stock disposal may leave entity creditor debt. The helper preserves that debt in the audit and checks that it is finite/nonnegative; it does not manufacture household recourse or assume the creditor claim disappeared. An entity margin liquidation alone does not establish an investor stock sale. All normal household tax-year, spending and liquidity constraints remain separate.
+
+Forty native exit, pooled-capital, cost/carry, settlement and insolvency checks passed; both new helper modules have100% measured coverage. Twenty affected checks passed again after organizing tests to preserve the unchanged maintainability gate. All1,522first-party modules pass CC<=8, MI>=50 and module/function-size gates, plus Ruff/format/type checks. The full QOZ allocation schema/compiler/UI consumer is the next integration step; this helper alone does not close the optimizer or release ticket.

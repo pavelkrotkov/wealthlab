@@ -48,7 +48,7 @@ def envelope(household, offers):
         validation=validation,
         dimensions=[Dimension(id="retain", choices=[PolicyChoice(id="unchanged")])],
     )
-    scope = case.model_dump(mode="json")
+    scope = case.model_dump(mode="json", exclude={"drilling_envelope"})
     scope["drilling_offers"] = [o.model_dump(mode="json") for o in offers]
     record = DrillingEnvelope(
         id="independent_scope",

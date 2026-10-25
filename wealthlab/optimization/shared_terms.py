@@ -6,8 +6,11 @@ modes and selection order remain decisions. Live household marks replace
 policy price placeholders at execution; prices are not searched forecasts.
 """
 
+from wealthlab.optimization.advisory_fees import validate as validate_advisory
+
 
 def validate(case):
+    validate_advisory(case)
     lots, ira = case.household.lot_plan, case.household.ira_plan
     sales = lots.case.sale_policies if lots is not None else []
     harvests = lots.case.harvest_policies if lots is not None else []

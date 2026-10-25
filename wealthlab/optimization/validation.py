@@ -9,11 +9,18 @@ there is no implicit last-write-wins ordering across unrelated policies."""
 from math import prod
 
 from wealthlab.household.calendar import months
-from wealthlab.optimization import life_paths
+from wealthlab.optimization import (
+    drilling_controls,
+    exchange_paths,
+    life_paths,
+    new_life_controls,
+    qoz_controls,
+)
 from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_validation import control_keys
 from wealthlab.optimization.allocation_validation import validate as validate_allocations
 from wealthlab.optimization.market_validation import validate_markets
+from wealthlab.optimization.option_offer_validation import validate as validate_options
 from wealthlab.optimization.robustness_inputs import projection_paths
 from wealthlab.optimization.robustness_inputs import validate as validate_robustness
 from wealthlab.optimization.shared_terms import validate as validate_terms
@@ -25,6 +32,10 @@ FIELDS = (
     "savings",
     "ira_orders",
     "lot_funding_order",
+    "option_units",
+    "new_life_purchases",
+    "drilling_offer",
+    "qoz_offer",
     *AccountControls.model_fields,
 )
 
@@ -37,6 +48,7 @@ def footprint(choice):
     keys = {"retirement:" + key for key in choice.retirement_dates}
     keys.update(control_keys(choice))
     keys.update(life_paths.control_keys(choice))
+    keys.update(exchange_paths.control_keys(choice))
     keys.update(key for key in FIELDS if getattr(choice, key) is not None)
     if choice.change_guardrail:
         keys.add("guardrail")
@@ -53,6 +65,11 @@ def validate(case):
     validate_markets(case)
     validate_allocations(case)
     life_paths.validate(case)
+    exchange_paths.validate(case)
+    new_life_controls.validate(case)
+    validate_options(case)
+    drilling_controls.validate(case)
+    qoz_controls.validate(case)
     validate_terms(case)
     validate_robustness(case)
     identifiers, controlled = set(), set()

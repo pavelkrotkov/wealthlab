@@ -76,6 +76,7 @@ class Ledger:
         raw = equity(fund["book"]) if fund else ZERO
         return dict(
             entity_equity=raw,
+            entity_asset_value=fund["book"]["long"] if fund else ZERO,
             nonrecourse_deficit=max(ZERO, -raw),
             nav=economics.value(fund) if fund else ZERO,
             receivable=fund["receivable"] if fund else ZERO,
@@ -95,5 +96,11 @@ class Ledger:
             economic_log=self.economic_log,
             stock_values=self.stock_values,
             ending_entity=self.economic["book"] if self.economic else None,
+            economic_state=self.ending_state(),
             tranches=self.tranches,
         )
+
+    def ending_state(self):
+        if self.economic is None:
+            return None
+        return {name: self.economic[name] for name in ("sold", "receivable", "settlement")}

@@ -12,7 +12,12 @@ from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_inputs import SleeveOpportunity, Units
+from wealthlab.optimization.drilling_inputs import DrillingEnvelope, DrillingOffer
+from wealthlab.optimization.exchange_paths import ExchangePath
 from wealthlab.optimization.life_paths import LifePath
+from wealthlab.optimization.new_life_inputs import NewLifeOffer
+from wealthlab.optimization.option_opportunity import OptionOpportunity, OptionUnits
+from wealthlab.optimization.qoz_inputs import QOZOffer
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
@@ -42,6 +47,11 @@ class PolicyChoice(AccountControls):
     lot_funding_order: list[int] | None = None
     sleeve_units: dict[Identifier, Units] | None = None
     life_paths: dict[Identifier, Identifier] | None = None
+    option_units: OptionUnits | None = None
+    exchange_path: Identifier | None = None
+    new_life_purchases: list[Identifier] | None = None
+    drilling_offer: Identifier | None = None
+    qoz_offer: Identifier | None = None
     change_guardrail: bool = False
     guardrail: SpendingGuardrail | None = None
 
@@ -72,8 +82,14 @@ class PolicySearch(TaxModel):
     validation: MarketCase
     sleeve_opportunities: list[SleeveOpportunity] = Field(default_factory=list, max_length=16)
     life_opportunities: list[LifePath] = Field(default_factory=list, max_length=32)
+    option_opportunity: OptionOpportunity | None = None
+    exchange_opportunities: list[ExchangePath] = Field(default_factory=list, max_length=32)
+    new_life_opportunities: list[NewLifeOffer] = Field(default_factory=list, max_length=32)
+    drilling_offers: list[DrillingOffer] = Field(default_factory=list, max_length=32)
+    drilling_envelope: DrillingEnvelope | None = None
+    qoz_offers: list[QOZOffer] = Field(default_factory=list, max_length=32)
     robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
-    dimensions: list[Dimension] = Field(min_length=1, max_length=8)
+    dimensions: list[Dimension] = Field(min_length=1, max_length=32)
     targets: SearchTargets = Field(default_factory=SearchTargets)
     maximum_candidates: int = Field(default=128, ge=1, le=512)
     maximum_projection_months: int = Field(default=100000, ge=1, le=1000000)

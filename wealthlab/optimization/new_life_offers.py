@@ -23,7 +23,11 @@ def validate_offers(household, offers):
 
 
 def validate_offer(household, offer):
-    if offer.provenance == "unresolved" or not offer.matched_new_issue_terms_confirmed:
+    if (
+        offer.provenance == "unresolved"
+        or not offer.matched_new_issue_terms_confirmed
+        or not offer.source.strip()
+    ):
         raise ValueError("Confirm the complete independently sourced new-issue terms.")
     if offer.owner not in household.life_plan.insurance_need_by_owner:
         raise ValueError("Retain a supplied independent baseline need for the offered owner.")

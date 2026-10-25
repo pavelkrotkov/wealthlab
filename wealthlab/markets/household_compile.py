@@ -11,6 +11,7 @@ from wealthlab.markets.exchange_compile import compile_plan as compile_exchange
 from wealthlab.markets.hsa_compile import compile_plan as compile_hsa
 from wealthlab.markets.medical_inflation import compile_bills
 from wealthlab.markets.option_compile import compile_plan as compile_options
+from wealthlab.markets.qoz_compile import compile_plan as compile_qoz
 from wealthlab.markets.sleeve_compile import compile_plans as compile_sleeves
 from wealthlab.markets.wrapper_compile import compile_plans
 
@@ -25,6 +26,7 @@ def compile_marks(scenario, batch, binding, index):
     compile_hsa(payload, scenario, batch, binding, index)
     compile_options(payload, scenario, batch, binding, index)
     compile_drilling(payload, scenario, batch, binding, index)
+    compile_qoz(payload, scenario, batch, binding, index)
     if scenario.lot_plan is not None:
         compile_lots(payload, scenario, batch, binding, index)
     return Scenario.model_validate(payload)
