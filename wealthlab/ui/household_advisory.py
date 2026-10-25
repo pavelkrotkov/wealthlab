@@ -23,7 +23,10 @@ def controls(payload, scenario):
             "after product marks and before optional saving/deposits. Embedded costs remain "
             "separate. Unpaid fees remain liabilities; no automatic tax deduction is claimed. "
             "Cash payments use the complete listed household cash pool in its existing order. "
-            "Active HSA/529 closing valuations are unavailable at this assessment stage."
+            "Explicit snapshot cutoffs can use actual opening or prior completed values, "
+            "including native HSA/529 net equity. Current HSA/529 closing values are unavailable "
+            "at the earlier product stage. Advance billing needs source-confirmed "
+            "nonrefundable/no-proration terms; daily/first-day billing is unsupported."
         )
         default = payload.get("advisory_fee_plan") or plan(scenario).model_dump(mode="json")
         return st.text_area(
@@ -43,6 +46,8 @@ def display(rows):
         "All simultaneous schedules share one observed snapshot. Marginal tiers apply only "
         "to their own AUM bands. Days equal exclusive accrual end minus accrual start; no monthly "
         "fraction or deduction is inferred. Reserved cash still belongs to the household. "
+        "Opening/completed snapshots are observed before billing; future dates are blocked. "
+        "Month-end payment is never relabeled as first-day cash. "
         "Assessments create a bill, not a product trade or basis adjustment. Existing arrears "
         "precede new fees; the audit distinguishes actual advisory payment from generic fees."
     )
