@@ -13,3 +13,17 @@ def account_value(lots, identity, cash, prices):
             Decimal(0),
         )
     )
+
+
+def security_values(book, prices):
+    return {
+        security: sum(
+            (
+                lot.quantity * prices[security]
+                for lot in book.lots.values()
+                if lot.security_id == security
+            ),
+            Decimal(0),
+        )
+        for security in book.securities
+    }

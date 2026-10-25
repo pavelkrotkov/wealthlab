@@ -10,6 +10,7 @@ basis events, so that convention requires a separate adapter.
 from wealthlab.household.calendar import months
 from wealthlab.markets.employer_validation import validate as validate_employers
 from wealthlab.markets.guardrails import validate as validate_guardrail
+from wealthlab.markets.hsa_validation import validate as validate_hsa
 from wealthlab.markets.medical_inflation import validate as validate_medical
 from wealthlab.markets.sleeve_compile import validate as validate_sleeves
 from wealthlab.markets.wrapper_compile import validate as validate_wrappers
@@ -21,6 +22,7 @@ def validate(scenario, batch, binding, index):
         raise ValueError("Market execution requires explicit household tax.")
     if scenario.lot_plan is not None:
         validate_lots(scenario)
+    validate_hsa(scenario, batch, binding)
     validate_wrappers(scenario, batch, binding)
     validate_employers(scenario, batch, binding)
     validate_sleeves(scenario, batch, binding)
@@ -55,6 +57,7 @@ def validate_bindings(scenario, batch, binding):
     if not any(
         (
             actual,
+            binding.hsa_securities,
             binding.wrappers,
             binding.employers,
             binding.sleeves,

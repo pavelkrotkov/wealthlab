@@ -35,6 +35,8 @@ HIDDEN = [
     "ira_contribution_eligibility",
     "ira_contribution_audit",
     "hsa_audit",
+    "hsa_investment_accounts",
+    "hsa_investment_security_values",
     "education_audit",
     "lot_audit",
     "medicare_audit",

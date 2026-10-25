@@ -9,7 +9,9 @@ from wealthlab.portfolio.tax_reporting import validate_tax_cases
 from wealthlab.portfolio.terminal_exit import validate_exit
 
 
-def validate(case):
+def validate(case, *, hsa_investment=False):
+    if any(a.wrapper == "hsa" for a in case.accounts) and not hsa_investment:
+        raise ValueError("HSA securities require the dedicated investment book, not IRA tax rules.")
     validate_distributions(case)
     validate_fees(case)
     validate_exit(case)

@@ -5,6 +5,7 @@ import json
 import streamlit as st
 
 from wealthlab.retirement.hsa_household_template import template
+from wealthlab.ui.hsa_invested_results import display as invested_metrics
 from wealthlab.ui.medical_bills import display as medical_summary
 
 
@@ -15,7 +16,8 @@ def controls(payload, scenario):
             value=payload.get("hsa_plan") is not None,
         )
         st.caption(
-            "Cash-only USD HSAs without fees; complete calendar years and confirmed monthly "
+            "USD HSAs with separate investment/custodian fees; complete calendar years "
+            "and confirmed monthly "
             "eligibility. Personal deposits use available cash before IRA elections/current tax. "
             "Historical receipts must already be paid before this projection and unavailable "
             "for another reimbursement or deduction. One shared ledger prevents reuse across "
@@ -25,7 +27,10 @@ def controls(payload, scenario):
             "Net medical bills can use direct HSA elections and actual cash fallback; only paid, "
             "undeducted portions can be reimbursed later. Unpaid bills remain liabilities. "
             "Confirm bills are excluded from other budgets, receipts and deductions. "
-            "HSA investments and corrections still need adapters. "
+            "Optional investments share actual cash, dated prices, fees and explicit NJ basis. "
+            "Exclude generated investment income from other tax inputs. Linked recipient NJ "
+            "fractions must be zero in this profile. Confirm remaining accounts are cash-only "
+            "and clear the all-cash confirmation. Corrections remain unsupported. "
             "Salary reduction is not modeled as a personal deposit. "
             "NJ bank treatment is a confirmed scenario assumption: no personal deduction, "
             "current taxable bank interest and employer funding added to NJ wages. Exclude "
@@ -54,6 +59,7 @@ def display(rows):
     )
     c.metric("Unfilled HSA requests", f"${sum(r['hsa_unfilled_requests'] for r in rows):,.2f}")
     distribution_metrics(rows)
+    invested_metrics(rows)
     medical_summary(rows)
     st.caption(
         "Reimbursements transfer existing assets to cash; they are not new earnings. "

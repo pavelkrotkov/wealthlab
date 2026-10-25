@@ -5,6 +5,7 @@ import streamlit as st
 from wealthlab.ui import (
     education,
     health_education,
+    hsa_investments,
     medicare,
     owl_reference,
     retirement,
@@ -18,6 +19,7 @@ def show():
         "Contributions": retirement,
         "IRA withdrawals": retirement_withdrawals,
         "HSA": health_education,
+        "HSA investments": hsa_investments,
         "Education": education,
         "Medicare": medicare,
         "Social Security": social_security,

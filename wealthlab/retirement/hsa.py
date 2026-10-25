@@ -104,12 +104,17 @@ def withdraw(book, item):
     allowed = item.amount
     if item.mode == "qualified_only":
         allowed = min(allowed, hsa_receipts.capacity(book, item, owner))
+    investments = book.get("investments")
+    if investments is not None:
+        investments.fund(book, item.source, allowed, item.date)
     paid = min(allowed, book["balances"][item.source])
     qualified = hsa_receipts.consume(book, item, owner, paid)
     taxable = paid - qualified
     penalty = additional_tax(owner, item.date, taxable)
     book["balances"][item.source] -= paid
     book["cash"] += paid
+    if investments is not None:
+        investments.sync_cash(book)
     book["rows"].append(
         dict(
             id=item.id,

@@ -8,6 +8,7 @@ the current wallet supplies the HSA book at each year boundary.
 from wealthlab.retirement.hsa_household_coverage import validate_medicare
 from wealthlab.retirement.hsa_household_sources import validate_sources
 from wealthlab.retirement.hsa_inputs import HSACase
+from wealthlab.retirement.hsa_invested_validation import validate as validate_investments
 from wealthlab.tax.projection_validation import validate as validate_tax
 
 
@@ -19,7 +20,7 @@ def validate(scenario):
     if not all(
         (
             plan.conditional_nj_treatment_confirmed,
-            plan.cash_only_accounts_and_complete_context_confirmed,
+            plan.cash_only_accounts_and_complete_context_confirmed or plan.investments is not None,
             plan.receipts_paid_before_projection_confirmed,
             plan.employer_funding_excluded_from_other_nj_wages_confirmed,
         )
@@ -37,6 +38,7 @@ def validate(scenario):
         raise ValueError("This household HSA profile requires complete calendar years.")
     if sorted(y.year for y in plan.years) != list(range(scenario.start.year, scenario.end.year)):
         raise ValueError("Provide one HSA eligibility context for every household year.")
+    validate_investments(scenario)
     validate_sources(scenario)
     validate_establishment_history(plan.years)
     for context in plan.years:

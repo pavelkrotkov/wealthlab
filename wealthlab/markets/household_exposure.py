@@ -8,28 +8,27 @@ inventory; unbound positive noncash accounts remain visibly unmeasured.
 
 from decimal import Decimal
 
+from wealthlab.portfolio.household_values import security_values
+
 ZERO = Decimal(0)
 
 
 def securities(lots):
     if lots is None:
         return {}
-    return {
-        identity: sum(
-            (
-                lot.quantity * lots.prices[identity]
-                for lot in lots.book.lots.values()
-                if lot.security_id == identity
-            ),
-            ZERO,
-        )
-        for identity in lots.book.securities
-    }
+    return security_values(lots.book, lots.prices)
 
 
 def report(scenario, binding, lots, row):
     values = securities(lots)
+    values.update(
+        {
+            "hsa:" + key: value
+            for key, value in row.get("hsa_investment_security_values", {}).items()
+        }
+    )
     known = set(lots.book.accounts) if lots else set()
+    known.update(row.get("hsa_investment_accounts", []))
     unmapped_issuers = sorted(set(missing(scenario, row, known)) | sleeve_accounts(row))
     assets = sum(row["account_balances"].values(), ZERO)
     factors = factor_values(binding, values, row)
@@ -67,6 +66,10 @@ def factor_values(binding, values, row):
     factors = {}
     for security in binding.securities:
         factors[security.factor] = factors.get(security.factor, ZERO) + values[security.security_id]
+    for security in binding.hsa_securities:
+        factors[security.factor] = (
+            factors.get(security.factor, ZERO) + values["hsa:" + security.security_id]
+        )
     for wrapper in [*binding.wrappers, *binding.employers]:
         factors[wrapper.factor] = (
             factors.get(wrapper.factor, ZERO) + row["account_balances"][wrapper.account_id]
