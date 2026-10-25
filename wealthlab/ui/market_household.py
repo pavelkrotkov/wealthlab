@@ -23,6 +23,7 @@ from wealthlab.markets.medical_example import synthetic as medical_example
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
+from wealthlab.markets.rollover_example import synthetic as rollover_example
 from wealthlab.markets.sleeve_example import synthetic as sleeve_example
 from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
@@ -144,6 +145,7 @@ def account_example(mode, stress):
             "Employer and employment",
             "Employee 401(k)",
             "Workplace RMDs",
+            "Direct plan rollovers",
             "Long-short household",
             "Medical bill inflation",
             "Invested HSA",
@@ -157,6 +159,7 @@ def account_example(mode, stress):
         "Employer and employment": employer_example,
         "Employee 401(k)": workplace_example,
         "Workplace RMDs": workplace_rmd_example,
+        "Direct plan rollovers": rollover_example,
         "Long-short household": sleeve_example,
         "Medical bill inflation": medical_example,
         "Invested HSA": hsa_example,

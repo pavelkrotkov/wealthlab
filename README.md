@@ -93,3 +93,9 @@ Load the synthetic 401(k) cash withdrawals household for [actual gross plan debi
 Load the synthetic separate-plan RMD household for [complete plan groups, required/eligible withholding portions and actual December catch-up](docs/adr/0048-workplace-rmd.md). Shortfalls retain explicit contingent excise and unresolved-prior-year status; broader retirement adapters remain in progress.
 
 In Markets, select **Workplace RMDs** for [the same plan requirements on realized paths, explicit illiquidity failures and matched catch-up policies](docs/adr/0049-workplace-rmd-market-paths.md). Required transfers and their shortfalls remain separate from ordinary spending cash.
+
+Retirement / IRA withdrawals / **Direct plan rollover with withdrawals** adds [confirmed incoming qualified-plan cash and independently supplied federal/NJ basis](docs/adr/0050-incoming-ira-rollovers.md). Received IRA assets create no spending cash or ordinary contribution deduction; actual household source transfers remain the next retirement adapter.
+
+Load **synthetic direct plan rollover** in Household for [actual separated-plan debits feeding the same-owner IRA ledger before withdrawals](docs/adr/0051-household-plan-rollovers.md). Source locks, current/prior RMD blocks and unfilled requests remain visible; zero-basis ordinary direct cash transfers create no spending receipt or contribution deduction.
+
+Markets / Household funding / **Direct plan rollovers** adds [actual source and IRA execution on shared realized paths](docs/adr/0052-plan-rollover-market-paths.md), per-path funded/unfilled transfers and matched policy comparisons. The two-year synthetic horizon and ordinary zero-basis transfer limits remain explicit.

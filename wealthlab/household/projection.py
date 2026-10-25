@@ -25,6 +25,7 @@ from wealthlab.retirement import (
     ira_household,
     medicare_household,
     workplace,
+    workplace_rollovers,
 )
 from wealthlab.retirement.social_household import prepare
 from wealthlab.tax.projection_ledger import TaxLedger
@@ -50,6 +51,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         live, market_events = market.start(scenario, lots, start) if market else (scenario, ())
         medical_events = medicare_household.start(medicare, start)
         events = compensation.month(wallet, start, end) if compensation else ()
+        workplace_rollovers.before_ira(employee, wallet, ira, start, end)
         ira_events, ira_summary = ira_household.month(ira, wallet, start, end)
         row = month(
             live,
@@ -94,6 +96,7 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
         rows[-1]["workplace_audit"] = employee.log
         rows[-1]["workplace_market_audit"] = employee.market_log
         rows[-1]["workplace_withdrawal_audit"] = employee.withdrawal_log
+        rows[-1]["workplace_rollover_audit"] = employee.rollover_log
         rows[-1]["workplace_rmd_audit"] = employee.rmd.audit if employee.rmd is not None else []
     household_book.finish(lots, rows)
     medicare_household.finish(medicare, rows)

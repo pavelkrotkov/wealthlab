@@ -8,17 +8,22 @@ from wealthlab.retirement.distribution_example import synthetic
 from wealthlab.retirement.distribution_inputs import DistributionCase
 from wealthlab.retirement.distributions import run
 from wealthlab.retirement.ira_contribution_example import synthetic as combined
+from wealthlab.retirement.ira_rollover_example import synthetic as rollover_example
 from wealthlab.ui.ira_contribution_results import display as contribution_summary
+from wealthlab.ui.ira_rollovers import display as rollover_summary
 from wealthlab.ui.uploads import invalid, source
 
 
 def show():
     st.header("IRA withdrawals and conversions")
     introduction()
-    choice = st.selectbox(
-        "IRA example", ["Withdrawals and conversions", "Contributions with withdrawals"]
-    )
-    default = synthetic() if choice == "Withdrawals and conversions" else combined()
+    examples = {
+        "Withdrawals and conversions": synthetic,
+        "Contributions with withdrawals": combined,
+        "Direct plan rollover with withdrawals": rollover_example,
+    }
+    choice = st.selectbox("IRA example", list(examples))
+    default = examples[choice]()
     uploaded = st.file_uploader("Load IRA withdrawal JSON", type="json")
     raw = source(uploaded, default.model_dump_json(indent=2), "withdrawal")
     if raw is None:
@@ -44,12 +49,14 @@ def introduction():
     st.caption(
         "Ordinary, non-inherited traditional/Roth IRAs only, with complete owner-wide history. "
         "Confirm opening_context_complete: all IRA accounts/history, no prior deferred RMD, "
-        "outstanding rollover or unlisted current-year contribution. "
+        "unresolved in-flight rollover or unlisted current-year contribution. "
         "Opening balances are prior December 31 values. Fixed dated schedules draw only actual "
         "available assets; conversions move assets without adding spendable cash. Returns "
         "precede same-day withdrawals; contributions follow them. Receipts precede both. "
         "All current-year contributions and outside cash receipts belong in the optional "
-        "contributions plan, sharing the same opening cash/accounts."
+        "contributions plan, sharing the same opening cash/accounts. Confirmed direct plan "
+        "cash receipts belong in incoming_rollovers with independent federal/NJ basis; they add "
+        "no spending cash or ordinary contribution deduction."
     )
     st.info(
         "Federal basis uses annual Form 8606-style aggregation; NJ uses separately combined "
@@ -81,6 +88,7 @@ def display(result):
     """
     st.metric("Cash remaining before tax payments", f"${result['cash']:,.2f}")
     contribution_summary(result)
+    rollover_summary(result)
     st.subheader("Dated IRA cash and annual recognition")
     st.dataframe(result["orders"], hide_index=True, width="stretch")
     st.subheader("Remaining owner basis and conversion buckets")

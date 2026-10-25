@@ -48,6 +48,7 @@ HIDDEN = [
     "workplace_market_audit",
     "workplace_withdrawal_audit",
     "workplace_rmd_audit",
+    "workplace_rollover_audit",
 ]
 
 

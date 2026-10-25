@@ -14,8 +14,8 @@ def validate(scenario):
     cash = scenario.workplace_plan.cash_withdrawals
     config = cash.rmd
     if config is None:
-        if not cash.orders:
-            raise ValueError("Provide workplace cash orders or an explicit RMD policy.")
+        if not cash.orders and not cash.direct_rollovers:
+            raise ValueError("Provide workplace cash/rollover orders or an explicit RMD policy.")
         return
     if not config.no_unmodeled_opening_shortfalls_confirmed:
         raise ValueError("Confirm no unmodeled opening RMD shortfalls.")
