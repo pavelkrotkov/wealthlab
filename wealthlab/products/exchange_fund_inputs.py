@@ -7,7 +7,7 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from wealthlab.household.records import Identifier, Money, Record
-from wealthlab.portfolio.models import Lot, Price, Quantity, Security
+from wealthlab.portfolio.models import Lot, Price, Security
 from wealthlab.products.household_inputs import SleeveAllocation
 from wealthlab.tax.facts import SignedMoney, TaxModel
 
@@ -36,7 +36,7 @@ class ExchangeObservation(Record):
 
 class ExchangeRequest(Record):
     date: date
-    action: Literal["redeem", "sell_liquid"]
+    action: Literal["redeem", "sell_liquid", "sell_source"]
     # Only used for an explicitly permitted full early cash redemption.
     early_tax: SleeveAllocation
     early_tax_confirmed: bool = False
@@ -47,7 +47,7 @@ class ExchangeFundPlan(TaxModel):
     nj_wash_treatment: Literal["unconfirmed", "no_wash_assumption", "federal_rules"] = "unconfirmed"
     source_security: Security
     source_lot: Lot
-    contribution_quantity: Quantity
+    contribution_quantity: Decimal = Field(ge=0, max_digits=18, decimal_places=6)
     opening_prices: dict[str, Price]
     accepted: bool
     federal_contribution: Treatment = "unconfirmed"

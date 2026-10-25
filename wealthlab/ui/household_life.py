@@ -13,7 +13,8 @@ def controls(payload, scenario):
         )
         st.caption(
             "Use one USD insurance account per policy, opening net surrender value and complete "
-            "post-event monthly values. Every required payment needs a supplied, confirmed "
+            "post-event monthly values. An explicit empty holdings list retains uninsured needs. "
+            "Every required payment needs a supplied, confirmed "
             "failure exit. Cash-only or permitted household-sale funding is explicit. "
             "Missing tax/value terms cannot establish household funding success."
         )

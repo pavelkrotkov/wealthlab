@@ -27,7 +27,9 @@ def validate_source(scenario, plan, account):
     lot = plan.source_lot
     if lot.account_id != account.id or lot.security_id != plan.source_security.id:
         raise ValueError("Contribution lot must belong to the source account and security.")
-    if lot.acquired > scenario.start or lot.liquid_after > scenario.start:
+    if lot.acquired > scenario.start or (
+        plan.contribution_quantity and lot.liquid_after > scenario.start
+    ):
         raise ValueError("Contribution shares must be acquired and available at opening.")
     if plan.contribution_quantity > lot.quantity:
         raise ValueError("Contribution exceeds actual source shares.")

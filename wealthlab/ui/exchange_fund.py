@@ -1,4 +1,8 @@
-"""Editable conditional exchange contracts and actual paired household outcomes."""
+"""Editable conditional contracts and matched household outcomes.
+
+Contribution presets retain one actual source account/lot; they do not create
+another cash balance or alter independently supplied contract and tax facts.
+"""
 
 import json
 
@@ -7,8 +11,8 @@ import streamlit as st
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.paths import generate
+from wealthlab.products.exchange_fund_allocation_example import CHOICES, allocation_example
 from wealthlab.products.exchange_fund_compare import compare
-from wealthlab.products.exchange_fund_example import synthetic
 from wealthlab.products.exchange_fund_market import bind
 from wealthlab.products.exchange_fund_market_example import synthetic as market_example
 from wealthlab.ui.exchange_fund_results import display
@@ -26,7 +30,9 @@ def show():
         "Both policies use the same price-only basket benchmark. Direct sale realizes source "
         "gains and buys a liquid basket at opening, with zero assumed direct fees. Fund fees "
         "reduce NAV; supplied cash distributions and tax/basis adjustments are independent. "
-        "Dated sell requests raise actual household cash; there is no automatic product sale "
+        "sell_liquid sells basket shares; sell_source sells actual retained source shares. "
+        "Zero contribution creates no fund and rejects fund-only cash/tax facts. "
+        "Dated requests raise actual household cash; there is no automatic product sale "
         "for a bill. A locked account can coexist with spending/tax shortfalls. Partial "
         "redemptions, debt, qualification, statutory basket allocation and excess-basis cash "
         "distributions need other adapters. Edit the complete household and contract below."
@@ -35,7 +41,8 @@ def show():
     mode = st.selectbox(
         "Exchange price source", ["entered", "deterministic", "stress", "monte_carlo"]
     )
-    scenario = synthetic()
+    contribution = st.selectbox("Synthetic contribution profile", CHOICES)
+    scenario = allocation_example(contribution)
     data = {"scenario": scenario.model_dump(mode="json")}
     if mode != "entered":
         data.update(
