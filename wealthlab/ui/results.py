@@ -9,6 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.household.projection import project
+from wealthlab.household.report import encode, payload
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
@@ -97,6 +98,12 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
     advisory_summary(rows)
+    st.download_button(
+        "Export projection inputs, full ledger and reproduction details",
+        encode(payload(scenario, rows)),
+        "wealthlab-projection.json",
+        "application/json",
+    )
     tax_summary(rows)
     social_work_summary(rows)
     compensation_summary(rows)

@@ -12,6 +12,7 @@ from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_inputs import SleeveOpportunity, Units
+from wealthlab.optimization.drilling_inputs import DrillingEnvelope, DrillingOffer
 from wealthlab.optimization.exchange_paths import ExchangePath
 from wealthlab.optimization.life_paths import LifePath
 from wealthlab.optimization.new_life_inputs import NewLifeOffer
@@ -48,6 +49,7 @@ class PolicyChoice(AccountControls):
     option_units: OptionUnits | None = None
     exchange_path: Identifier | None = None
     new_life_purchases: list[Identifier] | None = None
+    drilling_offer: Identifier | None = None
     change_guardrail: bool = False
     guardrail: SpendingGuardrail | None = None
 
@@ -81,6 +83,8 @@ class PolicySearch(TaxModel):
     option_opportunity: OptionOpportunity | None = None
     exchange_opportunities: list[ExchangePath] = Field(default_factory=list, max_length=32)
     new_life_opportunities: list[NewLifeOffer] = Field(default_factory=list, max_length=32)
+    drilling_offers: list[DrillingOffer] = Field(default_factory=list, max_length=32)
+    drilling_envelope: DrillingEnvelope | None = None
     robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
     dimensions: list[Dimension] = Field(min_length=1, max_length=8)
     targets: SearchTargets = Field(default_factory=SearchTargets)

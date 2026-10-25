@@ -9,6 +9,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.optimization import (
     advisory_fees,
+    drilling_controls,
     exchange_paths,
     life_paths,
     new_life_controls,
@@ -31,6 +32,7 @@ def compile_candidate(case, selection):
     exchange_paths.validate(case)
     new_life_controls.validate(case)
     validate_options(case)
+    drilling_controls.validate(case)
     data = case.household.model_dump(mode="json")
     binding = case.binding.model_dump(mode="json")
     data.update(
@@ -47,6 +49,7 @@ def compile_candidate(case, selection):
         data, binding, case.option_opportunity, option_allocations.selected(selection)
     )
     new_life_offers.apply(data, case.new_life_opportunities, new_life_controls.selected(selection))
+    drilling_controls.apply(data, binding, case, selection)
     candidate = Scenario.model_validate(data)
     advisory_fees.preserved(case.household, candidate)
     return candidate, HouseholdBinding.model_validate(binding)
