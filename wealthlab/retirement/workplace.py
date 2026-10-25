@@ -11,12 +11,13 @@ in the audit. Optional unfilled elections are not themselves spending
 failures; any resulting inability to meet taxes or spending remains visible.
 
 Prior-year employer wages and plan permissions are explicit annual forecasts.
-There is one sponsoring employer per owner; no match, vesting, rollover,
-withdrawal or later excess correction is invented.
+There is one sponsoring employer per owner. Confirmed ordinary cash withdrawals
+use their own bounded profile; match, vesting, rollover and corrections remain separate.
 """
 
 from decimal import Decimal
 
+from wealthlab.retirement import workplace_withdrawals
 from wealthlab.retirement.contribution_rules import workplace_limits
 from wealthlab.retirement.workplace_returns import apply as apply_returns
 from wealthlab.retirement.workplace_tax import events, summarize, tax_amounts
@@ -35,8 +36,12 @@ class Ledger:
         self.used = {}
         self.log = []
         self.market_log = []
+        self.withdrawal_log = []
+        self.accounts = {a.id: a for a in scenario.accounts}
+        self.birth_dates = {m.id: m.birth_date for m in scenario.members}
 
     def month(self, wallet, amounts, start, end):
+        cash_events, cash_summary = workplace_withdrawals.month(self, wallet, start, end)
         context = next(y for y in self.plan.years if y.year == start.year)
         people = {p.id: p for p in context.contributors}
         remaining = gross_wages(amounts, self.rules, self.members)
@@ -50,13 +55,13 @@ class Ledger:
                     excluded[order.owner] += row["funded"]
         self.remaining_wages = remaining
         self.log.extend(rows)
-        summary = summarize(rows)
+        summary = dict(summarize(rows), **cash_summary)
         summary["workplace_market_change"] = apply_returns(
             self.plan, wallet, start, end, self.market_log
         )
         return (
             tax_amounts(amounts, self.rules, self.members, excluded),
-            events(self.members, excluded, start),
+            [*cash_events, *events(self.members, excluded, start)],
             summary,
         )
 

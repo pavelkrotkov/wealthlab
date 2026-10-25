@@ -5,6 +5,7 @@ import json
 import streamlit as st
 
 from wealthlab.retirement.workplace_example import template
+from wealthlab.ui.workplace_withdrawals import display as withdrawals
 
 
 def controls(payload, scenario):
@@ -21,7 +22,10 @@ def controls(payload, scenario):
             "validate payroll dates. Pretax reduces federal/NJ income-tax wages, while employee "
             "payroll still includes it. Roth stays taxable. Limits share actual funded amounts. "
             "Future frozen-rule assumptions are conditional. No employer match, after-tax "
-            "non-Roth contributions, withdrawals or rollover are generated."
+            "non-Roth contributions or rollover are generated. Optional cash_withdrawals "
+            "accepts confirmed ordinary eligible pretax 401(k) cash with zero federal/NJ basis, "
+            "first-day dates, source withholding and age-55 separation access; RMD years and "
+            "special distributions require later profiles."
         )
         if not enabled:
             return None
@@ -36,6 +40,7 @@ def controls(payload, scenario):
 def display(rows):
     if "workplace_contributions" not in rows[-1]:
         return
+    withdrawals(rows)
     st.subheader("Employee 401(k) cash and wage reconciliation")
     total = sum(r["workplace_contributions"] for r in rows)
     pretax = sum(r["workplace_pretax"] for r in rows)
@@ -53,7 +58,7 @@ def display(rows):
     st.caption(
         f"Entered or market-bound investment change: ${change:,.2f}. Month-end returns follow "
         "actual funded employee elections and stay inside the plan. Locked plan balances "
-        "remain unavailable for general spending; broader withdrawals are unfinished."
+        "fund spending only through explicit supported withdrawal orders."
     )
     with st.expander("Employee investment-return audit"):
         st.json(rows[-1].get("workplace_market_audit", []))

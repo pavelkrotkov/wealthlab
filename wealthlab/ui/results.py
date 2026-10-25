@@ -46,6 +46,7 @@ HIDDEN = [
     "sleeve_tax_assumptions",
     "workplace_audit",
     "workplace_market_audit",
+    "workplace_withdrawal_audit",
 ]
 
 

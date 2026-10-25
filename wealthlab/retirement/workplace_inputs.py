@@ -10,6 +10,7 @@ from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.retirement.contribution_assumptions import RuleMode
 from wealthlab.retirement.contribution_inputs import ContributionOrder
 from wealthlab.retirement.distribution_inputs import AccountReturn
+from wealthlab.retirement.workplace_withdrawal_inputs import WorkplaceCashPlan
 from wealthlab.tax.facts import TaxModel
 
 
@@ -35,6 +36,7 @@ class WorkplacePlan(TaxModel):
     years: list[WorkplaceYear] = Field(min_length=1)
     products: dict[Identifier, Literal["pretax_401k", "roth_401k"]]
     orders: list[WorkplaceOrder]
+    cash_withdrawals: WorkplaceCashPlan | None = None
     returns: list[AccountReturn] = Field(default_factory=list)
     liquidity_locks: list[AccountLock] = Field(default_factory=list)
     complete_single_employer_elections_confirmed: bool
