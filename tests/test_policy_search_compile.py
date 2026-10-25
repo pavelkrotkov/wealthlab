@@ -5,7 +5,7 @@ from optimization_cases import flat
 
 from wealthlab.optimization.compile import compile_candidate
 from wealthlab.optimization.inputs import PolicyChoice
-from wealthlab.products.life_household_example import synthetic as insurance
+from wealthlab.products.option_household_example import synthetic as options
 
 
 def test_retirement_and_funding_order_preserve_baseline_capital_and_tax_inputs():
@@ -35,8 +35,8 @@ def test_missing_ira_plan_cannot_make_a_conversion_tax_free():
         compile_candidate(flat(), [PolicyChoice(id="choice", ira_orders=[])])
 
 
-def test_zero_equity_or_conditional_products_need_their_own_exit_integration():
-    case = flat().model_copy(update=dict(household=insurance()))
+def test_options_still_require_their_own_native_exit_integration():
+    case = flat().model_copy(update=dict(household=options()))
     with pytest.raises(ValueError, match="product/wrapper exit integration"):
         compile_candidate(case, [])
 
