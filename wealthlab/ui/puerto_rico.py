@@ -17,6 +17,8 @@ def show():
         "independently. Confirmed means a supplied reviewed fact, not a legal finding by this app. "
         "Assumed eligibility keeps results conditional. Payroll remains on all original wages. "
         "PR deductions must already be allowed and allocated for the residence period. "
+        "Filing status is an explicit matched US/PR assumption; joint assumes spouses "
+        "living together, and optional separate-spouse computation is unsupported. "
         "The US-credit payment input must exclude tax allocated to section 933-excluded income."
     )
     case = st.session_state.setdefault("pr_case", synthetic())

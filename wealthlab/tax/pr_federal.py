@@ -20,6 +20,8 @@ def calculate(case, taxable_rows, foreign_rows):
     ratio = taxable_gross / gross if gross else Decimal(0)
     policy = Policy()
     policy.set_year(policy_year)
+    # Policy.STD is year x filing status: [0] selects the entire current-year
+    # row, including joint; it does not select only the single-filer amount.
     standard = (policy.STD[0] * float(ratio)).tolist()
     policy.implement_reform(
         {"STD": {policy_year: standard}, "AlimonyReceived_frac_in_AGI": {policy_year: 1.0}},
