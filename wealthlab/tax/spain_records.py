@@ -42,9 +42,17 @@ class SpanishDebt(TaxModel):
     eligibility_source: Source
 
 
+class SpanishWealthAllowance(TaxModel):
+    """Independently supplied eligible regional minimum, without inferring personal eligibility."""
+
+    minimum_eur: Money
+    eligibility_source: Source
+
+
 class SpanishCredits(TaxModel):
     """Independently prelimited entitlements; these never create a cash receipt."""
 
+    regional_bonus_included_confirmed: bool = False
     irpf_state: Money
     irpf_regional: Money
     wealth_foreign: Money

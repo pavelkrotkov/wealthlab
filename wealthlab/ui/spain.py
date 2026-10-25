@@ -7,6 +7,7 @@ import streamlit as st
 from wealthlab.tax.spain import evaluate
 from wealthlab.tax.spain_example import synthetic
 from wealthlab.tax.spain_inputs import SpainCase
+from wealthlab.tax.spain_regional_policy import REGIONS
 from wealthlab.ui.uploads import invalid, source
 
 
@@ -14,11 +15,15 @@ def show():
     st.subheader("Spain: annual income and wealth taxes")
     st.warning(
         "Conditional individual full-year resident assessment using published 2025 schedules. "
-        "Madrid, Catalonia and Castilla-La Mancha are supported. Supply eligible minima, "
+        "The 15 common-regime regions are supported. Galicia needs supplied prelimited relief; "
+        "foral and city profiles need separate adapters. Supply eligible minima, "
         "post-limitation income and foreign-product/treaty classifications. Unresolved facts "
         "block affected results. Bilateral credits and household funding need separate adapters."
     )
-    region = st.selectbox("Synthetic Spanish region", ["castilla_la_mancha", "madrid", "catalonia"])
+    region = st.selectbox(
+        "Synthetic Spanish region",
+        ["castilla_la_mancha", *sorted(set(REGIONS) - {"castilla_la_mancha"})],
+    )
     uploaded = st.file_uploader("Load Spain annual case JSON", type="json")
     default = synthetic(region).model_dump_json(indent=2)
     if source(uploaded, default, "spain") is None:

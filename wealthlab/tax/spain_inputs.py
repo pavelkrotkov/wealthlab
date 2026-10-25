@@ -14,6 +14,7 @@ from wealthlab.tax.spain_records import (
     SpanishAsset,
     SpanishCredits,
     SpanishDebt,
+    SpanishWealthAllowance,
 )
 
 
@@ -41,6 +42,7 @@ class SpainCase(TaxModel):
     long_held_gain_cap_exclusion_eur: Money
     patrimonial_company_dividends_eur: Money
     cap_adjustment_source: Source
+    wealth_allowance: SpanishWealthAllowance | None = None
     credits: SpanishCredits
     payments: list[SpanishTaxPayment]
 

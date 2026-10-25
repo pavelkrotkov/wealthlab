@@ -2,7 +2,8 @@
 
 from decimal import Decimal
 
-from wealthlab.tax.spain_rates import REGIONS, SAVINGS, STATE, scale
+from wealthlab.tax.spain_rates import SAVINGS, STATE, scale
+from wealthlab.tax.spain_regional_policy import REGIONS
 
 ZERO = Decimal(0)
 

@@ -1,6 +1,6 @@
 """Conditional annual Spanish assessment; bilateral credits and household cash stay separate."""
 
-from wealthlab.tax import spain_income, spain_scope, spain_wealth
+from wealthlab.tax import spain_income, spain_regional_policy, spain_scope, spain_wealth
 from wealthlab.tax.spain_inputs import SpainCase
 
 
@@ -19,6 +19,11 @@ def evaluate(case: SpainCase):
         currency="EUR",
         policy=f"2025 published schedules; {case.policy}; supplied prelimited classifications",
         region=case.region,
+        regional_policy=(
+            spain_regional_policy.policy(case.region)
+            if case.region in spain_regional_policy.REGIONS
+            else None
+        ),
         income=section(income_reasons, income),
         wealth=section(wealth_reasons, wealth),
         total_liability_eur=total_liability(income, wealth),

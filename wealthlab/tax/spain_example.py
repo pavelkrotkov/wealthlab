@@ -1,6 +1,7 @@
 """Original supplied profiles; Toledo's income/IP numbers are an attributed official oracle."""
 
 from wealthlab.tax.spain_inputs import SpainCase
+from wealthlab.tax.spain_regional_policy import policy
 
 SOURCE = "Original synthetic assumption; classifications are independently supplied"
 
@@ -60,7 +61,7 @@ def synthetic(region="castilla_la_mancha"):
             general_reduction_eur="2000",
             savings_reduction_eur="0",
             state_minimum_eur="5550",
-            regional_minimum_eur="5956.65" if region == "madrid" else "5550",
+            regional_minimum_eur=policy(region)["ordinary_under65_minimum"],
             allowance_source="Supplied under65/no dependents minima and prelimited reduction",
             assets=[asset("productive", 7750000, False), asset("nonproductive", 250000, True)],
             debts=[],

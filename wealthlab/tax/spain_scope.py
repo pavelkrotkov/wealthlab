@@ -1,6 +1,6 @@
 """Unsupported residence and product classifications block affected results, never imply zero."""
 
-from wealthlab.tax.spain_rates import REGIONS
+from wealthlab.tax.spain_regional_policy import REGIONS, relief_reasons
 
 
 def common(case):
@@ -12,7 +12,7 @@ def common(case):
         (case.filing == "individual", "Joint/family aggregation requires another adapter."),
         (
             case.region in REGIONS,
-            "Select a supported region: Madrid, Catalonia or Castilla-La Mancha.",
+            "Select a supported common-regime region; foral/city profiles need another adapter.",
         ),
         (
             case.worldwide_inputs_complete_confirmed,
@@ -37,7 +37,7 @@ def income(case):
 
 
 def wealth(case):
-    return [
+    return relief_reasons(case) + [
         f"Asset {asset.id}: resolve independent Spanish exemption and productivity classification."
         for asset in case.assets
         if asset.treatment == "unknown" or asset.nonproductive is None

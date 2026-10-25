@@ -6,7 +6,8 @@ IP paid. A calculated IP bill never automatically becomes a credit.
 
 from decimal import Decimal
 
-from wealthlab.tax.spain_rates import CATALONIA_WEALTH, SOLIDARITY, WEALTH, scale
+from wealthlab.tax import spain_regional_policy
+from wealthlab.tax.spain_rates import SOLIDARITY, scale
 from wealthlab.tax.spain_wealth_limits import limit_facts, limited
 from wealthlab.tax.spain_wealth_values import balances
 
@@ -27,8 +28,13 @@ def paid(case, tax_type):
 def calculate(case, income):
     balance = balances(case)
     limits = limit_facts(case, income)
-    minimum = Decimal(500000 if case.region == "catalonia" else 700000)
-    rows = CATALONIA_WEALTH if case.region == "catalonia" else WEALTH
+    regional_policy = spain_regional_policy.policy(case.region)
+    minimum = (
+        case.wealth_allowance.minimum_eur
+        if case.wealth_allowance is not None
+        else Decimal(regional_policy["wealth_minimum"])
+    )
+    rows = regional_policy["wealth"]
     ip_base = max(ZERO, balance["net_base"] - minimum)
     sgf_base = max(ZERO, balance["net_base"] - Decimal(700000))
     ip = limited(
@@ -40,7 +46,7 @@ def calculate(case, income):
         limits["adjusted_irpf_quota"] + ip["capped_quota"],
         limits["combined_ceiling"],
     )
-    bonus = max(ZERO, ip["capped_quota"] - sgf["capped_quota"]) if case.region == "madrid" else ZERO
+    bonus = spain_regional_policy.bonus(case, ip["capped_quota"], sgf["capped_quota"])
     ip_liability = max(
         ZERO,
         ip["capped_quota"] - case.credits.wealth_foreign - case.credits.wealth_regional - bonus,
@@ -52,11 +58,17 @@ def calculate(case, income):
         **balance,
         **limits,
         wealth_minimum=minimum,
+        supplied_wealth_allowance=(
+            case.wealth_allowance.model_dump(mode="json") if case.wealth_allowance else None
+        ),
         wealth_taxable_base=ip_base,
         solidarity_taxable_base=sgf_base,
         wealth=ip,
         solidarity=sgf,
-        madrid_bonus=bonus,
+        madrid_bonus=bonus if case.region == "madrid" else ZERO,
+        regional_bonus=bonus,
+        regional_relief_source=case.credits.source,
+        regional_policy=regional_policy,
         wealth_liability=ip_liability,
         wealth_actually_paid=ip_paid,
         solidarity_liability=max(
