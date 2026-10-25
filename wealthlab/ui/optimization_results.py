@@ -5,6 +5,7 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.household.report import encode
 from wealthlab.ui.optimization_robustness import display as robustness
 
 
@@ -29,7 +30,7 @@ def display(result):
     )
     st.download_button(
         "Export policy search audit",
-        json.dumps(result, default=str),
+        encode(result),
         "policy-search-audit.json",
         "application/json",
     )

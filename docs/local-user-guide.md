@@ -1,6 +1,6 @@
 # Local workbench guide
 
-Release integration is still open in [issue #19](https://github.com/pavelkrotkov/wealthlab/issues/19). This guide covers the current main-based workbench and the local launch/report changes in this layer. Read the [coverage matrix](model-coverage.md) before entering a case; pending product, jurisdiction and optimizer branches are not a completed integrated release.
+Release integration is still open in [issue #19](https://github.com/pavelkrotkov/wealthlab/issues/19). This guide covers the current integration branch and its local launch, projection and bounded-search reports. Read the [coverage matrix](model-coverage.md) before entering a case; pending product, jurisdiction and optimizer branches are not a completed integrated release.
 
 ## Install and launch on the selected Mac
 
@@ -45,9 +45,25 @@ uv run --no-sync python -m wealthlab project "/your/selected/private/folder/scen
 uv run --no-sync python -m wealthlab compare "/your/selected/private/folder/baseline.json" "/your/selected/private/folder/candidate.json" --output-directory "/your/selected/private/folder" --filename comparison.json
 ```
 
-Without `--output-directory`, project/compare deliberately write their full JSON report to the local terminal. That output can be private; keep it out of shared logs. Supplying a filename requires a selected directory. CLI errors omit raw scenario values and private input paths. A blocked or invalid action returns nonzero and writes no report.
+Without `--output-directory`, project/compare/optimize deliberately write their full JSON report to the local terminal. That output can be private; keep it out of shared logs. Supplying a filename requires a selected directory. CLI errors omit raw scenario values and private input paths. A blocked or invalid action returns nonzero and writes no report.
 
-To reproduce, import a saved raw scenario or projection report and project again, or pass either to the CLI. Check the recorded input fingerprint, clean source revision and dependency versions; a dirty checkout or missing revision cannot establish exact reproducibility. Re-execution uses the current engine and does not certify that a different version's archived result is identical. The dependency record includes the installed Owl version, or explicit `null` when its retirement tables are absent; it does not substitute the version expected by the lock file. The UI and CLI share the actual household engine and report format; CLI comparison requires aligned dates and does not run the still-in-progress personal optimizer.
+To reproduce, import a saved raw scenario or projection report and project again, or pass either to the CLI. Check the recorded input fingerprint, clean source revision and dependency versions; a dirty checkout or missing revision cannot establish exact reproducibility. Re-execution uses the current engine and does not certify that a different version's archived result is identical. The dependency record includes the installed Owl version, or explicit `null` when its retirement tables are absent; it does not substitute the version expected by the lock file. The UI and CLI share the actual household engine and report format; CLI comparison requires aligned dates. The separate bounded optimizer also uses the same calculation in both interfaces, within the supported scope described below.
+
+## Search and reproduce allowed policy choices
+
+Open **Optimize**, start with a clearly synthetic example, and edit or import its finite policy grid. Lock any dimension to one named choice to hold it fixed. Inspect spending/reserve, horizon, tax-year, concentration and completed-exit constraints separately. The short starter deliberately fails the default age100 horizon; the full-horizon starter supplies a complete cash/stock schedule. Supplied contract/eligibility assumptions are not permissions to invent missing future illustrations or legal facts.
+
+Run the allowed grid, then inspect the frozen training selection and independent validation result. Validation failure does not substitute a runner-up. The interface also exposes configured deterministic, historical and stress checks, without treating their frequencies as probabilities. A best evaluated candidate is not a certified global optimum.
+
+Export **policy search inputs** to preserve the editable model, and **policy search audit** for the full executed evidence. The audit includes normalized input fingerprint, source revision/dirty state, installed dependencies, seeds and market paths, evaluated choices, actual ledger rows and unmet constraints. Actual-source drilling envelopes remain input-specific and require renewed independent confirmation after edits.
+
+To execute the exported inputs through the same optimizer without a browser:
+
+```sh
+uv run --no-sync python -m wealthlab optimize "/your/selected/private/folder/policy-search-inputs.json" --output-directory "/your/selected/private/folder" --filename policy-search-audit.json
+```
+
+Raw search inputs and this version's search audit can be loaded by the UI or CLI. Audit import validates the embedded input fingerprint, ignores archived selection/outcomes and performs a fresh search under current code. Use the separate input export when editing assumptions or when a full audit exceeds the2MB import bound. The fingerprint detects input changes; it authenticates neither a source document nor legal eligibility. Bounded-search results remain conditional; advisory-fee, QOZ and cross-border integration must be checked against the current coverage matrix and unresolved issue list.
 
 ## Before private entry
 

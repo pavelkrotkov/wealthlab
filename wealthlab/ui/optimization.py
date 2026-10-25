@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from wealthlab.optimization.inputs import PolicySearch
+from wealthlab.optimization.report import loads, payload
 from wealthlab.optimization.search import search
 from wealthlab.ui.optimization_results import display
 from wealthlab.ui.optimization_starters import show as starter_case
@@ -54,7 +54,7 @@ def show():
 
 def calculate(edited):
     try:
-        case = PolicySearch.model_validate_json(edited)
+        case = loads(edited)
         progress = st.progress(0.0, text="Evaluating the allowed training grid")
         result = search(
             case,
@@ -63,7 +63,7 @@ def calculate(edited):
             ),
         )
         progress.empty()
-        st.session_state["policy_search_result"] = result
+        st.session_state["policy_search_result"] = payload(result)
         st.session_state["policy_search_input"] = edited
     except (ValueError, TypeError, KeyError) as error:
         invalid(error, "policy_search")

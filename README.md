@@ -167,3 +167,5 @@ Markets / Household funding / **Opportunity-zone household** adds [actual QOF as
 Optimize compares [complete supplied new life-policy purchases](docs/adr/0206-new-life-policy-purchases.md), preserving independent protection needs and paying actual premiums from existing household cash. Its optional synthetic starter can be combined with existing contract, option, exchange and sleeve choices.
 
 Optimize compares [complete conditional drilling participation profiles](docs/adr/0208-drilling-participation-search.md), including actual interests, liquid references and confirmed no entry. Independently supplied facts must cover all candidates and price paths; full-tax drilling optimization remains unsupported.
+
+Local [CLI and UI policy-search reports](docs/adr/0151-reproducible-local-policy-search.md) share the existing optimizer, input fingerprints, actual engine metadata and guarded report output. `python -m wealthlab optimize` re-executes selected bounded inputs or an imported audit rather than trusting archived results.
