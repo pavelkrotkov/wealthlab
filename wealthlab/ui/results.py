@@ -20,8 +20,8 @@ from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
 from wealthlab.ui.household_lots import display as lot_summary
 from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
-from wealthlab.ui.household_sleeves import display as sleeve_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
+from wealthlab.ui.private_fund_results import route_household as sleeve_summary
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [

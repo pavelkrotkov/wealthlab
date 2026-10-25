@@ -52,3 +52,12 @@ def display_household(rows):
         "without another cash receipt. Outside basis uses a separate supplied adjustment schedule."
     )
     st.json(audit)
+
+
+def route_household(rows):
+    from wealthlab.ui.household_sleeves import display as sleeve_results
+
+    if any("fund_internal_equity" in r for r in rows[-1].get("sleeve_audit", [])):
+        display_household(rows)
+    else:
+        sleeve_results(rows)
