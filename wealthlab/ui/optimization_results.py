@@ -24,7 +24,7 @@ def display(result):
     selected(result)
     robustness(result)
     with st.expander("Reproduce inputs, selected household, realized paths and tax/cash audit"):
-        st.json(result)
+        st.json(encode(result))
     st.download_button(
         "Export policy search inputs",
         json.dumps(result["inputs"], indent=2),
@@ -52,7 +52,7 @@ def selected(result):
     st.write("Training-selected policy:", result["selection"])
     held_out = result["held_out"]
     st.subheader("Separate validation sample — selection remains frozen")
-    st.json(held_out["assessment"])
+    st.json(encode(held_out["assessment"]))
     if held_out["assessment"]["eligible"]:
         st.success("The selected candidate also meets the targets on the held-out sample.")
     else:

@@ -113,20 +113,22 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
             "All reported account and debt balances are converted to USD at the stated fixed rates."
         )
         st.json(
-            dict(
-                accounts=rows[-1]["account_balances"],
-                debts=rows[-1]["debt_balances"],
-                funding_basis=rows[-1].get("funding_basis", {}),
-                input_sha256=fingerprint(scenario),
-                schema_version=scenario.schema_version,
-                ytd=scenario.ytd.model_dump(mode="json"),
-                employer_tranches=rows[-1].get("employer_tranches", []),
-                employer_events=rows[-1].get("employer_event_log", []),
-                exchange_fund=rows[-1].get("exchange_fund_audit"),
-                life_policies=rows[-1].get("life_policy_audit"),
-                qoz=rows[-1].get("qoz_audit"),
-                advisory_fees=rows[-1].get("advisory_fee_audit"),
-                drilling=rows[-1].get("drilling_audit"),
+            encode(
+                dict(
+                    accounts=rows[-1]["account_balances"],
+                    debts=rows[-1]["debt_balances"],
+                    funding_basis=rows[-1].get("funding_basis", {}),
+                    input_sha256=fingerprint(scenario),
+                    schema_version=scenario.schema_version,
+                    ytd=scenario.ytd.model_dump(mode="json"),
+                    employer_tranches=rows[-1].get("employer_tranches", []),
+                    employer_events=rows[-1].get("employer_event_log", []),
+                    exchange_fund=rows[-1].get("exchange_fund_audit"),
+                    life_policies=rows[-1].get("life_policy_audit"),
+                    qoz=rows[-1].get("qoz_audit"),
+                    advisory_fees=rows[-1].get("advisory_fee_audit"),
+                    drilling=rows[-1].get("drilling_audit"),
+                )
             )
         )
 

@@ -171,6 +171,9 @@ Household and Markets can assess [sourced outer advisory AUM fees](docs/adr/0078
 The dependent [observed-snapshot and advance-fee profile](docs/adr/0079-advisory-observed-snapshots-and-advance.md) adds actual opening/previously completed net values, native HSA custody-debt adjustments and full source-confirmed advance accrual spans. Billing/due/payment cutoffs remain month end; unavailable/future snapshots and first-day billing are explicit guards. Household and Markets provide original editable starters, not inferred adviser terms.
 
 Optimize can use [one common sourced advisory fee contract](docs/adr/0207-optimizer-common-advisory-fees.md) across native choices, with actual per-path AUM observations, paid fees and remaining debt. Offered strategy accounts require explicit source coverage; no candidate can choose a different fee rate, substitute AUM or clear an unpaid bill to obtain a completed-exit ranking.
+
 Optimize compares [complete conditional drilling participation profiles](docs/adr/0208-drilling-participation-search.md), including actual interests, liquid references and confirmed no entry. Independently supplied facts must cover all candidates and price paths; full-tax drilling optimization remains unsupported.
 
 Local [CLI and UI policy-search reports](docs/adr/0151-reproducible-local-policy-search.md) share the existing optimizer, input fingerprints, actual engine metadata and guarded report output. `python -m wealthlab optimize` re-executes selected bounded inputs or an imported audit rather than trusting archived results.
+
+The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-release-compatibility.md) match actual fee-enabled CLI/UI reports, preserve structured NJ loss carry, re-execute imported audits and retain guarded local output. Visible reproduction JSON uses the same finite typed encoder as exported reports.
