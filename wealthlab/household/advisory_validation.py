@@ -1,10 +1,11 @@
 """Only complete sourced contracts reach the shared observed-value assessment book.
 
-Rate tiers are marginal contract inputs, not a guessed blended rate. Independent
+Rate methods are supplied contract inputs, not a guessed blended rate. Independent
 source and availability dates prevent a later fee quote from changing an earlier
 cash decision. Embedded product costs must be excluded from this outer bill.
 """
 
+from wealthlab.household.advisory_billing import validate as validate_billing
 from wealthlab.household.advisory_calendar import validate_periods
 from wealthlab.household.advisory_scope import validate_coverage
 
@@ -19,6 +20,7 @@ def validate(scenario):
         raise ValueError("Advisory schedule IDs must be unique.")
     for schedule in plan.schedules:
         validate_source(schedule)
+        validate_billing(schedule)
         validate_tiers(schedule.tiers)
         validate_periods(scenario, schedule)
         validate_coverage(scenario, schedule)
@@ -45,8 +47,10 @@ def validate_tiers(tiers):
     for tier in tiers[:-1]:
         if tier.upper_limit is None or tier.upper_limit <= previous:
             raise ValueError(
-                "Marginal AUM tier upper limits must be finite and strictly increasing."
+                "Marginal AUM tiers / whole-base limits must be finite and strictly increasing."
             )
         previous = tier.upper_limit
     if tiers[-1].upper_limit is not None:
-        raise ValueError("The last marginal AUM tier must explicitly have no upper limit.")
+        raise ValueError(
+            "The last marginal AUM tier / whole-base breakpoint must have no upper limit."
+        )

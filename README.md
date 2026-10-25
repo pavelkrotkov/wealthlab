@@ -177,3 +177,5 @@ Optimize compares [complete conditional drilling participation profiles](docs/ad
 Local [CLI and UI policy-search reports](docs/adr/0151-reproducible-local-policy-search.md) share the existing optimizer, input fingerprints, actual engine metadata and guarded report output. `python -m wealthlab optimize` re-executes selected bounded inputs or an imported audit rather than trusting archived results.
 
 The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-release-compatibility.md) match actual fee-enabled CLI/UI reports, preserve structured NJ loss carry, re-execute imported audits and retain guarded local output. Visible reproduction JSON uses the same finite typed encoder as exported reports.
+
+[Explicit advisory rate/period methods](docs/adr/0153-explicit-advisory-rate-and-period-methods.md) add source-confirmed whole-base breakpoint rates and supplied fixed annual fractions alongside existing marginal/actual-day defaults. Billing dates, observed valuations, cash priorities and unpaid fee liabilities remain native.

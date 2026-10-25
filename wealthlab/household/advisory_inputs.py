@@ -1,4 +1,8 @@
-"""Sourced outer cash-fee contracts use explicit periods, marginal tiers and valuation scope."""
+"""Sourced outer cash fees declare rate methods, period factors and observed valuation scope.
+
+Nondefault interpretations require separate source confirmation at execution.
+An annual day count may be unknown only when every period supplies a fixed factor.
+"""
 
 from datetime import date
 from decimal import Decimal
@@ -27,6 +31,8 @@ class AdvisoryCoverage(TaxModel):
 
 
 class AdvisoryPeriod(TaxModel):
+    fixed_annual_period_fraction: Annotated[Decimal, Field(gt=0, le=1)] | None = None
+    fixed_fraction_source_confirmed: bool = False
     accrual_start: date
     accrual_end: date
     valuation_date: date
@@ -45,9 +51,13 @@ class AdvisorySchedule(Record):
     outer_cash_fee_not_already_in_embedded_costs_confirmed: bool
     covered: list[AdvisoryCoverage] = Field(min_length=1)
     tiers: list[AdvisoryTier] = Field(min_length=1)
+    rate_application: Literal["progressive_marginal", "whole_relationship_breakpoint"] = (
+        "progressive_marginal"
+    )
+    whole_relationship_breakpoints_source_confirmed: bool = False
     advance_nonrefundable_no_proration_assumed_confirmed: bool = False
     fixed_per_period: Money = Decimal(0)
-    day_count: Literal[365, 366, 360]
+    day_count: Literal[365, 366, 360] | None = None
     periods: list[AdvisoryPeriod] = Field(min_length=1)
 
 
