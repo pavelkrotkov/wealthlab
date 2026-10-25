@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+from wealthlab.markets.workplace_rmd_report import summary as rmd_summary
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -16,6 +17,7 @@ def funding(rows):
         funding_shortfall=sum((r["funding_shortfall"] for r in rows), Decimal(0)),
         missed_tax_schedule_months=sum(missed_schedule(r) for r in rows),
         **product_outcome(rows, not failures),
+        **rmd_summary(rows),
         cash_reserve_breach_months=sum(r["closing_cash"] < r["reserve_target"] for r in rows),
     )
 

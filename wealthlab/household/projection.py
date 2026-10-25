@@ -94,6 +94,7 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
         rows[-1]["workplace_audit"] = employee.log
         rows[-1]["workplace_market_audit"] = employee.market_log
         rows[-1]["workplace_withdrawal_audit"] = employee.withdrawal_log
+        rows[-1]["workplace_rmd_audit"] = employee.rmd.audit if employee.rmd is not None else []
     household_book.finish(lots, rows)
     medicare_household.finish(medicare, rows)
     hsa_household.finish(hsa, rows)

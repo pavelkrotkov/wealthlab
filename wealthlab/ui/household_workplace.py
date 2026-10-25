@@ -5,6 +5,7 @@ import json
 import streamlit as st
 
 from wealthlab.retirement.workplace_example import template
+from wealthlab.ui.workplace_rmd import display as rmd_display
 from wealthlab.ui.workplace_withdrawals import display as withdrawals
 
 
@@ -24,8 +25,11 @@ def controls(payload, scenario):
             "Future frozen-rule assumptions are conditional. No employer match, after-tax "
             "non-Roth contributions or rollover are generated. Optional cash_withdrawals "
             "accepts confirmed ordinary eligible pretax 401(k) cash with zero federal/NJ basis, "
-            "first-day dates, source withholding and age-55 separation access; RMD years and "
-            "special distributions require later profiles."
+            "first-day dates, source withholding and age-55 separation access. Optional rmd "
+            "settings "
+            "supply complete plan groups, beneficiary tables, December targets and separate "
+            "withholding. "
+            "Current-employer delays and special distributions remain unfinished."
         )
         if not enabled:
             return None
@@ -41,6 +45,7 @@ def display(rows):
     if "workplace_contributions" not in rows[-1]:
         return
     withdrawals(rows)
+    rmd_display(rows)
     st.subheader("Employee 401(k) cash and wage reconciliation")
     total = sum(r["workplace_contributions"] for r in rows)
     pretax = sum(r["workplace_pretax"] for r in rows)

@@ -26,6 +26,7 @@ from wealthlab.markets.policy_example import enable as policy_example
 from wealthlab.markets.sleeve_example import synthetic as sleeve_example
 from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
+from wealthlab.markets.workplace_rmd_example import synthetic as workplace_rmd_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.market_hsa_payroll import controls as paired_controls
@@ -142,6 +143,7 @@ def account_example(mode, stress):
             "IRA and education proxies",
             "Employer and employment",
             "Employee 401(k)",
+            "Workplace RMDs",
             "Long-short household",
             "Medical bill inflation",
             "Invested HSA",
@@ -154,6 +156,7 @@ def account_example(mode, stress):
         "IRA and education proxies": wrapper_example,
         "Employer and employment": employer_example,
         "Employee 401(k)": workplace_example,
+        "Workplace RMDs": workplace_rmd_example,
         "Long-short household": sleeve_example,
         "Medical bill inflation": medical_example,
         "Invested HSA": hsa_example,

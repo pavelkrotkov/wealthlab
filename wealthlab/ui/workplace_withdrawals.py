@@ -11,10 +11,12 @@ def display(rows):
     st.caption(
         "Confirmed eligible nonperiodic cash from fully vested pretax 401(k) balances with "
         "zero federal/NJ basis. First-day orders precede employee deferrals and month-end "
-        "returns. Cash is net of payer withholding; federal tax is at least 20% in this "
-        "profile, with entered NJ rates. Account locks and actual balances limit payment. "
+        "returns. Cash is net of payer withholding; eligible remainder uses at least 20% federal, "
+        "with separate RMD and entered NJ rates. Account locks and actual balances limit payment. "
         "The age-55 separation exception uses the separation calendar year and does not "
-        "apply to IRA withdrawals. RMD years, Roth plan distributions, rollovers, inherited "
+        "apply to IRA withdrawals. RMD years require explicit plan settings. Roth plan "
+        "distributions, "
+        "rollovers, inherited "
         "plans, nonzero basis, loans, NUA and other special features require later profiles."
     )
     labels = dict(
@@ -23,6 +25,8 @@ def display(rows):
         source="Plan account",
         requested="Requested gross",
         gross="Paid gross",
+        rmd_portion="Required portion",
+        eligible_remainder="Eligible remainder",
         net_cash="Net cash received",
         unfilled="Unfilled request",
         additional_tax="Early-distribution additional tax",

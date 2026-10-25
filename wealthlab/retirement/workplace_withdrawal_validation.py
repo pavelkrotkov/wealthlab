@@ -8,6 +8,7 @@ none can masquerade as an ordinary eligible zero-basis cash withdrawal.
 from types import SimpleNamespace
 
 from wealthlab.retirement.rmd import start_age
+from wealthlab.retirement.workplace_rmd_validation import validate as validate_rmd
 
 
 def validate(scenario):
@@ -20,12 +21,18 @@ def validate(scenario):
     for source, profile in cash.profiles.items():
         if plan.products.get(source) != "pretax_401k":
             raise ValueError("Ordinary workplace cash requires a known pretax 401(k) source.")
-        validate_profile(profile, members[accounts[source].owner].birth_date, scenario.end.year - 1)
+        validate_profile(
+            profile,
+            members[accounts[source].owner].birth_date,
+            scenario.end.year - 1,
+            cash.rmd is not None,
+        )
     validate_orders(cash, plan, scenario)
     validate_separated_elections(cash, plan)
+    validate_rmd(scenario)
 
 
-def validate_profile(profile, born, final_year):
+def validate_profile(profile, born, final_year, has_rmd=False):
     confirmations = (
         profile.eligible_nonperiodic_cash_distributions_confirmed,
         profile.fully_vested_zero_federal_and_nj_basis_confirmed,
@@ -36,6 +43,8 @@ def validate_profile(profile, born, final_year):
         raise ValueError("Confirm eligible workplace cash, vested zero basis and complete inputs.")
     if profile.separation_date <= born:
         raise ValueError("Workplace separation must follow the owner's birth date.")
+    if has_rmd:
+        return
     # Both conditional 1959 start ages are beyond a projection ending before age 73.
     if born.year == 1959 and final_year - born.year < 73:
         return
