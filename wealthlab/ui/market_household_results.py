@@ -18,7 +18,7 @@ from wealthlab.ui.market_funding_results import display as funding_results
 from wealthlab.ui.market_hsa_payroll import display as payroll_results
 from wealthlab.ui.market_medical_results import display as medical_results
 from wealthlab.ui.medical_bills import display as bill_results
-from wealthlab.ui.private_fund_results import route_household as sleeve_results
+from wealthlab.ui.private_fund_household_results import route_household as sleeve_results
 from wealthlab.ui.results import HIDDEN
 
 
