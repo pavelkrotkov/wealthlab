@@ -10,6 +10,7 @@ from math import prod
 
 from wealthlab.household.calendar import months
 from wealthlab.optimization.market_validation import validate_markets
+from wealthlab.optimization.shared_terms import validate as validate_terms
 
 FIELDS = ("sale_policies", "harvest_policies", "ira_orders", "lot_funding_order")
 
@@ -34,6 +35,7 @@ def footprint(choice):
 
 def validate(case):
     validate_markets(case)
+    validate_terms(case)
     identifiers, controlled = set(), set()
     for dimension in case.dimensions:
         if dimension.id in identifiers:
