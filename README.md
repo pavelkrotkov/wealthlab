@@ -144,3 +144,5 @@ Optimize can compare [new long/short and private-fund sleeve mixes funded from e
 Optimize offers [complete life-policy funding paths](docs/adr/0136-complete-life-policy-paths.md): select supplied premium/event/value illustrations for the same opening policy, with actual cash, basis, failure settlement and protection checks.
 
 Optimize also provides a [full age-100 cash/stock example](docs/adr/0137-full-horizon-search-example.md) with cash, W-2 and spending controls, complete future tax/lot schedules and explicitly small demonstration samples.
+
+Long optimizer runs display [per-path progress for training, independent validation and named checks](docs/adr/0139-native-optimizer-progress.md), with the active phase clearly identified.
