@@ -67,3 +67,10 @@ def test_spousal_add_on_cannot_silently_skip_earnings_effects():
     ]
     with pytest.raises(ValueError, match="Auxiliary/survivor work effects"):
         calculate(data)
+
+
+def test_pre_start_claim_cannot_skip_december_work_assessment():
+    data = payload()
+    data["claims"]["members"][0].update(birth_date="1963-01-02", claim_month="2025-12-01")
+    with pytest.raises(ValueError, match="before benefits start"):
+        SocialWorkCase.model_validate(data)

@@ -25,6 +25,10 @@ def validate(case):
 
 def validate_coverage(case, people):
     policy = case.work
+    if any(p.claim_month.year < case.claims.start_year for p in case.claims.members):
+        raise ValueError(
+            "Start the projection before benefits start; prior claims need opening work history."
+        )
     expected = {(y, p) for y in range(case.claims.start_year, case.claims.end_year) for p in people}
     actual = {(row.year, row.member) for row in policy.years}
     if actual != expected or len(actual) != len(policy.years):

@@ -54,7 +54,7 @@ editing/submission. No aggregate tax-savings receipt is created.
 
 The initial profile requires complete current earned-W2 classification without
 special payments, no opening work-related government positions or reduction
-credits, no other auxiliaries, and no special lump-sum tax election. It rejects
+credits, no claims preceding the projection start, no other auxiliaries, and no special lump-sum tax election. It rejects
 actual spouse/survivor add-ons and dated deaths. Self-employment, foreign work,
 family allocation, opening debt/waivers, earnings-history PIA reconstruction,
 Medicare collection and household tax recognition need their own supported
@@ -70,3 +70,10 @@ Primary sources inspected October25,2026:
 - [POMS RS02501.110, closed-year partial payments](https://secure.ssa.gov/poms.nsf/lnx/0302501110), example1.
 - [POMS RS00615.480, adjustment effective dates](https://secure.ssa.gov/poms.nsf/lnx/0300615480).
 - [POMS RS00615.482, reduction-factor crediting months](https://secure.ssa.gov/poms.nsf/lnx/0300615482).
+
+Claims must begin on or after January 1 of the start year. The ordinary no-work
+baseline can include a prior December entitlement paid in the first January,
+but this work profile has no prior-year assessment, opening adjustment or ARF
+credit history. Rejecting an earlier claim prevents that payment from silently
+escaping withholding. Extend the projection backward to cover the claim before
+using this profile; an existing claimant needs a separate opening-history adapter.
