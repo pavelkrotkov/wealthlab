@@ -14,6 +14,7 @@ from wealthlab.optimization.diversification_example import extend as with_divers
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.exchange_example import extend as with_exchange_choices
 from wealthlab.optimization.life_example import extend as with_life_paths
+from wealthlab.optimization.new_life_example import extend as with_new_life
 from wealthlab.optimization.option_allocation_example import extend as with_new_options
 from wealthlab.optimization.product_example import extend as with_products
 from wealthlab.optimization.robustness_example import synthetic as robust
@@ -38,6 +39,10 @@ def show():
     ):
         if st.checkbox(label, key=label):
             starter = extend(starter)
+    return purchases(starter)
+
+
+def purchases(starter):
     new_options = st.checkbox(
         "Add synthetic cash-funded option allocation choices",
         disabled=starter.household.option_plan is not None,
@@ -47,4 +52,6 @@ def show():
         starter = with_new_options(starter)
     if st.checkbox("Add synthetic exchange-fund contribution choices", key="exchange_path_starter"):
         starter = with_exchange_choices(starter)
+    if st.checkbox("Add synthetic new life-policy purchase choices", key="new_life_starter"):
+        starter = with_new_life(starter)
     return starter

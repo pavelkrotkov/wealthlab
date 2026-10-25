@@ -20,7 +20,8 @@ def show():
         "schedules. New option units buy actual shares from existing cash. Fixed options "
         "and employer awards require actual contractual exits. Exchange choices retain the "
         "original source shares and basis. "
-        "Life choices use complete supplied premium/event/value paths; other product "
+        "Life choices use complete supplied premium/event/value paths, including new policies "
+        "funded by actual future premiums. Other product "
         "allocation and cross-border controls remain in progress."
     )
     st.info(
@@ -28,7 +29,11 @@ def show():
         "two years of cash reserves. The short synthetic example intentionally fails the "
         "horizon constraint. Supply complete annual/market/account schedules for a longer run."
     )
-    starter = starter_case()
+    try:
+        starter = starter_case()
+    except (ValueError, TypeError, KeyError) as error:
+        invalid(error, "policy_search_starter")
+        return
     uploaded = st.file_uploader("Load policy search JSON", type="json")
     if source(uploaded, starter.model_dump_json(indent=2), "policy_search") is None:
         return

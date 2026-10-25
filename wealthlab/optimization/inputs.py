@@ -14,6 +14,7 @@ from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_inputs import SleeveOpportunity, Units
 from wealthlab.optimization.exchange_paths import ExchangePath
 from wealthlab.optimization.life_paths import LifePath
+from wealthlab.optimization.new_life_inputs import NewLifeOffer
 from wealthlab.optimization.option_opportunity import OptionOpportunity, OptionUnits
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
@@ -46,6 +47,7 @@ class PolicyChoice(AccountControls):
     life_paths: dict[Identifier, Identifier] | None = None
     option_units: OptionUnits | None = None
     exchange_path: Identifier | None = None
+    new_life_purchases: list[Identifier] | None = None
     change_guardrail: bool = False
     guardrail: SpendingGuardrail | None = None
 
@@ -78,6 +80,7 @@ class PolicySearch(TaxModel):
     life_opportunities: list[LifePath] = Field(default_factory=list, max_length=32)
     option_opportunity: OptionOpportunity | None = None
     exchange_opportunities: list[ExchangePath] = Field(default_factory=list, max_length=32)
+    new_life_opportunities: list[NewLifeOffer] = Field(default_factory=list, max_length=32)
     robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
     dimensions: list[Dimension] = Field(min_length=1, max_length=8)
     targets: SearchTargets = Field(default_factory=SearchTargets)

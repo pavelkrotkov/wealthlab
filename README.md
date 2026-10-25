@@ -163,3 +163,5 @@ Optimize compares [new option units funded from existing cash](docs/adr/0202-new
 Optimize compares [retained, partial/full exchange contributions and direct sale](docs/adr/0203-exchange-contribution-path-search.md) using the same original stock and independent basis, complete supplied profiles, actual source/basket exits and preserved liquidity locks.
 
 Markets / Household funding / **Opportunity-zone household** adds [actual QOF asset factors and source-sale funding on shared paths](docs/adr/0077-qoz-shared-market-paths.md). Explicit net-after-entity-tax returns replace only asset observations; native dividends, costs, carry, tax dates and settlement remain intact. Gross factor exposure stays separate from shareholder NAV and unknown issuer inventory. The replay starter uses clearly invented factors, with no QOF quote history.
+
+Optimize compares [complete supplied new life-policy purchases](docs/adr/0206-new-life-policy-purchases.md), preserving independent protection needs and paying actual premiums from existing household cash. Its optional synthetic starter can be combined with existing contract, option, exchange and sleeve choices.
