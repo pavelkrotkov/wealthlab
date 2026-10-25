@@ -16,7 +16,12 @@ def requested(ledger, request, prices, wallet, row):
 def redeem(ledger, request, prices, wallet, row):
     if ledger.plan.mode == "direct_sale":
         # The reference already owns the actual basket; no partnership interest exists.
-        row["direct_basket_already_owned_requests"] += 1
+        field = (
+            "direct_basket_already_owned_requests"
+            if ledger.plan.contribution_quantity
+            else "inactive_fund_redemption_requests"
+        )
+        row[field] += 1
         return []
     if not ledger.active:
         row["inactive_fund_redemption_requests"] += 1

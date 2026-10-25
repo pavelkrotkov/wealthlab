@@ -3,7 +3,9 @@
 from wealthlab.household.calendar import money
 from wealthlab.products import exchange_fund_lots as lots
 from wealthlab.products.exchange_fund_direct import audit as direct_audit
+from wealthlab.products.exchange_fund_positions import snapshot
 from wealthlab.products.exchange_fund_redemption import requested
+from wealthlab.products.exchange_fund_source_sales import sell_source
 from wealthlab.products.exchange_fund_trades import marked
 
 
@@ -16,6 +18,10 @@ def advance(ledger, observation, wallet):
         denied_redemptions=0,
         early_cash=lots.ZERO,
         basket_cash=lots.ZERO,
+        source_sale_cash=lots.ZERO,
+        source_quantity_sold=lots.ZERO,
+        denied_source_sales=0,
+        empty_source_sale_requests=0,
     )
     row.update(direct_audit(ledger.plan, observation))
     if ledger.active:
@@ -28,10 +34,10 @@ def advance(ledger, observation, wallet):
     wallet.deposit(cash)
     ledger.book.cash = dict.fromkeys(ledger.book.cash, lots.ZERO)
     row["sale_cash"] = cash
-    row["locked_value"] = ledger.nav if ledger.active else lots.ZERO
+    row.update(snapshot(ledger, observation))
     row["federal_interest_basis"] = ledger.bases["federal"] if ledger.active else lots.ZERO
     row["nj_interest_basis"] = ledger.bases["nj"] if ledger.active else lots.ZERO
-    row["account_value"] = marked(ledger.book, observation.prices) + row["locked_value"]
+    row["account_value"] = marked(ledger.book, observation.prices) + ledger.nav
     wallet.balances[ledger.plan.account_id] = row["account_value"]
     ledger.prices = observation.prices
     ledger.log.append(row)
@@ -94,9 +100,15 @@ def execute_requests(ledger, observation, wallet, row):
     events = []
     for request in ledger.plan.requests:
         if request.date == observation.date:
-            direct_ownership = ledger.plan.mode == "direct_sale" and request.action == "redeem"
-            if observation.locked and not direct_ownership:
-                row["denied_redemptions"] += 1
-            else:
-                events.extend(requested(ledger, request, observation.prices, wallet, row))
+            events.extend(execute_request(ledger, request, observation, wallet, row))
     return events
+
+
+def execute_request(ledger, request, observation, wallet, row):
+    if request.action == "sell_source":
+        return sell_source(ledger, request, observation, row)
+    direct_ownership = ledger.plan.mode == "direct_sale" and request.action == "redeem"
+    if observation.locked and not direct_ownership:
+        row["denied_redemptions"] += 1
+        return []
+    return requested(ledger, request, observation.prices, wallet, row)

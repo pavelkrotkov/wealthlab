@@ -36,4 +36,7 @@ def outcome(rows):
         funding_shortfall=sum(r["funding_shortfall"] for r in rows),
         denied_redemptions=sum(r["exchange_denied_redemptions"] for r in rows),
         tax_position=final.get("tax_position", 0),
+        retained_source_quantity=final["exchange_retained_source_quantity"],
+        positions_closed=final["exchange_positions_closed"],
+        modeled_exit_complete=final["exchange_fund_audit"]["exit_status"]["modeled_exit_complete"],
     )
