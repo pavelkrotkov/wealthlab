@@ -7,6 +7,7 @@ Each call keeps its own investment date instead of tacking the source holding pe
 
 
 def validate_dates(scenario, plan, expected):
+    validate_month_boundaries(scenario)
     dates = [c.date for c in plan.calls] + [plan.sale_requested, plan.sale_not_before]
     if any(when not in expected or (when.month, when.day) == (2, 29) for when in dates):
         raise ValueError("QOZ calls/sale dates must be observed month ends, excluding leap day.")
@@ -30,7 +31,10 @@ def validate_horizon(scenario, plan):
         raise ValueError(
             "This adapter supports new investments from 2026, not legacy opening interests."
         )
-    if scenario.end.year >= min(c.date.year for c in plan.calls) + 30:
+    if any(
+        c.date.year > 2026 and c.date.replace(year=c.date.year + 30) < scenario.end
+        for c in plan.calls
+    ):
         raise ValueError("Thirty-year FMV-cap observations require another QOZ profile.")
 
 
@@ -40,3 +44,8 @@ def validate_inclusion_marks(scenario, plan, expected):
     due = [inclusion_date(c.date) for c in plan.calls]
     if any(scenario.start <= when < scenario.end and when not in expected for when in due):
         raise ValueError("Statutory QOZ inclusion needs an exact observed month-end FMV.")
+
+
+def validate_month_boundaries(scenario):
+    if scenario.start.day != 1 or scenario.end.day != 1:
+        raise ValueError("QOZ requires whole calendar months beginning/ending on the first.")

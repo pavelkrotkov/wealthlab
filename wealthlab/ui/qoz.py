@@ -13,19 +13,23 @@ def show():
     st.subheader("Opportunity-zone funds")
     st.warning(
         "Conditional QOF C-corporation illustration, not legal eligibility or sponsor terms. "
-        "Federal denied / deferral-only / conditional ten-year election share the same "
+        "Federal denied / deferral without the ten-year election / conditional ten-year "
+        "election share the same "
         "contract economics. NJ has independent gain/basis and supplied limits; it cannot "
         "grant a federal election that this policy denies."
     )
     st.caption(
         "Calls are assumed optional, partially accepted subscriptions with no default penalty. "
         "They consume actual cash from executed stock sales. Returns are after entity tax; "
-        "fees, internal financing, distributions and hurdle carry use the existing fund "
-        "economic book. Preferred hurdle is only a carry threshold, never guaranteed income. "
+        "all stock lots share the same company assets, debt and costs. New cash first cures "
+        "creditor debt, then retargets exposure under the supplied NAV-pricing terms. "
+        "Cash dividends are explicitly assumed nonqualified. "
+        "Preferred hurdle is only a carry threshold, never guaranteed income. "
         "Mandatory inclusion can require tax with no distribution. A full stock-interest "
         "sale recognizes tax before delayed settlement. The liquid reference uses the same "
         "asset returns, zero leverage/fees/carry and immediate settlement at the request. "
-        "Only month-end calls/sales are supported. Pass-through clocks, opening QOF interests, "
+        "Only whole months and month-end calls/sales are supported. "
+        "Pass-through clocks, opening QOF interests, "
         "transfers, return-of-capital distributions and 30-year exits require another profile."
     )
     uploaded = st.file_uploader("Load QOZ household JSON", type="json")

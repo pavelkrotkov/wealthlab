@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 from wealthlab.products import qoz_economics as economics
-from wealthlab.products.long_short_book import ZERO
+from wealthlab.products.long_short_book import ZERO, equity
 from wealthlab.products.qoz_calls import fund
 from wealthlab.products.qoz_execution import execute
 from wealthlab.products.qoz_validation import validate
@@ -12,7 +12,9 @@ from wealthlab.products.qoz_validation import validate
 class Ledger:
     """One run keeps economic books separate from original-source tax recognition.
 
-    Each funded call owns its own clock and mixed qualifying/nonqualifying basis.
+    Each funded call owns its stock units, clock and mixed qualifying/nonqualifying basis.
+    All stock lots share one economic book and creditor position; losses cannot
+    vanish between calls. Actual new capital repays debt before buying assets.
     Month-end source sales have already swept actual cash into the shared wallet.
     No predicted tax saving supplies a call; the annual ledger later funds taxes.
     Internal loans are entity obligations, while only stock NAV and settlement
@@ -24,6 +26,9 @@ class Ledger:
         self.plan, self.lots, self.tax_ledger = scenario.qoz_plan, lots, tax
         self.tranches, self.used, self.log, self.calls = [], {}, [], []
         self.summary = {}
+        self.economic = None
+        self.economic_log = []
+        self.stock_values = []
 
     def after_receipts(self, wallet, start, end):
         when = end - timedelta(days=1)
@@ -41,8 +46,7 @@ class Ledger:
         )
         self.advance(observation)
         events.extend(self.fund_calls(wallet, when, row))
-        for tranche in self.tranches:
-            events.extend(execute(self, tranche, observation, wallet, row))
+        events.extend(execute(self, observation, wallet, row))
         row.update(self.values())
         wallet.balances[self.plan.account_id] = row["nav"]
         self.summary = {"qoz_" + key: value for key, value in row.items() if key != "date"}
@@ -50,9 +54,8 @@ class Ledger:
         return events
 
     def advance(self, observation):
-        for tranche in self.tranches:
-            if not tranche["sold"]:
-                tranche["economic_log"].append(economics.step(tranche, observation))
+        if self.economic is not None and not self.economic["sold"]:
+            self.economic_log.append(economics.step(self.economic, observation))
 
     def fund_calls(self, wallet, when, row):
         events = []
@@ -68,10 +71,14 @@ class Ledger:
         return events
 
     def values(self):
+        fund = self.economic
+        raw = equity(fund["book"]) if fund else ZERO
         return dict(
-            nav=sum((economics.value(t) for t in self.tranches), ZERO),
-            receivable=sum((t["receivable"] for t in self.tranches), ZERO),
-            internal_debt=sum((t["book"]["loan"] for t in self.tranches), ZERO),
+            entity_equity=raw,
+            nonrecourse_deficit=max(ZERO, -raw),
+            nav=economics.value(fund) if fund else ZERO,
+            receivable=fund["receivable"] if fund else ZERO,
+            internal_debt=fund["book"]["loan"] if fund else ZERO,
         )
 
     def finish(self, rows):
@@ -79,7 +86,8 @@ class Ledger:
             terms=self.plan.model_dump(mode="json"),
             calls=self.calls,
             months=self.log,
-            tranches=[
-                {key: value for key, value in t.items() if key != "case"} for t in self.tranches
-            ],
+            economic_log=self.economic_log,
+            stock_values=self.stock_values,
+            ending_entity=self.economic["book"] if self.economic else None,
+            tranches=self.tranches,
         )

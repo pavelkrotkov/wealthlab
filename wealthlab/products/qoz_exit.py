@@ -13,14 +13,9 @@ from wealthlab.products.qoz_tax import event
 
 def exit_event(tax, nav, proceeds, when, plan):
     values = {}
-    anniversary = tax["invested"].replace(year=tax["invested"].year + 10)
     for jurisdiction, book in tax["jurisdictions"].items():
         fmv = money(nav * book["elected"] / tax["funded"])
-        treatment = getattr(plan, jurisdiction)
-        permitted = jurisdiction == "federal" or plan.federal == "allowed"
-        step = (
-            treatment == "allowed" and permitted and when >= anniversary and bool(book["elected"])
-        )
+        step = elects_fmv(tax, book, when, plan, jurisdiction)
         if step:
             book["basis"] = max(book["basis"], fmv)
         basis = book["basis"] + book["ordinary_basis"]
@@ -45,3 +40,15 @@ def exit_event(tax, nav, proceeds, when, plan):
         nj=values["new_jersey"],
         character=character,
     )
+
+
+def elects_fmv(tax, book, when, plan, jurisdiction):
+    permitted = jurisdiction == "federal" or plan.federal == "allowed"
+    if not (permitted and getattr(plan, jurisdiction) == "allowed" and book["elected"]):
+        return False
+    invested = tax["invested"]
+    if when < invested.replace(year=invested.year + 10):
+        return False
+    if invested.year <= 2026 and when.year > 2047:
+        raise ValueError("Legacy post-2047 QOF-election eligibility requires another profile.")
+    return True

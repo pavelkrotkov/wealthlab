@@ -6,11 +6,12 @@ cash leaves the shared wallet. A gain cannot support duplicate elections.
 
 from wealthlab.products import qoz_economics as economics
 from wealthlab.products import qoz_source, qoz_tax
+from wealthlab.products.qoz_units import new_units
 
 
 def fund(state, call, wallet):
     row, _sold, deadline = qoz_source.source(state.lots, call)
-    funded = wallet.pay(call.amount)
+    funded = min(wallet.cash, call.amount)
     federal = qoz_source.elected_amount(
         row, funded, "federal", state.plan.federal, state.used, call.date <= deadline
     )
@@ -19,12 +20,18 @@ def fund(state, call, wallet):
         row, funded, "new_jersey", nj_treatment, state.used, call.date <= deadline
     )
     elected = dict(federal=federal, new_jersey=nj)
+    units = new_units(state, call, funded, elected)
+    paid = wallet.pay(call.amount)
+    assert paid == funded
+    economic_entry = contribute(state, call, funded)
     audit = dict(
         call=call.model_dump(mode="json"),
         source=dict(row),
         funded=funded,
         deadline=deadline.isoformat(),
         elected=elected,
+        units=units,
+        economic_entry=economic_entry,
         regime="legacy_2026" if call.date.year <= 2026 else "post_2026",
     )
     exclusion = qoz_tax.event(
@@ -36,10 +43,25 @@ def fund(state, call, wallet):
     )
     if not funded:
         return None, exclusion, audit
-    tranche = economics.create(state.plan, funded, call.date)
-    tranche.update(
+    tranche = dict(
         id=call.id,
+        units=units,
+        funded=funded,
+        invested=call.date,
+        dividends=0,
         tax=qoz_tax.opening(funded, elected, call.date, row["federal_character"]),
-        economic_log=[],
     )
     return tranche, exclusion, audit
+
+
+def contribute(state, call, funded):
+    if not funded:
+        return {}
+    if state.economic is None:
+        state.economic = economics.create(state.plan, funded, call.date)
+        return dict(
+            initial_subscription=funded,
+            entry_cost=state.economic["entry_cost"],
+            entry_margin=state.economic["entry"],
+        )
+    return economics.subscribe(state.economic, funded, call.date)

@@ -1,4 +1,9 @@
-"""Boundaries keep cash ownership, source clocks and supported tax profiles explicit."""
+"""Require complete source observations and supplied corporation tax/contract assumptions.
+
+These checks do not establish legal qualification. They prevent a second owner
+for the same household capital, unknown dividend classification, unobserved
+statutory FMV and a subscription that would need a pending-investment adapter.
+"""
 
 from datetime import timedelta
 
@@ -14,9 +19,10 @@ def validate(scenario, lots, tax):
     confirmations = (
         plan.new_jersey_regime_and_basis_assumed_confirmed,
         plan.unrelated_direct_gains_no_other_elections_assumed_confirmed,
-        plan.c_corporation_dividends_ep_no_extraordinary_distributions_assumed_confirmed,
+        plan.nonqualified_ep_dividends_no_extraordinary_distributions_assumed_confirmed,
         plan.limited_liability_internal_debt_only_assumed_confirmed,
         plan.calls_are_optional_partial_subscriptions_assumed_confirmed,
+        plan.nav_priced_common_stock_retarget_on_calls_assumed_confirmed,
         plan.entity_tax_already_in_returns_assumed_confirmed,
         plan.source_and_product_tax_excluded_elsewhere_assumed_confirmed,
     )
@@ -27,9 +33,16 @@ def validate(scenario, lots, tax):
     validate_account(scenario, plan)
     validate_economics(plan.economics)
     expected = [end - timedelta(days=1) for _, end in months(scenario.start, scenario.end)]
+    validate_observations(plan, expected)
+    validate_dates(scenario, plan, expected)
+
+
+def validate_observations(plan, expected):
     if [o.date for o in plan.observations] != expected:
         raise ValueError("QOZ requires ordered complete month-end observations.")
-    validate_dates(scenario, plan, expected)
+    locked = {o.date for o in plan.observations if o.locked}
+    if any(c.date in locked for c in plan.calls):
+        raise ValueError("Subscriptions during a market lock require a pending-investment profile.")
 
 
 def validate_economics(case):

@@ -49,7 +49,7 @@ def test_denied_deferral_and_allowed_preserve_the_same_underlying_economic_audit
     economic = [economic_only(r) for r in audits[0]["months"]]
     for audit in audits[1:]:
         assert economic == [economic_only(r) for r in audit["months"]]
-    assert audits[0]["tranches"][0]["economic_log"] == audits[2]["tranches"][0]["economic_log"]
+    assert audits[0]["economic_log"] == audits[2]["economic_log"]
     assert all(a["terms"]["new_jersey"] == "allowed" for a in audits)
     assert result["rows"]["liquid_reference"][-2]["qoz_settlement_cash"] == D(80000)
 
