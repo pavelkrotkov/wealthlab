@@ -7,9 +7,10 @@ permissions without changing their fees, basis, security or sale selection."""
 
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
-from wealthlab.optimization import life_paths
+from wealthlab.optimization import life_paths, option_allocations
 from wealthlab.optimization.account_controls import apply as account_changes
 from wealthlab.optimization.allocation_validation import validate as validate_allocations
+from wealthlab.optimization.option_offer_validation import validate as validate_options
 from wealthlab.optimization.scope import validate
 from wealthlab.optimization.sleeve_allocations import apply as allocate
 from wealthlab.optimization.sleeve_allocations import selections
@@ -19,6 +20,7 @@ def compile_candidate(case, selection):
     validate(case.household, case.binding)
     validate_allocations(case)
     life_paths.validate(case)
+    validate_options(case)
     data = case.household.model_dump(mode="json")
     binding = case.binding.model_dump(mode="json")
     data.update(
@@ -30,6 +32,9 @@ def compile_candidate(case, selection):
         apply(data, binding, choice)
     allocate(data, binding, case.sleeve_opportunities, selections(selection))
     life_paths.apply(data, case.life_opportunities, life_paths.selections(selection))
+    option_allocations.apply(
+        data, binding, case.option_opportunity, option_allocations.selected(selection)
+    )
     return Scenario.model_validate(data), HouseholdBinding.model_validate(binding)
 
 

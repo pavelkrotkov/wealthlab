@@ -157,3 +157,5 @@ Products / **Drilling partnerships** adds [a conditional synthetic cash-basis pa
 Combined projections preserve [canonical QOZ source-year tax revisions and required drilling product failures](docs/adr/0200-combined-product-return-and-safety-reporting.md). Revised liability stays distinct from actual payment/refund dates, and required product obligations participate in joint safety even when ordinary bills are paid.
 
 Optimize accepts [native option and employer contracts](docs/adr/0201-native-option-employer-search.md) on shared market paths, with actual cash/tax exits and separately supplied termination evidence.
+
+Optimize compares [new option units funded from existing cash](docs/adr/0202-new-option-allocation-search.md), with actual share acquisition, explicit bounds/locks, native tax exits and unchanged starting wealth.

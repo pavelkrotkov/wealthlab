@@ -14,6 +14,7 @@ from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_validation import control_keys
 from wealthlab.optimization.allocation_validation import validate as validate_allocations
 from wealthlab.optimization.market_validation import validate_markets
+from wealthlab.optimization.option_offer_validation import validate as validate_options
 from wealthlab.optimization.robustness_inputs import projection_paths
 from wealthlab.optimization.robustness_inputs import validate as validate_robustness
 from wealthlab.optimization.shared_terms import validate as validate_terms
@@ -25,6 +26,7 @@ FIELDS = (
     "savings",
     "ira_orders",
     "lot_funding_order",
+    "option_units",
     *AccountControls.model_fields,
 )
 
@@ -53,6 +55,7 @@ def validate(case):
     validate_markets(case)
     validate_allocations(case)
     life_paths.validate(case)
+    validate_options(case)
     validate_terms(case)
     validate_robustness(case)
     identifiers, controlled = set(), set()
