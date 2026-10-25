@@ -10,6 +10,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.option_validation import validate as validate_market
 from wealthlab.markets.paths import generate
+from wealthlab.optimization.contract_scope import owner_for, validate_wash_groups
 from wealthlab.optimization.option_allocations import insert
 from wealthlab.products.option_allocation import scale_new_plan
 from wealthlab.products.option_household_validation import validate as validate_native
@@ -49,20 +50,8 @@ def validate_source(case, item):
 
 
 def validate_owner(household, item):
-    owners = {"primary": household.members[0].id, "joint": "joint"}
-    if len(household.members) == 2:
-        owners["spouse"] = household.members[1].id
-    if item.owner != owners.get(item.unit.case.holdings.accounts[0].owner):
+    if item.owner != owner_for(household, item.unit.case.holdings.accounts[0].owner):
         raise ValueError("Map the native option owner role to the same household owner.")
-
-
-def validate_wash_groups(household, plan):
-    groups = {s.wash_group for s in plan.case.holdings.securities}
-    books = [household.lot_plan.case] if household.lot_plan else []
-    if household.hsa_plan and household.hsa_plan.investments:
-        books.append(household.hsa_plan.investments.case)
-    if any(groups & {s.wash_group for s in book.securities} for book in books):
-        raise ValueError("New option books need distinct wash groups from linked lot/HSA books.")
 
 
 def offered_counts(case):

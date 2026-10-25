@@ -12,9 +12,11 @@ from optimization_cases import changed
 from optimization_option_cases import case
 from test_policy_option_allocation_guards import locked
 
+from wealthlab.optimization.contract_scope import validate_wash_groups
 from wealthlab.optimization.option_allocation_example import extend
 from wealthlab.optimization.option_offer_validation import validate_owner
 from wealthlab.optimization.validation import validate
+from wealthlab.retirement.hsa_invested_example import synthetic as invested_hsa
 
 
 def test_offer_validates_a_named_stress_even_when_its_only_active_quantity_is_zero():
@@ -76,3 +78,17 @@ def test_option_factor_mapping_must_refer_to_its_actual_destination_account():
     profile = locked(lambda d: d["option_opportunity"]["binding"].update(account_id="elsewhere"))
     with pytest.raises(ValueError, match="actual option account"):
         validate(profile)
+
+
+def test_a_new_option_unit_cannot_share_known_wash_identity_with_an_invested_hsa():
+    household = invested_hsa()
+    item = case().option_opportunity
+    assert item is not None and household.hsa_plan is not None
+    assert household.hsa_plan.investments is not None
+    validate_wash_groups(household, item.unit)
+    data = item.unit.model_dump(mode="json")
+    data["case"]["holdings"]["securities"][0]["wash_group"] = (
+        household.hsa_plan.investments.case.securities[0].wash_group
+    )
+    with pytest.raises(ValueError, match="distinct wash groups"):
+        validate_wash_groups(household, type(item.unit).model_validate(data))
