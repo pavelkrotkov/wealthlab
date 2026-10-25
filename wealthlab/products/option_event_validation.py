@@ -12,6 +12,7 @@ def validate_events(case, dates):
         validate_event(event, leg)
         validate_roll(event, leg, legs)
     validate_roll_coverage(case)
+    validate_roll_targets(case.legs)
 
 
 def validate_event(event, leg):
@@ -45,3 +46,16 @@ def validate_roll_coverage(case):
     missing = {leg.id for leg in case.legs if leg.rolls_to} - {e.leg_id for e in case.events}
     if missing:
         raise ValueError("Each configured roll needs an explicit close transaction.")
+
+
+def validate_roll_targets(legs):
+    from graphlib import CycleError, TopologicalSorter
+
+    targets = [leg.rolls_to for leg in legs if leg.rolls_to]
+    if len(targets) != len(set(targets)):
+        raise ValueError("Each roll target must have exactly one incoming roll.")
+    graph = {leg.id: [leg.rolls_to] if leg.rolls_to else [] for leg in legs}
+    try:
+        TopologicalSorter(graph).prepare()
+    except CycleError as error:
+        raise ValueError("Roll targets must be separate, acyclic contracts.") from error

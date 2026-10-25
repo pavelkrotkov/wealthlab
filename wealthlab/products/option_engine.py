@@ -38,13 +38,18 @@ def run(case):
 
 
 def complete_unwind(state, mark):
+    """Retain actual shares if the broker rejects their sale.
+
+    Repay debt only from cash left after the trades that actually executed.
+    A failed stock exit remains an incomplete unwind in the returned report.
+    """
     for leg in list(state.active.values()):
         if leg.expiry > mark.date:
             finish(state, leg, mark, "close")
-    unwind_stock(state, mark)
+    stock_unwound = unwind_stock(state, mark)
     cash = state.book.cash[state.account]
     repaid = min(max(Decimal(0), cash), state.loan)
     state.loan -= repaid
     state.book.cash[state.account] -= repaid
     row = snapshot(state, mark)
-    row["phase"] = "unwind_incomplete" if state.active else "complete_unwind"
+    row["phase"] = "unwind_incomplete" if state.active or not stock_unwound else "complete_unwind"

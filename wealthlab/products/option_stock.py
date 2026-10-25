@@ -40,20 +40,25 @@ def trade_stock(state, leg, mark):
 def unwind_stock(state, mark):
     quantity = shares(state)
     if not quantity:
-        return
-    state.book.trade(
-        Trade(
-            id="complete_unwind",
-            provenance="assumption",
-            date=mark.date,
-            action="sell",
-            account_id=state.account,
-            security_id="STOCK",
-            quantity=quantity,
-            price=mark.stock,
-            commission=state.case.stock_sale_fee,
+        return True
+    try:
+        state.book.trade(
+            Trade(
+                id="complete_unwind",
+                provenance="assumption",
+                date=mark.date,
+                action="sell",
+                account_id=state.account,
+                security_id="STOCK",
+                quantity=quantity,
+                price=mark.stock,
+                commission=state.case.stock_sale_fee,
+            )
         )
-    )
+    except ValueError as error:
+        state.failures.append(f"complete_unwind: {error}")
+        return False
+    return True
 
 
 def adjust_basis(state, leg, buy, trade_id, first):

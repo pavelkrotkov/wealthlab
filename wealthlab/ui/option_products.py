@@ -19,13 +19,9 @@ def show():
         "Tax classification, straddles, covered calls, holding periods and constructive sales "
         "require explicit independent assumptions. No guaranteed aggregate floor is inferred."
     )
-    strategy = st.selectbox(
-        "Option example",
-        ["Covered call", "Collar", "Four-leg synthetic exposure"],
-        key="option_example",
-    )
+    strategy = selection()
     namespace = f"option_{strategy}"
-    uploaded = st.file_uploader("Load dated option JSON", type="json")
+    uploaded = st.file_uploader("Load dated option JSON", type="json", key=f"{namespace}_upload")
     if source(uploaded, synthetic(strategy).model_dump_json(indent=2), namespace) is None:
         return
     with st.form("option_products"):
@@ -75,3 +71,14 @@ def display(result):
         "synthetic-option-run.json",
         "application/json",
     )
+
+
+def selection():
+    """Widget cleanup must not reset the selected contract example on remount."""
+    choices = ["Covered call", "Collar", "Four-leg synthetic exposure"]
+    saved = st.session_state.get("option_selected_example", choices[0])
+    strategy = st.selectbox(
+        "Option example", choices, index=choices.index(saved), key="option_example"
+    )
+    st.session_state["option_selected_example"] = strategy
+    return strategy
