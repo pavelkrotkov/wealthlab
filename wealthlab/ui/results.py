@@ -53,6 +53,9 @@ HIDDEN = [
     "sleeve_tax_assumptions",
     "exchange_fund_audit",
     "qoz_audit",
+    "drilling_audit",
+    "drilling_paid_costs",
+    "drilling_deduction_audit",
     "workplace_audit",
     "workplace_market_audit",
     "workplace_withdrawal_audit",
@@ -111,6 +114,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 exchange_fund=rows[-1].get("exchange_fund_audit"),
                 life_policies=rows[-1].get("life_policy_audit"),
                 qoz=rows[-1].get("qoz_audit"),
+                drilling=rows[-1].get("drilling_audit"),
             )
         )
 

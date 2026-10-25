@@ -67,6 +67,7 @@ class CombinedLedger:
 
 def make(scenario, tax_ledger=None, lots=None):
     from wealthlab.portfolio.saving_household import Ledger as SavingLedger
+    from wealthlab.products.drilling_household import Ledger as DrillingLedger
     from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
     from wealthlab.products.life_household import Ledger as LifeLedger
 
@@ -79,6 +80,8 @@ def make(scenario, tax_ledger=None, lots=None):
         from wealthlab.products.qoz_household import Ledger as QOZLedger
 
         books.append(QOZLedger(scenario, lots, tax_ledger))
+    if scenario.drilling_plan:
+        books.append(DrillingLedger(scenario))
     if scenario.lot_plan and scenario.lot_plan.savings:
         books.append(SavingLedger(scenario, tax_ledger))
     return CombinedLedger(books) if books else None

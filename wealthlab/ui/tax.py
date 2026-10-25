@@ -68,6 +68,8 @@ def show():
         "wages, investments, retirement and business income; no eligibility is inferred. "
         "Insurance ordinary income is supplied recognized policy income subject to NIIT; "
         "insurance additional tax is an entered liability, without inferred MEC eligibility. "
+        "Partnership nonpassive income, SE earnings, eligible QBI and AMT additions are "
+        "independently supplied after applicable limits; no classification is inferred. "
         "Positive balances are due, negative balances are overpayments. No payment is sent."
     )
     try:

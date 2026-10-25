@@ -11,6 +11,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import months
 from wealthlab.household.flows import earning_items
 from wealthlab.retirement.social_dates import full_retirement_month
+from wealthlab.retirement.social_partnership_earnings import add_wages
 from wealthlab.tax.projection_example import age
 from wealthlab.tax.projection_validation import validate as validate_tax
 
@@ -112,12 +113,6 @@ def wage_totals(scenario):
                 key = start.year, owner
                 totals[key] = totals.get(key, Decimal(0)) + value
     return totals
-
-
-def add_wages(totals, year, income, fields):
-    for field, owner in fields.items():
-        key = year, owner
-        totals[key] = totals.get(key, Decimal(0)) + getattr(income, field)
 
 
 def validate_ages(scenario):
