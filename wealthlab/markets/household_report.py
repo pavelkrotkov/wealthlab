@@ -9,6 +9,7 @@ from statistics import NormalDist
 from wealthlab.household.funding import opening_wealth
 from wealthlab.markets.household_outcomes import funding, product_totals
 from wealthlab.markets.hsa_payroll_report import summary as hsa_summary
+from wealthlab.portfolio.rebalance_state import summary as rebalance_summary
 from wealthlab.tax.household_reporting import summary as tax_summary
 
 
@@ -17,6 +18,7 @@ def summarize(scenario, rows, index):
         **funding(rows),
         **tax_summary(rows),
         **hsa_summary(scenario, rows),
+        **rebalance_summary(rows),
         path=index,
         net_wealth_drawdown=drawdown(scenario, rows),
         max_security_weight=known_weight(rows),

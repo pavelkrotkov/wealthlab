@@ -1,4 +1,10 @@
-"""Targets cannot silently liquidate an omitted position or duplicate a decision."""
+"""Targets cannot silently liquidate an omitted position or duplicate a decision.
+
+Coverage includes explicit later purchases and harvest replacements, even when
+those positions have zero weight today. A zero target is an intentional sale
+instruction; an omitted target is not. Month-end decisions run once in stable
+account order, so same-account duplicate schedules cannot churn the portfolio.
+"""
 
 from wealthlab.portfolio.household_policies import month_end
 

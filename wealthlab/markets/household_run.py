@@ -52,6 +52,7 @@ def paired(left, right):
             reported_tax_liability_change=b["reported_tax_liability"] - a["reported_tax_liability"],
             net_cash_taxes_paid_change=b["net_cash_taxes_paid"] - a["net_cash_taxes_paid"],
             joint_feasible_change=int(b["joint_feasible"]) - int(a["joint_feasible"]),
+            rebalance_commissions_change=b["rebalance_commissions"] - a["rebalance_commissions"],
             real_wealth_change=b["ending_real_wealth"] - a["ending_real_wealth"],
             discretionary_reduction_change=b["discretionary_spending_reduction"]
             - a["discretionary_spending_reduction"],

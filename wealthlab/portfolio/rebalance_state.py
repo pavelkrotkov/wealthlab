@@ -7,6 +7,8 @@ can reinvest only its own net sale receipts, with no wallet top-up or leverage.
 
 from decimal import Decimal
 
+from wealthlab.household.calendar import money
+
 ZERO = Decimal(0)
 
 
@@ -60,8 +62,10 @@ def report(book, policy, prices, state, status, locked):
         account_id=policy.account_id,
         status=status,
         opening_security_value=state["total"],
-        gross_sales=sum((t.quantity * t.price for t in trades if t.action == "sell"), ZERO),
-        gross_purchases=sum((t.quantity * t.price for t in trades if t.action == "buy"), ZERO),
+        gross_sales=sum((money(t.quantity * t.price) for t in trades if t.action == "sell"), ZERO),
+        gross_purchases=sum(
+            (money(t.quantity * t.price) for t in trades if t.action == "buy"), ZERO
+        ),
         commissions=sum((t.commission for t in trades), ZERO),
         residual_cash=book.cash[policy.account_id] - state["cash"],
         trade_ids=[t.id for t in trades],
@@ -80,3 +84,11 @@ def report(book, policy, prices, state, status, locked):
             for key in sorted(after)
         ],
     )
+
+
+def summary(rows):
+    decisions = rows[-1].get("lot_audit", {}).get("rebalance_decisions", [])
+    return {
+        f"rebalance_{key}": sum((d[key] for d in decisions), ZERO)
+        for key in ("gross_sales", "gross_purchases", "commissions")
+    }
