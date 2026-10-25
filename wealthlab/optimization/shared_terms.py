@@ -33,10 +33,12 @@ def validate(case):
 
 
 def schedules(case, name, baseline):
+    declared = [getattr(choice, name) for d in case.dimensions for choice in d.choices]
+    if not any(orders is not None for orders in declared):
+        return
     yield from baseline
-    for dimension in case.dimensions:
-        for choice in dimension.choices:
-            yield from getattr(choice, name) or []
+    for orders in declared:
+        yield from orders or []
 
 
 def same(rows, identifiers, assumptions, label):

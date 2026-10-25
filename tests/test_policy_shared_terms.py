@@ -13,10 +13,8 @@ from wealthlab.optimization.inputs import PolicySearch
 from wealthlab.optimization.validation import validate
 
 
-def menu(field, options, baseline=None):
+def menu(field, options):
     data = flat().model_dump(mode="json")
-    if baseline is not None:
-        data["household"] = baseline
     data["dimensions"] = [
         dict(
             id="policy",
@@ -103,3 +101,12 @@ def test_distinct_ira_sources_can_retain_independent_confirmed_exception_assumpt
     )
     other = dict(order, id="other_draw", source="other_ira", early_penalty_exception=True)
     assert validate(menu("ira_orders", [[order, other], []])) == 2
+
+
+def test_untouched_factual_schedule_keeps_its_independent_dated_fees():
+    data = flat().model_dump(mode="json")
+    original = sale()
+    data["household"]["lot_plan"]["case"]["sale_policies"].append(
+        dict(original, id="earlier_fee", date="2026-12-31", commission="2")
+    )
+    assert validate(PolicySearch.model_validate(data)) == 2
