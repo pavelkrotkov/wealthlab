@@ -9,6 +9,7 @@ from pydantic import Field, model_validator
 from wealthlab.household.records import Account, Identifier, Money, Record
 from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.retirement.contribution_inputs import ContributionCase
+from wealthlab.retirement.ira_rollover_inputs import IncomingIRARollover
 from wealthlab.tax.annual import AnnualCase
 from wealthlab.tax.facts import TaxModel
 
@@ -66,6 +67,7 @@ class DistributionCase(TaxModel):
     nj_treatment: Literal["resident_combined_owner_pools"]
     rmd_policy: Literal["december_target_no_deferral"]
     orders: list[WithdrawalOrder] = Field(default_factory=list)
+    incoming_rollovers: list[IncomingIRARollover] = Field(default_factory=list)
     returns: list[AccountReturn] = Field(default_factory=list)
     liquidity_locks: list[AccountLock] = Field(default_factory=list)
     annual_tax_case: AnnualCase | None = None

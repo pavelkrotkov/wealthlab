@@ -5,6 +5,7 @@ from datetime import date
 from wealthlab.retirement.account_liquidity import validate as validate_liquidity
 from wealthlab.retirement.distribution_owner_validation import validate_owners, validate_tax
 from wealthlab.retirement.ira_contribution_validation import validate as validate_contributions
+from wealthlab.retirement.ira_rollovers import validate as validate_rollovers
 
 
 def validate(case):
@@ -18,13 +19,14 @@ def validate(case):
     validate_records(case)
     validate_owners(case)
     validate_accounts(case, people)
-    for item in [*case.orders, *case.returns]:
+    for item in [*case.orders, *case.returns, *case.incoming_rollovers]:
         if item.date.year != case.year:
             raise ValueError("Distribution events must fall within the selected year.")
     validate_orders(case, accounts)
     validate_returns(case, accounts)
     validate_tax(case)
     validate_contributions(case)
+    validate_rollovers(case, accounts)
 
 
 def validate_accounts(case, people):
@@ -84,7 +86,14 @@ def validate_returns(case, accounts):
 
 def validate_records(case):
     """Unknown eligibility blocks the entire run before it can change any balance."""
-    records = [*case.owners, *case.accounts, *case.orders, *case.returns, *case.liquidity_locks]
+    records = [
+        *case.owners,
+        *case.accounts,
+        *case.orders,
+        *case.returns,
+        *case.liquidity_locks,
+        *case.incoming_rollovers,
+    ]
     ids = [item.id for item in records]
     if len(ids) != len(set(ids)):
         raise ValueError("Distribution case IDs must be unique across all tables.")

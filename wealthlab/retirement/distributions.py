@@ -10,6 +10,7 @@ from wealthlab.household.calendar import money
 from wealthlab.retirement import (
     ira_contributions,
     ira_reconciliation,
+    ira_rollovers,
     rmd,
     roth_reconciliation,
     withdrawal_cash,
@@ -26,6 +27,7 @@ def run(case: DistributionCase):
         balances={a.id: a.balance for a in case.accounts},
         cash=case.opening_cash,
         rows=[],
+        rollover_rows=[],
         market_change=Decimal(0),
         rmd=rmd.requirements(case),
     )
@@ -36,7 +38,9 @@ def run(case: DistributionCase):
         balance_events.append(dict(date=when, balances=dict(book["balances"])))
     additions = ira_contributions.summaries(case, book)
     owners = []
-    for person in ira_contributions.owners(case, additions):
+    for person in ira_rollovers.owners(
+        ira_contributions.owners(case, additions), book["rollover_rows"]
+    ):
         traditional = ira_reconciliation.traditional(case, book, person)
         roth = roth_reconciliation.reconcile(case, book, person)
         penalize(book, person)
@@ -54,6 +58,8 @@ def run(case: DistributionCase):
         balance_events=balance_events,
         market_change=book["market_change"],
         rmd=book["rmd"],
+        incoming_rollovers=book["rollover_rows"],
+        incoming_rollover_value=sum((r["amount"] for r in book["rollover_rows"]), Decimal(0)),
         contribution_orders=book["contribution_rows"],
         contribution_owners=additions,
         contribution_eligibility=checked,

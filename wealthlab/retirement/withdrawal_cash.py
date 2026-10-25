@@ -5,19 +5,25 @@ from wealthlab.retirement.account_liquidity import blocked as liquidity_blocked
 from wealthlab.retirement.contribution_inputs import CashReceipt, ContributionOrder
 from wealthlab.retirement.distribution_inputs import AccountReturn
 from wealthlab.retirement.ira_contributions import fund
+from wealthlab.retirement.ira_rollover_inputs import IncomingIRARollover
+from wealthlab.retirement.ira_rollovers import receive as receive_rollover
 
 
 def timeline(case):
-    # Same-day receipts, returns, withdrawals/conversions, then contributions.
+    # Same-day cash/rollover receipts, returns, withdrawals/conversions, then contributions.
     events = [(item.date, 1, i, item) for i, item in enumerate(case.returns)]
     events += [(item.date, 2, i, item) for i, item in enumerate(case.orders)]
     if case.contributions is not None:
         events += [(item.date, 0, i, item) for i, item in enumerate(case.contributions.receipts)]
         events += [(item.date, 3, i, item) for i, item in enumerate(case.contributions.orders)]
+    events += [(item.date, 0, i, item) for i, item in enumerate(case.incoming_rollovers)]
     return sorted(events, key=lambda event: event[:3])
 
 
 def apply(book, item, case=None):
+    if isinstance(item, IncomingIRARollover):
+        receive_rollover(book, item)
+        return
     if isinstance(item, CashReceipt):
         book["cash"] += item.amount
         return

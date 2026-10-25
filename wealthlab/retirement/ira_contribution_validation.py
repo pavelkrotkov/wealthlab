@@ -34,7 +34,7 @@ def validate_records(case):
     plan = case.contributions
     if any(o.kind not in {"traditional_ira", "roth_ira"} for o in plan.orders):
         raise ValueError("Only ordinary IRA contributions belong in the combined IRA book.")
-    records = [*case.orders, *case.returns, *plan.orders, *plan.receipts]
+    records = [*case.orders, *case.returns, *case.incoming_rollovers, *plan.orders, *plan.receipts]
     if len({r.id for r in records}) != len(records):
         raise ValueError("Combined IRA cash and return events need unique IDs.")
 
