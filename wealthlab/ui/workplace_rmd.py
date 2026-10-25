@@ -11,7 +11,8 @@ def display(rows):
     st.caption(
         "Subaccounts share their explicitly supplied plan group; separate plans cannot cover "
         "each other's requirement. Targets use prior December balances and confirmed beneficiary "
-        "tables under frozen 2026 assumptions. The elected deadline is December, including a first "
+        "tables under frozen 2026 assumptions. The elected deadline is December 31, including "
+        "a first "
         "RMD year. Optional December catch-up follows manual first-day withdrawals, before monthly "
         "returns. Required cash uses the separate entered noneligible withholding rate; eligible "
         "remainder keeps at least 20% federal withholding. Default shortfall excise is 25%; "

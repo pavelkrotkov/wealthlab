@@ -5,7 +5,7 @@ plan cash access still requires confirmed separation before December catch-up;
 there is no inferred current-employer exception or first-year deadline deferral.
 """
 
-from datetime import date
+from datetime import date, timedelta
 from types import SimpleNamespace
 
 from wealthlab.retirement.rmd import divisor
@@ -50,13 +50,17 @@ def validate_table(group, person, members):
 def validate_sources(group, cash, accounts):
     if len({accounts[s].owner for s in group.sources}) != 1:
         raise ValueError("An RMD plan group must have one owner.")
+    separations = {cash.profiles[s].separation_date for s in group.sources}
+    if len(separations) != 1:
+        raise ValueError("One plan must have one consistent separation history.")
     choices = {cash.profiles[s].birth_1959_start_age for s in group.sources}
     if len(choices) != 1:
         raise ValueError("One plan cannot have conflicting RMD start-age assumptions.")
 
 
 def validate_deadlines(person, group, cash, scenario):
-    for year in range(scenario.start.year, scenario.end.year):
+    last_year = (scenario.end - timedelta(days=1)).year
+    for year in range(scenario.start.year, last_year + 1):
         factor = divisor(person, year)
         if factor is not None and any(
             cash.profiles[s].separation_date > date(year, 12, 1) for s in group.sources

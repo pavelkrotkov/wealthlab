@@ -8,8 +8,8 @@ A qualified plan must satisfy its own RMD; an excess payment from another plan
 cannot cure the shortfall. Separate investment subaccounts within one plan must
 share that plan's target. Optional `cash_withdrawals.rmd` supplies complete plan
 groups, beneficiary-table eligibility, frozen-2026 rule assumptions, an explicit
-December deadline and a source-withholding policy. All classified pretax workplace
-accounts appear in exactly one group, with one owner and consistent birth-1959
+December31 deadline and a source-withholding policy. All classified pretax workplace
+accounts appear in exactly one group, with one owner, one separation history and consistent birth-1959
 start-age assumptions. No unmodeled opening shortfalls may be omitted.
 
 The existing pinned Owl/IRS divisor helper determines the target from each

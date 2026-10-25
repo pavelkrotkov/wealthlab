@@ -71,3 +71,12 @@ def test_unmodeled_opening_failures_cannot_be_assumed_away():
     ] = False
     with pytest.raises(ValueError, match="opening"):
         validate(Scenario.model_validate(data))
+
+
+def test_one_plan_cannot_use_conflicting_separation_histories_across_subaccounts():
+    data = synthetic().model_dump(mode="json")
+    data["workplace_plan"]["cash_withdrawals"]["profiles"]["alpha_two"]["separation_date"] = (
+        "2026-02-01"
+    )
+    with pytest.raises(ValueError, match="separation history"):
+        validate(Scenario.model_validate(data))

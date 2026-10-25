@@ -22,6 +22,7 @@ RATES = {
 
 
 def month(book, start, end):
+    """Assess at December31; the December1 cash date is not an excise deadline."""
     if book is None:
         return [], {}
     shortfall, excise = finalize(book) if end.year > start.year else (ZERO, ZERO)
