@@ -1,4 +1,9 @@
-"""Every observed option mark participates in joint product feasibility, not only ending cash."""
+"""Every observed product obligation participates in joint feasibility.
+
+Drilling calls and creditors can remain unpaid while ordinary bills are paid.
+Their failure dates join option, sleeve and policy failures without adding a
+second creditor amount to wealth or turning a required payment into spending.
+"""
 
 from wealthlab.markets.life_reporting import outcome as life_outcome
 
@@ -54,6 +59,8 @@ def outcome(rows, funded):
     products = combined(rows, options)
     life_failures, life = life_outcome(rows)
     products["constraints_failed"].update(life_failures)
+    drilling = condition_dates(rows, "drilling_product_failure")
+    products["constraints_failed"].update(drilling)
     failures = products["constraints_failed"]
     return dict(
         **{f"product_{key}_months": months(dates) for key, dates in products.items()},
@@ -61,6 +68,9 @@ def outcome(rows, funded):
         product_feasible=not failures,
         joint_feasible=funded and not failures,
         first_product_failure=min(failures, default=None),
+        drilling_feasible=not drilling,
+        first_drilling_failure=min(drilling, default=None),
+        drilling_failure_months=months(drilling),
         option_feasible=not options["constraints"],
         first_option_failure=min(options["constraints"], default=None),
         option_margin_failure_months=months(options["margin"]),
