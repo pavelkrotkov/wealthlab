@@ -4,6 +4,8 @@ Remaining product/wrapper adapters must establish their own closure semantics;
 zero net equity does not establish the absence of gross assets or obligations.
 """
 
+from wealthlab.optimization.contract_scope import validate as validate_option_ownership
+
 ALLOWED_PLANS = {
     "tax_plan",
     "employment_plan",
@@ -31,6 +33,7 @@ def validate(household, binding):
     validate_accounts(household)
     validate_product_paths(household, binding)
     validate_contract_paths(household, binding)
+    validate_option_ownership(household)
 
 
 def validate_accounts(household):
