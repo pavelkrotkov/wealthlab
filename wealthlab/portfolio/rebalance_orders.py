@@ -29,6 +29,7 @@ def order(book, policy, security, action, quantity, price):
 
 
 def sell(book, policy, security, price, amount):
+    amount = amount.quantize(CENT, rounding=ROUND_DOWN)
     quantity = min(
         (amount / price).quantize(UNIT, rounding=ROUND_DOWN), liquid_units(book, policy, security)
     )
@@ -36,7 +37,7 @@ def sell(book, policy, security, price, amount):
     if quantity <= 0 or gross <= policy.commission_per_trade:
         return ZERO
     order(book, policy, security, "sell", quantity, price)
-    return quantity * price
+    return gross
 
 
 def buy(book, policy, security, price, budget):

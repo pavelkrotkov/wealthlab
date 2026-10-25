@@ -7,7 +7,9 @@ A `HouseholdLots.rebalances` entry supplies a month-end date, account, complete
 security target weights, drift band, maximum gross-sale fraction, FIFO/HIFO
 selection and per-trade commission. Targets sum exactly to one and include
 explicit zero weights for securities intended to be sold completely. Known
-later manual purchases and harvest replacements require target entries too.
+later manual purchases, harvest replacements and positive targets of earlier
+rebalance decisions require target entries too. Earlier zero-weight targets alone
+do not establish a potential purchase.
 The schedule is ordered by date/account, once per account per date.
 
 Weights refer to securities in the chosen account. They exclude cash, other
@@ -16,7 +18,10 @@ current marked security values fix both target dollars and the gross-sale cap.
 A maximum weight deviation greater than the drift band triggers the decision.
 Overweights sell in stable security-ID order, limited by actual liquid lots,
 market locks, the sale cap and commissions. The cap measures one-way gross
-sales; it does not include the subsequent purchases in its numerator.
+sales; it does not include the subsequent purchases in its numerator. The
+remaining sale budget floors to cents before sizing shares, and executed gross
+reduces that budget using the same cent settlement as the cash book. Rounding
+cannot exceed a fractional-cent cap.
 
 Only cash raised by these sales can finance the resulting purchases. Existing
 brokerage cash and household salary/reserves are not automatic top-ups. After

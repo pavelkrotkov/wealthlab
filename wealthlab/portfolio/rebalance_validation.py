@@ -20,6 +20,7 @@ def validate(plan):
         raise ValueError("Order rebalances by date/account, once per account per date.")
     for policy in policies:
         validate_policy(policy, case, accounts, securities)
+        validate_holdings(policy, case, policies)
 
 
 def validate_ids(case, policies):
@@ -42,17 +43,27 @@ def validate_policy(policy, case, accounts, securities):
         raise ValueError("Rebalance targets require known linked accounts and securities.")
     if sum(policy.target_weights.values()) != 1:
         raise ValueError("Rebalance target weights must sum exactly to one.")
-    validate_holdings(policy, case)
 
 
-def validate_holdings(policy, case):
+def validate_holdings(policy, case, policies):
     required = {
         r.security_id for r in (*case.lots, *case.trades) if r.account_id == policy.account_id
     }
     required.update(
         p.replacement_id for p in case.harvest_policies if p.account_id == policy.account_id
     )
+    required.update(prior_purchases(policy, policies))
     if not required <= policy.target_weights.keys():
         raise ValueError(
             "Give every account holding/purchase an explicit rebalance weight, even zero."
         )
+
+
+def prior_purchases(policy, policies):
+    return {
+        key
+        for earlier in policies
+        if earlier.account_id == policy.account_id and earlier.date < policy.date
+        for key, weight in earlier.target_weights.items()
+        if weight > 0
+    }
