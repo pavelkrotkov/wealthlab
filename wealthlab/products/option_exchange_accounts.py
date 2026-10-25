@@ -1,7 +1,10 @@
 """Competing product books cannot duplicate capital or contradict their no-wash profiles."""
 
+from wealthlab.products.drilling_option_accounts import validate as validate_drilling
+
 
 def validate(scenario):
+    validate_drilling(scenario)
     option, exchange = scenario.option_plan, scenario.exchange_fund_plan
     if option is None or exchange is None:
         return

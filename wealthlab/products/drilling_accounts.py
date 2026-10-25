@@ -1,7 +1,10 @@
 """A drilling interest owns its complete account and cannot duplicate another funding/basis book."""
 
+from wealthlab.products.drilling_option_accounts import validate as validate_options
+
 
 def validate_account(scenario, plan):
+    validate_options(scenario)
     account = next((a for a in scenario.accounts if a.id == plan.account_id), None)
     if account is None or (account.wrapper, account.currency, account.monthly_fee) != (
         "taxable",
