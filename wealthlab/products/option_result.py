@@ -1,11 +1,14 @@
 """Export all economic, tax and contract evidence without reusing cash as a tax saving."""
 
+from wealthlab.products.option_deferrals import validate as validate_deferrals
 from wealthlab.products.option_recognition import recognition
 from wealthlab.products.option_tax_rows import stock_recognition
 
 
 def report(state, held, leg_rows):
     case = state.case
+    tax = recognition(state) + stock_recognition(state)
+    validate_deferrals(case.tax, tax)
     opening = case.holdings.accounts[0].cash + case.outside_cash
     opening += sum(lot.quantity for lot in case.holdings.lots) * case.marks[0].stock
     return dict(
@@ -15,7 +18,7 @@ def report(state, held, leg_rows):
         rows=state.rows,
         legs=leg_rows,
         terminations=list(state.closed.values()),
-        tax=recognition(state) + stock_recognition(state),
+        tax=tax,
         disposals=state.book.disposals,
         cash_movements=state.cash_movements,
         failures=state.failures,
