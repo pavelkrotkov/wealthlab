@@ -1,4 +1,8 @@
-"""Visible funding outcomes retain batch identity, path indices and actual ledger detail."""
+"""Visible funding outcomes retain batch identity, path indices and actual ledger detail.
+
+Reported assessments and dated cash payments remain separate. Payroll policy
+comparisons display actual funded deposits and unresolved return years.
+"""
 
 import json
 
@@ -12,6 +16,7 @@ from wealthlab.ui.hsa_invested_results import display as hsa_results
 from wealthlab.ui.lot_policy_results import display as policy_results
 from wealthlab.ui.market_employer_results import display as employment_results
 from wealthlab.ui.market_funding_results import display as funding_results
+from wealthlab.ui.market_hsa_payroll import display as payroll_results
 from wealthlab.ui.market_medical_results import display as medical_results
 from wealthlab.ui.medical_bills import display as bill_results
 from wealthlab.ui.results import HIDDEN
@@ -43,6 +48,7 @@ def display(bundle):
     employment_results(result, index)
     medical_results(result, index, rows)
     hsa_scope(result, rows)
+    payroll_results(bundle, rows)
     st.line_chart(
         pd.DataFrame(rows)
         .set_index("date")[["closing_cash", "net_wealth", "real_net_wealth"]]

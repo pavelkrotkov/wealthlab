@@ -17,6 +17,7 @@ from wealthlab.markets.household_example import synthetic
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.household_run import paired, run
 from wealthlab.markets.hsa_example import synthetic as hsa_example
+from wealthlab.markets.hsa_payroll_example import synthetic as hsa_payroll_example
 from wealthlab.markets.inputs import MarketCase
 from wealthlab.markets.medical_example import synthetic as medical_example
 from wealthlab.markets.paths import generate
@@ -27,6 +28,8 @@ from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
 from wealthlab.ui.market_household_results import display
+from wealthlab.ui.market_hsa_payroll import controls as paired_controls
+from wealthlab.ui.market_hsa_payroll import policy_text
 from wealthlab.ui.sleeve_loss_assumptions import controls as loss_controls
 from wealthlab.ui.uploads import invalid, source
 
@@ -79,24 +82,21 @@ def show():
         st.caption(
             "Full tax-ledger execution can take seconds per path; use a small run to check inputs."
         )
-        alternative = st.text_area("Optional paired household policy (JSON)", value="", height=120)
-        st.caption(
-            "The alternative accepts household JSON or {household, binding} to compare "
-            "employment triggers or other binding policies on the same realized market batch."
-        )
+        alternative, match_hsa = paired_controls()
         submitted = st.form_submit_button("Project actual household paths", type="primary")
     if submitted:
-        calculate(edited, count, alternative)
+        calculate(edited, count, alternative, match_hsa)
     if "market_household_result" in st.session_state:
         display(st.session_state["market_household_result"])
 
 
-def calculate(edited, count, alternative):
+def calculate(edited, count, alternative, match_hsa=False):
     try:
         data = json.loads(edited or "")
         household = Scenario.model_validate(data["household"])
         case = MarketCase.model_validate(data["market"])
         binding = HouseholdBinding.model_validate(data["binding"])
+        alternative = policy_text(household, alternative, match_hsa)
         batch = generate(case)
         indices = range(min(int(count), len(batch.mark_returns)))
         progress = st.progress(0)
@@ -145,6 +145,7 @@ def account_example(mode, stress):
             "Long-short household",
             "Medical bill inflation",
             "Invested HSA",
+            "HSA payroll and employment",
         ],
         key="market_account_scope",
     )
@@ -156,5 +157,6 @@ def account_example(mode, stress):
         "Long-short household": sleeve_example,
         "Medical bill inflation": medical_example,
         "Invested HSA": hsa_example,
+        "HSA payroll and employment": hsa_payroll_example,
     }[scope]
     return starter(mode, stress)
