@@ -29,8 +29,7 @@ Checks compare passive/nonpassive gains and losses with identical AGI and indepe
 For checkout-local review of this deliberate adapter, the pinned [6.8.5 `TaxInc` implementation](https://github.com/PSLmodels/Tax-Calculator/blob/6.8.5/taxcalc/calcfunctions.py#L1905-L1916) builds:
 
 ```python
-qbinc = max(0., e00900 - c03260 - e03300 - e03270
-            + e26270 + e02100 + e27200)
+qbinc = max(0.0, e00900 - c03260 - e03300 - e03270 + e26270 + e02100 + e27200)
 ```
 
 Its [NIIT implementation](https://github.com/PSLmodels/Tax-Calculator/blob/6.8.5/taxcalc/calcfunctions.py#L2864-L2867) uses `line4c = e02000 - e26270` when `NIIT_PT_taxed` is false. The integration oracles in `tests/test_partnership_tax_channels.py` and `tests/test_partnership_se_amt.py` exercise the real pinned calculator with equal-AGI passive/nonpassive inputs, zero/positive QBI and independent SE/AMT channels. These independently expected results, rather than a test mirroring package source, constrain this version-specific adapter.
