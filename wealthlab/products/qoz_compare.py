@@ -13,6 +13,11 @@ def compare(scenario):
         name: plan.model_copy(update=dict(federal=name, mode="fund"))
         for name in ("denied", "deferred", "allowed")
     }
+    policies["timely_exit"] = plan.model_copy(
+        update=dict(
+            mode="fund", federal="allowed", sale_not_before=plan.sale_requested, settlement_months=0
+        )
+    )
     # NJ may independently limit benefits; no unsupported NJ-only federal election is granted.
     policies["liquid_reference"] = plan.model_copy(
         update=dict(

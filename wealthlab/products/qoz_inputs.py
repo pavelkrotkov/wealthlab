@@ -38,6 +38,7 @@ class QOZPlan(TaxModel):
     new_jersey: Treatment = "unconfirmed"
     new_jersey_regime_and_basis_assumed_confirmed: bool
     rural_30_percent_assumed_confirmed: bool = False
+    prior_source_year_revision_assumed_confirmed: bool = False
     unrelated_direct_gains_no_other_elections_assumed_confirmed: bool
     nonqualified_ep_dividends_no_extraordinary_distributions_assumed_confirmed: bool
     limited_liability_internal_debt_only_assumed_confirmed: bool

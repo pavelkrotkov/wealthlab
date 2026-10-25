@@ -39,7 +39,7 @@ def medicare_revision(medicare, year, result, when):
     )
 
 
-def update_education(education, year, result):
+def update_education(education, year, result, reason="january_wash_reconciliation"):
     if education is None:
         return
     for annual in education.years:
@@ -47,7 +47,7 @@ def update_education(education, year, result):
             annual["njbest_potential_deduction"] = deduction(
                 result["new_jersey"]["gross_income"], annual["njbest_funded_contributions"]
             )
-            annual["income_finalized"] = "january_wash_reconciliation"
+            annual["income_finalized"] = reason
 
 
 def validate_billing(case, identity, when):
