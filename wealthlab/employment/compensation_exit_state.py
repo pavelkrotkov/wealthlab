@@ -2,6 +2,8 @@
 
 from decimal import Decimal
 
+from wealthlab.employment.compensation_termination_state import observed
+
 
 def evidence(ledger, wallet, tranche, end):
     state = ledger.states[tranche.id]
@@ -14,7 +16,7 @@ def evidence(ledger, wallet, tranche, end):
         ),
         Decimal(0),
     )
-    return dict(
+    result: dict = dict(
         observed_before=end.isoformat(),
         coverage_end_exclusive=ledger.horizon_end.isoformat(),
         account_balance=wallet.balances[tranche.account],
@@ -38,6 +40,11 @@ def evidence(ledger, wallet, tranche, end):
         tax_scope="TaxPlan allocations are separate; inspect original inputs and tax position",
         legal_scope="Native tranche tracks dollar values, not contractual termination or units",
     )
+
+    # Only separate supplied termination facts may refine unknown legal fields.
+    # Dollar balances and actual cash/disposition observations remain unchanged.
+    result.update(observed(ledger, tranche, end, result["account_reconciles"]))
+    return result
 
 
 def forfeited(records):
