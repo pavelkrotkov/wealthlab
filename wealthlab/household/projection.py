@@ -47,8 +47,8 @@ def project(scenario: Scenario, market=None) -> list[dict]:
     employee = workplace.make(scenario)
     hsa = hsa_household.make(scenario)
     education = education_household.make(scenario)
-    products = sleeves.make(scenario)
     options = option_household.make(scenario, market)
+    products = sleeves.make(scenario, tax_ledger)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
         live, market_events = market.start(scenario, lots, start) if market else (scenario, ())

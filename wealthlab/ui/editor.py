@@ -21,6 +21,7 @@ from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.household_education import controls as education_controls
 from wealthlab.ui.household_hsa import controls as hsa_controls
 from wealthlab.ui.household_ira import controls as ira_controls
+from wealthlab.ui.household_life import controls as life_controls
 from wealthlab.ui.household_lots import controls as lot_controls
 from wealthlab.ui.household_medicare import controls as medicare_controls
 from wealthlab.ui.household_options import controls as option_controls
@@ -77,6 +78,7 @@ def editor(scenario: Scenario) -> Scenario | None:
             lot_plan=lot_controls(payload, scenario),
             sleeve_plan=sleeve_controls(payload, scenario),
             option_plan=option_controls(payload, scenario),
+            life_plan=life_controls(payload, scenario),
         )
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:

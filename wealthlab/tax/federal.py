@@ -36,7 +36,12 @@ def calculate(
     year, scale, label = policy.valuation()
     if filing.status != "joint" and (income.wages_spouse or income.deferrals_spouse):
         raise ValueError("Spouse wage inputs are supported only on joint returns.")
-    raw = engine_values(record(filing, income, deductions, scale), year, OUTPUTS)
+    raw = engine_values(
+        record(filing, income, deductions, scale),
+        year,
+        OUTPUTS,
+        insurance_niit=float(income.insurance_ordinary_income) / scale,
+    )
     values = {key: money(value * scale) for key, value in raw.items()}
     return breakdown(values, income, label)
 
@@ -75,6 +80,8 @@ def breakdown(values: dict, income: FederalIncome, label: str) -> dict:
         amt=values["c09600"],
         short_carry=carried["short_term"],
         long_carry=carried["long_term"],
+        insurance_ordinary_income=income.insurance_ordinary_income,
+        insurance_additional_tax=income.insurance_additional_tax,
         ordinary_noninvestment_income=income.ordinary_noninvestment_income,
         ordinary_noninvestment_adapter=(
             "Explicit e00800 numerical carrier with inclusion=1; no statutory alimony input"

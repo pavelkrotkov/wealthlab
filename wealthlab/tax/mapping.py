@@ -45,7 +45,10 @@ def record(filing: Filing, income: FederalIncome, deductions: Deductions, scale:
     )
     data.update(demographics(filing))
     data["e00200"] = data["e00200p"] + data["e00200s"]
+    # Taxable policy income belongs on1040line5, separate from retirement facts.
+    data["e01700"] += float(income.insurance_ordinary_income) / scale
     data["e01500"] = data["e01700"]
+    data["e09900"] += float(income.insurance_additional_tax) / scale
     short = income.short_term - income.short_carry
     long = income.long_term - income.long_carry
     data["p22250"], data["p23250"] = float(short) / scale, float(long) / scale
