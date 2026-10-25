@@ -17,6 +17,8 @@ ALLOWED_PLANS = {
     "sleeve_plan",
     "exchange_fund_plan",
     "life_plan",
+    "option_plan",
+    "compensation_plan",
 }
 
 
@@ -28,11 +30,22 @@ def validate(household, binding):
         )
     validate_accounts(household)
     validate_product_paths(household, binding)
+    validate_contract_paths(household, binding)
 
 
 def validate_accounts(household):
     if any(
-        a.wrapper not in {"cash", "taxable", "traditional", "roth", "hsa", "education", "insurance"}
+        a.wrapper
+        not in {
+            "cash",
+            "taxable",
+            "traditional",
+            "roth",
+            "hsa",
+            "education",
+            "insurance",
+            "employer",
+        }
         for a in household.accounts
     ):
         raise ValueError(
@@ -43,6 +56,7 @@ def validate_accounts(household):
         ("hsa", "hsa_plan"),
         ("education", "education_plan"),
         ("insurance", "life_plan"),
+        ("employer", "compensation_plan"),
     ):
         if (
             any(a.wrapper == wrapper for a in household.accounts)
@@ -70,3 +84,15 @@ def validate_product_paths(household, binding):
         raise ValueError("Optimizer paths must bind every household sleeve.")
     if household.exchange_fund_plan and not binding.exchange_factors:
         raise ValueError("Optimizer paths require an explicit exchange-fund market binding.")
+
+
+def validate_contract_paths(household, binding):
+    if household.option_plan and binding.options is None:
+        raise ValueError("Optimizer options require their native stock/index market binding.")
+    accounts = (
+        {t.account for t in household.compensation_plan.tranches}
+        if household.compensation_plan
+        else set()
+    )
+    if {item.account_id for item in binding.employers} != accounts:
+        raise ValueError("Optimizer paths must bind every employer compensation account.")
