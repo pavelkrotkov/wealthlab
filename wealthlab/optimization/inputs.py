@@ -10,6 +10,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.markets.inputs import MarketCase
+from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
@@ -17,7 +18,7 @@ from wealthlab.retirement.distribution_inputs import WithdrawalOrder
 from wealthlab.tax.facts import TaxModel
 
 
-class PolicyChoice(TaxModel):
+class PolicyChoice(AccountControls):
     """One atomic allowed proposal; None preserves a schedule, [] deliberately clears it.
 
     IRA orders reuse dated withdrawal/conversion and tax-basis rules. Funding

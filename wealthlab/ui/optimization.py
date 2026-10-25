@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from wealthlab.optimization.account_example import extend as with_accounts
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.inputs import PolicySearch
 from wealthlab.optimization.robustness_example import synthetic as robust
@@ -14,7 +15,8 @@ def show():
     st.subheader("Bounded policy search")
     st.caption(
         "Set finite allowed choices and lock any dimension. Search retirement dates, native "
-        "sale/harvest schedules, IRA withdrawals/conversions, taxable funding order and "
+        "sale/harvest schedules, IRA/workplace contributions and withdrawals, HSA cash, "
+        "529 deposits, taxable funding order and "
         "discretionary guardrails. All choices share capital, essential spending and tax facts. "
         "Product allocations and cross-border search integration are still being built."
     )
@@ -25,6 +27,8 @@ def show():
     )
     include_checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
     starter = robust() if include_checks else synthetic()
+    if st.checkbox("Add synthetic workplace, HSA and 529 policies"):
+        starter = with_accounts(starter)
     uploaded = st.file_uploader("Load policy search JSON", type="json")
     if source(uploaded, starter.model_dump_json(indent=2), "policy_search") is None:
         return

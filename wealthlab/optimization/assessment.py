@@ -5,6 +5,7 @@ from math import ceil
 from statistics import median
 
 from wealthlab.markets.household_report import wilson
+from wealthlab.optimization.account_exits import hsa_closed, lots_closed
 from wealthlab.optimization.metrics import financial_metrics
 
 
@@ -40,8 +41,10 @@ def completed_exit(household, rows):
     cash = {a.id for a in household.accounts if a.wrapper == "cash"}
     balances = rows[-1]["account_balances"]
     lots = rows[-1].get("lot_audit", {}).get("lots", [])
-    return all(value == 0 for key, value in balances.items() if key not in cash) and all(
-        Decimal(lot["quantity"]) == 0 for lot in lots
+    return (
+        all(value == 0 for key, value in balances.items() if key not in cash)
+        and lots_closed(lots)
+        and hsa_closed(household, rows[-1])
     )
 
 
