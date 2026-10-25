@@ -6,6 +6,7 @@ reconciliation. Observing tax positions never pays cash or recalculates a return
 """
 
 from copy import deepcopy
+from datetime import date, timedelta
 
 
 def observe(observer, ledger, row, phase):
@@ -13,7 +14,7 @@ def observe(observer, ledger, row, phase):
         return
     observer(
         dict(
-            date=row["date"],
+            date=(date.fromisoformat(row["period_end"]) - timedelta(days=1)).isoformat(),
             phase=phase,
             closed_returns=deepcopy(ledger.closed_returns),
             provisional_returns=set(ledger.provisional_returns),

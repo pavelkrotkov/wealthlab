@@ -22,7 +22,7 @@ def evaluate(scenario, *, spain=None, max_passes=16):
         candidate = with_assessments(scenario, amounts)
         observed = []
         rows = project(candidate, tax_observer=observed.append)
-        revised, audit = country_assessments(candidate, spain, observed[-1])
+        revised, audit = country_assessments(candidate, spain, observed)
         history.append(dict(assessments=amounts, revised_assessments=revised))
         if revised == amounts:
             return dict(
@@ -53,5 +53,6 @@ def with_assessments(scenario, amounts):
 
 def country_assessments(scenario, spain, observed=None):
     pr_amounts, pr_audit = pr_assessments(scenario, observed)
-    es_amounts, es_audit = spain_assessments(scenario, spain, observed)
+    latest = observed[-1] if observed is not None else None
+    es_amounts, es_audit = spain_assessments(scenario, spain, latest)
     return pr_amounts | es_amounts, pr_audit | es_audit

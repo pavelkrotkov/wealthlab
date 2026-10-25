@@ -57,9 +57,26 @@ def native_result(annual, observed):
         case = complete_case(annual)
         return dict(assessment=calculate(case, recognized(case), 0), actual_us_income_tax_paid=0)
     year = annual.policy.year
+    observed = closing_observation(observed, year)
     if year in observed["provisional_returns"]:
         raise ValueError("PR country settlement needs a finalized original US return.")
     position = observed["closed_returns"].get(year)
     if position is None:
         raise ValueError("PR country settlement needs a complete closed US tax year.")
     return actual(position)
+
+
+def closing_observation(observations, year):
+    matches = [row for row in observations if row["date"] == f"{year}-12-31"]
+    if not matches:
+        raise ValueError("PR country settlement needs an actual year-end observation.")
+    observed, latest = matches[-1], observations[-1]
+    closing = observed["closed_returns"].get(year)
+    final = latest["closed_returns"].get(year)
+    if (
+        closing is not None
+        and final is not None
+        and (closing.net_paid != final.net_paid or closing.case != final.case)
+    ):
+        raise ValueError("Later US payment/return changes require a dated PR assessment revision.")
+    return observed
