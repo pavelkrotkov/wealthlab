@@ -8,7 +8,8 @@ month; a deferred tax deduction can therefore retain a later recognition date.
 from decimal import Decimal
 
 from wealthlab.products.conditional_allocations import event
-from wealthlab.products.drilling_basis import funded_components, reduce_basis
+from wealthlab.products.drilling_basis import funded_components
+from wealthlab.products.drilling_basis_effects import apply as basis_effects
 from wealthlab.products.drilling_limits import limited
 from wealthlab.products.loss_timing import LossTiming
 from wealthlab.tax.facts import FederalIncome
@@ -36,23 +37,22 @@ def ordinary(plan, when, amount, description):
 
 
 def losses(ledger, observation, row):
-    plan, bases = ledger.plan, ledger.bases
+    plan = ledger.plan
     result, audit = [], []
     for item in observation.deductions:
         available = funded_components(ledger, item, observation, row)
         eligible = {
             key: min(getattr(item, key + "_requested"), amount) for key, amount in available.items()
         }
+        records = []
         for jurisdiction in ("federal", "nj"):
             amount, choice, record = limited(ledger, item, jurisdiction, eligible[jurisdiction])
             result.extend(loss_event(plan, observation.date, item.id, jurisdiction, amount, choice))
-            audit.append(record)
-        reduce_basis(bases, item, available)
-        if item.component == "depreciation":
-            for key in available:
-                ledger.tangible_basis[key] -= min(
-                    getattr(item, key + "_basis_reduction"), available[key]
-                )
+            records.append(record)
+        effects = basis_effects(ledger, item, available)
+        for record in records:
+            record["basis_effects"] = effects
+        audit.extend(records)
     row["deduction_audit"] = audit
     return result
 

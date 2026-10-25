@@ -35,3 +35,24 @@ and its underlying creditors unpaid without duplicating that debt, and an actual
 $500 MEC policy loan completing the drilling call while preserving the policy
 loan, recognized income and additional tax exactly once. Policy net surrender
 equity and drilling net property equity both survive the generic Household audit.
+
+Each deduction now requires a separate `basis_effect_source`. Its audit retains
+requested and actually applied federal/NJ outside-basis, at-risk and tangible
+pool reductions with before/after balances. Denied current recognition does not
+itself determine those independent effects. The actual 2025 K-1 instructions,
+page 25 box 18 code C, discovered/read through QMD and verified against the
+[official instructions](https://www.irs.gov/instructions/i1065sk1), distinguish
+nondeductible expenses from their outside-basis reductions. [Publication 541
+(December 2025), Adjusted Basis](https://www.irs.gov/publications/p541) likewise
+identifies nondeductible noncapital expenses. These authorities do not qualify a
+particular denied IDC/depreciation item or infer its at-risk/NJ effect. A source
+must supply each effect; omitted provenance blocks the input, and actual funded
+pools still cap every applied reduction. Regressions show denied tax recognition
+with separately supplied zero/nonzero basis effects and an over-request capped
+to the actually paid cost, without a tax deduction or fictitious cash.
+
+Optional liquid-saving purchases execute after required drilling funding. In a
+shared synthetic wallet with $100,000, the full drilling call executes before an
+unfilled $500 January saving request. Later actual distributions fund $1,000 of
+new share lots. The flat-share case preserves $41,600 before actual tax, with
+both account books and their generic Household audits retained.

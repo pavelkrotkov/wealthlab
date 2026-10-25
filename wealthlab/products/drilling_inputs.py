@@ -32,6 +32,7 @@ class DrillingDeduction(Record):
     federal_basis_reduction: Money
     nj_basis_reduction: Money
     at_risk_reduction: Money
+    basis_effect_source: str = Field(min_length=10, max_length=500)
 
 
 class DrillingObservation(Record):

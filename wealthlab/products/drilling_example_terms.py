@@ -27,6 +27,10 @@ def deduction(identity, component, amount, treatment="allowed"):
         federal_basis_reduction=str(amount),
         nj_basis_reduction=str(amount),
         at_risk_reduction=str(amount),
+        basis_effect_source=(
+            "Synthetic independently supplied federal/NJ basis and at-risk effects; "
+            "current tax recognition does not establish these classifications"
+        ),
     )
 
 
