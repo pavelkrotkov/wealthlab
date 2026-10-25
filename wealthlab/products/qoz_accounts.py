@@ -17,6 +17,8 @@ def validate_ownership(scenario, plan):
         linked.update(s.account_id for s in scenario.sleeve_plan.sleeves)
     if scenario.exchange_fund_plan:
         linked.add(scenario.exchange_fund_plan.account_id)
+    if scenario.option_plan:
+        linked.add(scenario.option_plan.account_id)
     if plan.account_id in linked:
         raise ValueError("QOZ cannot share ownership with another product or linked-lot account.")
 
