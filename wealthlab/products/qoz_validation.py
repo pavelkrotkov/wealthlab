@@ -16,6 +16,7 @@ def validate(scenario, lots, tax):
         plan.unrelated_direct_gains_no_other_elections_assumed_confirmed,
         plan.c_corporation_dividends_ep_no_extraordinary_distributions_assumed_confirmed,
         plan.limited_liability_internal_debt_only_assumed_confirmed,
+        plan.calls_are_optional_partial_subscriptions_assumed_confirmed,
         plan.entity_tax_already_in_returns_assumed_confirmed,
         plan.source_and_product_tax_excluded_elsewhere_assumed_confirmed,
     )

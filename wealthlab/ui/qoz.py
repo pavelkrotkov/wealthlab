@@ -18,7 +18,8 @@ def show():
         "grant a federal election that this policy denies."
     )
     st.caption(
-        "Calls consume actual cash from executed stock sales. Returns are after entity tax; "
+        "Calls are assumed optional, partially accepted subscriptions with no default penalty. "
+        "They consume actual cash from executed stock sales. Returns are after entity tax; "
         "fees, internal financing, distributions and hurdle carry use the existing fund "
         "economic book. Preferred hurdle is only a carry threshold, never guaranteed income. "
         "Mandatory inclusion can require tax with no distribution. A full stock-interest "

@@ -128,6 +128,7 @@ def contract(scenario, economics, year):
         unrelated_direct_gains_no_other_elections_assumed_confirmed=True,
         c_corporation_dividends_ep_no_extraordinary_distributions_assumed_confirmed=True,
         limited_liability_internal_debt_only_assumed_confirmed=True,
+        calls_are_optional_partial_subscriptions_assumed_confirmed=True,
         entity_tax_already_in_returns_assumed_confirmed=True,
         source_and_product_tax_excluded_elsewhere_assumed_confirmed=True,
         terms_source_description="Invented QOF corporation terms, not a sponsor offer or forecast",

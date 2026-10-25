@@ -56,7 +56,8 @@ def distribute(tranche, observation):
     requested = money(max(ZERO, equity(tranche["book"])) * observation.dividend_fraction_of_nav)
     if not requested or observation.locked:
         return ZERO
-    paid = redeem(tranche["book"], requested, tranche["case"].exit_cost)["redemption_paid"]
+    # This declared E&P cash dividend has no supplied investor stock-sale cost.
+    paid = redeem(tranche["book"], requested, ZERO)["redemption_paid"]
     tranche["book"]["outside"] = ZERO
     tranche["dividends"] += paid
     return paid
