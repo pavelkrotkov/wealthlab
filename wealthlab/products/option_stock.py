@@ -64,10 +64,19 @@ def unwind_stock(state, mark):
 
 
 def execute(state, trade):
-    """Rejected delivery/exit trades retain actual holdings and pending obligations."""
+    """Keep unpaid option debt outside the long-only Book during actual trades.
+
+    Book fee settlement assumes nonnegative cash. Temporarily isolating an unpaid
+    option settlement lets sale proceeds reduce it without inventing a fee debt.
+    Rejected delivery/exit trades retain holdings and the original obligation.
+    """
+    payable = min(state.book.cash[state.account], Decimal(0))
+    state.book.cash[state.account] -= payable
     try:
         state.book.trade(trade)
     except ValueError as error:
         state.failures.append(f"{trade.id}: {error}")
         return False
+    finally:
+        state.book.cash[state.account] += payable
     return True
