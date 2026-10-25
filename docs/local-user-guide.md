@@ -47,7 +47,7 @@ uv run --no-sync python -m wealthlab compare "/your/selected/private/folder/base
 
 Without `--output-directory`, project/compare deliberately write their full JSON report to the local terminal. That output can be private; keep it out of shared logs. Supplying a filename requires a selected directory. CLI errors omit raw scenario values and private input paths. A blocked or invalid action returns nonzero and writes no report.
 
-To reproduce, import a saved raw scenario or projection report and project again, or pass either to the CLI. Check the recorded input fingerprint, clean source revision and dependency versions; a dirty checkout or missing revision cannot establish exact reproducibility. Re-execution uses the current engine and does not certify that a different version's archived result is identical. The UI and CLI share the actual household engine and report format; CLI comparison requires aligned dates and does not run the still-in-progress personal optimizer.
+To reproduce, import a saved raw scenario or projection report and project again, or pass either to the CLI. Check the recorded input fingerprint, clean source revision and dependency versions; a dirty checkout or missing revision cannot establish exact reproducibility. Re-execution uses the current engine and does not certify that a different version's archived result is identical. The dependency record includes the installed Owl version, or explicit `null` when its retirement tables are absent; it does not substitute the version expected by the lock file. The UI and CLI share the actual household engine and report format; CLI comparison requires aligned dates and does not run the still-in-progress personal optimizer.
 
 ## Before private entry
 

@@ -9,7 +9,7 @@ import json
 import subprocess
 from datetime import date
 from decimal import Decimal
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from wealthlab.household.projection import project
@@ -51,12 +51,21 @@ def payload(scenario, rows):
         dependencies={
             name: version(name)
             for name in ("numpy", "pydantic", "taxcalc", "QuantLib", "streamlit")
-        },
+        }
+        | {"owlplanner": owl_version()},
         taxes_modeled=scenario.tax_plan is not None,
         inputs=scenario.model_dump(mode="json"),
         months=rows,
         limitations="Conditional enabled plans only; no full-tax optimization certificate.",
     )
+
+
+def owl_version():
+    """Record actual installed retirement-table data, including limited core-only absence."""
+    try:
+        return version("owlplanner")
+    except PackageNotFoundError:
+        return None
 
 
 def encode(report):

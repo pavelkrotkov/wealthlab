@@ -23,3 +23,9 @@ Project/compare JSON stdout is an explicit local report and may contain private 
 Checks exercise native CLI execution from another directory, actual Household UI agreement, taxed input/report re-execution, original-type audit retention, no-network selected calculations, aligned comparisons, byte/BOM/precision bounds, fingerprints, all linked-checkout aliases, exclusive UTF-8 saves and existing destination symlinks. Synthetic test metadata/output stays within the selected runtime folder. Current-Mac core installation/native launch and browser keyboard checks are recorded with the final PR evidence.
 
 The [user guide](../local-user-guide.md), [coverage matrix](../model-coverage.md), [private-input checklist](../private-input-checklist.md) and [dependency notices](../dependency-notices.md) describe actual supported workflows and pending integration. Completing this layer does not close issue #19: all prior slices must be merged and demonstrated together, dependent optimizer/cross-border completeness must be established, and exact-head required CI plus complete independent review remain mandatory.
+
+The shared report also records the actually installed Owl production-table version,
+or explicit null in a deliberately limited core-only environment. It never
+substitutes the lock file version for installed metadata: a mismatched environment
+therefore remains visible when reproducing SSA/RMD calculations. Metadata-only
+regressions cover mismatch and absence without mutating the installed environment.
