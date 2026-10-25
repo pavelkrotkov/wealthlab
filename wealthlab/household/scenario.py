@@ -23,6 +23,7 @@ from wealthlab.retirement.hsa_household_inputs import HSAPlan
 from wealthlab.retirement.ira_household_inputs import IRAPlan
 from wealthlab.retirement.medicare_household_inputs import MedicarePlan
 from wealthlab.retirement.social_inputs import SocialCase
+from wealthlab.retirement.social_work_inputs import WorkPolicy
 from wealthlab.retirement.workplace_inputs import WorkplacePlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
@@ -55,6 +56,7 @@ class Scenario(BaseModel):
     contributions: list[Contribution]
     tax_plan: TaxPlan | None = None
     social_security: SocialCase | None = None
+    social_work_plan: WorkPolicy | None = None
     employment_plan: EmploymentPlan | None = None
     compensation_plan: CompensationPlan | None = None
     ira_plan: IRAPlan | None = None
@@ -68,6 +70,8 @@ class Scenario(BaseModel):
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
+        if self.social_work_plan is not None and self.social_security is None:
+            raise ValueError("A work-test policy requires generated Social Security claims.")
         validate_dates(self)
         validate_references(self)
         return self

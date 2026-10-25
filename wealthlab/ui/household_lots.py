@@ -29,6 +29,7 @@ def controls(payload, scenario):
             "Dated month-end staged/target sales "
             "and conditional long-only harvesting use actual current marks and household tax. "
             "Targets use gross pre-tax household assets; later tax/spending can change weights. "
+            "Account target-weight rebalances run after harvesting using sale proceeds only. "
             "Tax-budget policies require a separate annual-forecast adapter. Unresolved "
             "year-end wash windows default to blocking. Select january_reconcile to observe the "
             "following January and revise the original return. Posted IRA deduction/basis "
@@ -67,6 +68,7 @@ def template(scenario):
         year_end_wash_policy="block",
         post_horizon_purchases="unconfirmed",
         funding_sources=[],
+        rebalances=[],
         complete_ownership_and_outside_purchases_confirmed=False,
         monthly_settlement_and_cash_sweep_confirmed=False,
         funding_priority="linked_lots_before_other_permitted_accounts",

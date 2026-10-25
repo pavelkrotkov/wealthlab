@@ -20,6 +20,7 @@ from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
 from wealthlab.ui.household_lots import display as lot_summary
 from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
+from wealthlab.ui.household_social_work import display as social_work_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
 from wealthlab.ui.private_fund_household_results import route_household as sleeve_summary
 from wealthlab.ui.projected_tax import display as tax_summary
@@ -52,6 +53,7 @@ HIDDEN = [
     "workplace_rollover_audit",
     "workplace_roth_audit",
     "workplace_roth_contracts",
+    "social_security_work_audit",
 ]
 
 
@@ -79,6 +81,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
     tax_summary(rows)
+    social_work_summary(rows)
     compensation_summary(rows)
     account_summaries(rows)
     with st.expander("Ending accounts, debts and reproduction details"):

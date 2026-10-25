@@ -22,6 +22,7 @@ from wealthlab.retirement.medical_bill_example import synthetic as medical_examp
 from wealthlab.retirement.medicare_household_example import synthetic as medicare_example
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.retirement.social_medicare_example import synthetic as withholding_example
+from wealthlab.retirement.social_work_household_example import synthetic as work_benefit_example
 from wealthlab.retirement.workplace_example import synthetic as workplace_example
 from wealthlab.retirement.workplace_rmd_example import synthetic as workplace_rmd_example
 from wealthlab.retirement.workplace_rollover_example import synthetic as rollover_example
@@ -80,6 +81,7 @@ def examples():
         ("Load synthetic direct plan rollover", rollover_example),
         ("Load synthetic designated Roth plan cash", roth_plan_example),
         ("Load synthetic Social Security household", benefit_example),
+        ("Load synthetic Social Security with earned wages", work_benefit_example),
         ("Load synthetic employment household", employment_example),
         ("Load synthetic employer compensation household", compensation_example),
         ("Load synthetic linked employment and asset shock", linked_shock),

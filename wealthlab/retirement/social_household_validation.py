@@ -66,6 +66,15 @@ def validate_opening(scenario):
 
 
 def validate_work(scenario, result):
+    if scenario.social_work_plan is not None:
+        from wealthlab.retirement.social_work_household_validation import validate
+
+        validate(scenario)
+        return
+    validate_no_work(scenario, result)
+
+
+def validate_no_work(scenario, result):
     """Conservative guard until earnings tests and later reduction-factor changes land.
 
     All annual wages count, including pre-claim wages and opening YTD. Even a

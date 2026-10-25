@@ -24,6 +24,7 @@ from wealthlab.ui.household_ira import controls as ira_controls
 from wealthlab.ui.household_lots import controls as lot_controls
 from wealthlab.ui.household_medicare import controls as medicare_controls
 from wealthlab.ui.household_sleeves import controls as sleeve_controls
+from wealthlab.ui.household_social_work import controls as social_work_controls
 from wealthlab.ui.household_workplace import controls as workplace_controls
 from wealthlab.ui.settings import controls
 from wealthlab.ui.tax_plan import controls as tax_controls
@@ -64,6 +65,7 @@ def editor(scenario: Scenario) -> Scenario | None:
         plans = dict(
             tax_plan=tax_controls(payload, scenario),
             social_security=benefit_controls(payload, scenario),
+            social_work_plan=social_work_controls(payload, scenario),
             employment_plan=employment_controls(payload, scenario),
             compensation_plan=compensation_controls(payload, scenario),
             ira_plan=ira_controls(payload, scenario),

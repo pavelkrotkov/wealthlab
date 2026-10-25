@@ -15,6 +15,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import months
 from wealthlab.portfolio.household_policies import validate as validate_policies
 from wealthlab.portfolio.household_values import account_value
+from wealthlab.portfolio.rebalance_validation import validate as validate_rebalances
 from wealthlab.portfolio.validation import validate as validate_lots
 
 
@@ -36,6 +37,7 @@ def validate(scenario):
     validate_marks(plan, scenario)
     validate_accounts(plan, scenario)
     validate_sellers(plan, scenario)
+    validate_rebalances(plan)
 
 
 def validate_scope(case):

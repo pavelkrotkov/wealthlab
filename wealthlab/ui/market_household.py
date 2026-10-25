@@ -23,6 +23,7 @@ from wealthlab.markets.medical_example import synthetic as medical_example
 from wealthlab.markets.paths import generate
 from wealthlab.markets.policy_example import CHOICES
 from wealthlab.markets.policy_example import enable as policy_example
+from wealthlab.markets.rebalance_example import synthetic as rebalance_example
 from wealthlab.markets.rollover_example import synthetic as rollover_example
 from wealthlab.markets.roth_cash_example import synthetic as roth_cash_example
 from wealthlab.markets.sleeve_example import synthetic as sleeve_example
@@ -30,6 +31,7 @@ from wealthlab.markets.stresses import NAMES
 from wealthlab.markets.workplace_example import synthetic as workplace_example
 from wealthlab.markets.workplace_rmd_example import synthetic as workplace_rmd_example
 from wealthlab.markets.wrapper_example import synthetic as wrapper_example
+from wealthlab.ui import market_rebalance
 from wealthlab.ui.market_household_results import display
 from wealthlab.ui.market_hsa_payroll import controls as paired_controls
 from wealthlab.ui.market_hsa_payroll import policy_text
@@ -46,7 +48,7 @@ def show():
         "entered schedules. The two-year synthetic horizon does not cover retirement to age 100. "
         "Dated sales and harvesting use current marks. IRA/529 proxies and employer factors reuse "
         "their ledgers; employment responds next month. Sleeve taxes use supplied allocations. "
-        "Discretionary guardrail cuts are shown separately; broader rebalancing remains unfinished."
+        "Discretionary cuts and constrained taxable-account rebalancing are reported separately."
     )
     mode = st.selectbox(
         "Household market mode", ["deterministic", "monte_carlo", "historical", "stress"]
@@ -61,7 +63,7 @@ def show():
     household = loss_controls(household)
     if st.checkbox("Use synthetic discretionary guardrail", key="market_guardrail_example"):
         household, binding = enable(household, binding)
-    if household.lot_plan is not None:
+    if household.lot_plan is not None and not household.lot_plan.rebalances:
         choice = st.selectbox("Synthetic lot policy", CHOICES, key="market_policy_example")
         household, binding = policy_example(household, binding, choice)
     default = json.dumps(
@@ -86,6 +88,7 @@ def show():
             "Full tax-ledger execution can take seconds per path; use a small run to check inputs."
         )
         alternative, match_hsa = paired_controls()
+        market_rebalance.controls()
         submitted = st.form_submit_button("Project actual household paths", type="primary")
     if submitted:
         calculate(edited, count, alternative, match_hsa)
@@ -100,6 +103,7 @@ def calculate(edited, count, alternative, match_hsa=False):
         case = MarketCase.model_validate(data["market"])
         binding = HouseholdBinding.model_validate(data["binding"])
         alternative = policy_text(household, alternative, match_hsa)
+        alternative = market_rebalance.policy_text(household, alternative)
         batch = generate(case)
         indices = range(min(int(count), len(batch.mark_returns)))
         progress = st.progress(0)
@@ -142,6 +146,7 @@ def account_example(mode, stress):
         "Synthetic account scope",
         [
             "Taxable lots",
+            "Taxable rebalancing",
             "IRA and education proxies",
             "Employer and employment",
             "Employee 401(k)",
@@ -157,6 +162,7 @@ def account_example(mode, stress):
     )
     starter = {
         "Taxable lots": synthetic,
+        "Taxable rebalancing": rebalance_example,
         "IRA and education proxies": wrapper_example,
         "Employer and employment": employer_example,
         "Employee 401(k)": workplace_example,

@@ -11,6 +11,7 @@ from wealthlab.ui import (
     retirement,
     retirement_withdrawals,
     social_security,
+    social_work,
 )
 
 
@@ -23,6 +24,7 @@ def show():
         "Education": education,
         "Medicare": medicare,
         "Social Security": social_security,
+        "Social Security with employment": social_work,
         "OWL household reference": owl_reference,
     }
     mode = st.radio(
