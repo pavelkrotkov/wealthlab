@@ -23,12 +23,12 @@ def test_heldout_failure_preserves_training_winner_without_testing_runner_up(
     real_run = module.run
     observed = []
 
-    def changed_run(household, batch, binding):
+    def changed_run(household, batch, binding, **kwargs):
         seed = batch.metadata["seed"]
         observed.append(seed)
         if seed == case.validation.seed and unsupported:
             raise ValueError("Unsupported held-out execution")
-        result = real_run(household, batch, binding)
+        result = real_run(household, batch, binding, **kwargs)
         if seed == case.validation.seed:
             result = deepcopy(result)
             result["outcomes"][0]["joint_feasible"] = False

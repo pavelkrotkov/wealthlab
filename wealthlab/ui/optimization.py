@@ -73,7 +73,12 @@ def calculate(edited):
     try:
         case = PolicySearch.model_validate_json(edited)
         progress = st.progress(0.0, text="Evaluating the allowed training grid")
-        result = search(case, lambda done, total: progress.progress(done / total))
+        result = search(
+            case,
+            path_progress=lambda phase, done, total: progress.progress(
+                done / total, text=f"{phase}: {done}/{total} paths"
+            ),
+        )
         progress.empty()
         st.session_state["policy_search_result"] = result
         st.session_state["policy_search_input"] = edited
