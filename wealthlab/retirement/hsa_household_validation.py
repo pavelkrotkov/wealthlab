@@ -9,6 +9,7 @@ from wealthlab.retirement.hsa_household_coverage import validate_medicare
 from wealthlab.retirement.hsa_household_sources import validate_sources
 from wealthlab.retirement.hsa_inputs import HSACase
 from wealthlab.retirement.hsa_invested_validation import validate as validate_investments
+from wealthlab.retirement.hsa_payroll_validation import validate as validate_payroll
 from wealthlab.tax.projection_validation import validate as validate_tax
 
 
@@ -43,6 +44,7 @@ def validate(scenario):
     validate_establishment_history(plan.years)
     for context in plan.years:
         validate_year(scenario, context)
+    validate_payroll(scenario)
 
 
 def validate_year(scenario, context):

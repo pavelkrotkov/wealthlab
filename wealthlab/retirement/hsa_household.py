@@ -16,11 +16,13 @@ from datetime import date
 
 from wealthlab.retirement import hsa
 from wealthlab.retirement.hsa_household_events import apply as apply_events
+from wealthlab.retirement.hsa_household_events import sync_wallet
 from wealthlab.retirement.hsa_household_reporting import annual, summary
 from wealthlab.retirement.hsa_household_tax import annotate, totals
 from wealthlab.retirement.hsa_household_tax import event as tax_event
 from wealthlab.retirement.hsa_household_validation import annual_case, validate
 from wealthlab.retirement.hsa_invested_household import Investments
+from wealthlab.retirement.hsa_payroll import opening as payroll_opening
 from wealthlab.retirement.medical_bills import Bills
 
 
@@ -28,6 +30,9 @@ class Ledger:
     def __init__(self, scenario):
         validate(scenario)
         self.plan = scenario.hsa_plan
+        self.members = [m.id for m in scenario.members]
+        self.rules = scenario.tax_plan.income_rules
+        self.payroll_opening = None
         self.accounts = [a for a in scenario.accounts if a.wrapper == "hsa"]
         self.year = scenario.start.year
         context = next(y for y in self.plan.years if y.year == self.year)
@@ -63,20 +68,12 @@ class Ledger:
         self.begin(start.year, wallet)
         self.medical.start(start, end)
         self.book["cash"] = wallet.cash
-        before = {key: self.book[key] for key in ("personal", "employer", "interest")}
-        offset = len(self.book["rows"])
+        before, offset = payroll_opening(self, start)
         apply_events(self, start, end)
         rows = self.book["rows"][offset:]
         validate_employer_funding(rows)
         annotate(rows, self.plan)
-        difference = self.book["cash"] - wallet.cash
-        if difference >= 0:
-            wallet.deposit(difference)
-        else:
-            wallet.pay(-difference)
-        wallet.balances.update(self.book["balances"])
-        if self.investments is not None:
-            self.investments.wallet(wallet)
+        sync_wallet(self, wallet)
         self.audit.extend(rows)
         amounts = {key: self.book[key] - before[key] for key in before}
         amounts.update(totals(rows))

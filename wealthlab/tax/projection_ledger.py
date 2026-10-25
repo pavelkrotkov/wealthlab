@@ -80,6 +80,7 @@ class TaxLedger:
         extra_events=(),
         receipt_hook=None,
         pre_receipt_hook=None,
+        additional_nj_wages=Decimal(0),
     ) -> dict:
         """Recognize this month's income, then pay only available cash.
 
@@ -87,6 +88,7 @@ class TaxLedger:
         income-tax withholding uses explicit user-entered wage percentages.
         Year-end settlement later reconciles the remaining tax balance.
         """
+        self.nj_wage_withholding_addition = additional_nj_wages
         self.start_year(start.year)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
@@ -103,7 +105,7 @@ class TaxLedger:
         sold = self.funding.fund(self, wallet, required, amounts, start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
-        requested = payments.withholding_request(amounts, self.plan, result, start, end)
+        requested = payments.ledger_request(self, amounts, result, start, end)
         before = self.case.payments
         self.case, paid = payments.pay(self.case, wallet, requested, self.plan.state_deduction_mode)
         estimates = (

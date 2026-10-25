@@ -73,13 +73,13 @@ def apply(book, item):
         withdraw(book, item)
 
 
-def contribute(book, item):
+def contribute(book, item, *, cafeteria=False):
     owner = book["accounts"][item.destination].owner
     allowed = min(item.amount, max(Decimal(0), book["limits"][owner] - book["used"][owner]))
     paid = min(allowed, book["cash"]) if item.source == "personal_cash" else allowed
     if item.source == "personal_cash":
         book["cash"] -= paid
-        book["personal"] += paid
+        book["employer" if cafeteria else "personal"] += paid
     else:
         book["employer"] += paid
     book["balances"][item.destination] += paid
@@ -88,7 +88,7 @@ def contribute(book, item):
         dict(
             id=item.id,
             date=item.date,
-            kind=item.source,
+            kind="cafeteria_salary_reduction" if cafeteria else item.source,
             owner=owner,
             account=item.destination,
             requested=item.amount,

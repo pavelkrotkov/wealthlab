@@ -44,7 +44,9 @@ def settle(case: AnnualCase, wallet, result: dict, mode="entered"):
     return case, state_paid + federal_paid
 
 
-def withholding_request(amounts: dict, plan, result: dict, start, end) -> dict:
+def withholding_request(
+    amounts: dict, plan, result: dict, start, end, *, additional_nj_wages=Decimal(0)
+) -> dict:
     wages = sum(
         (
             amounts[rule.income_id]
@@ -59,7 +61,7 @@ def withholding_request(amounts: dict, plan, result: dict, start, end) -> dict:
     )
     requested = dict(
         employee_payroll_withheld=max(Decimal(0), result["payroll_balance"]),
-        nj_withheld=state_wages * plan.nj_wage_withholding,
+        nj_withheld=(state_wages + additional_nj_wages) * plan.nj_wage_withholding,
         federal_income_withheld=wages * plan.federal_wage_withholding,
     )
     requested.update(estimated_requests(plan, start, end))
@@ -81,3 +83,15 @@ def settlement_due(plan, start, end):
 def missed_schedule(row):
     """Count a month once if current withholding or settlement was underfunded."""
     return row.get("tax_payment_gap", 0) > 0 or row.get("tax_settlement_payment_gap", 0) > 0
+
+
+def ledger_request(ledger, amounts, result, start, end):
+    """Trial funding and actual payment use the same independent NJ wage base."""
+    return withholding_request(
+        amounts,
+        ledger.plan,
+        result,
+        start,
+        end,
+        additional_nj_wages=getattr(ledger, "nj_wage_withholding_addition", Decimal(0)),
+    )

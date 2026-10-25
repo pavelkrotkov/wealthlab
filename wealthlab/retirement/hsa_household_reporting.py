@@ -17,7 +17,7 @@ def summary(rows, amounts):
     withdrawals = [r for r in rows if r["kind"] == "withdrawal"]
     return dict(
         hsa_personal_contributions=amounts["personal"],
-        hsa_employer_funding=amounts["employer"],
+        hsa_employer_funding=funded(rows, "direct_employer"),
         hsa_bank_interest=amounts["interest"],
         hsa_qualified_reimbursements=amounts["qualified"],
         hsa_nonqualified_taxable=amounts["federal_taxable"],
@@ -29,7 +29,9 @@ def summary(rows, amounts):
         ),
         hsa_unfilled_requests=sum(
             (
-                r.get("unfilled", r.get("unfunded", ZERO)) + r.get("blocked_by_limit", ZERO)
+                r.get("unfilled", r.get("unfunded", ZERO))
+                + r.get("blocked_by_limit", ZERO)
+                + r.get("blocked_by_current_wages", ZERO)
                 for r in rows
             ),
             ZERO,
@@ -45,8 +47,14 @@ def annual(ledger):
         rule_base_year=rule_year(ledger.context),
         contribution_limits=dict(ledger.book["limits"]),
         personal_federal_deduction=ledger.book["personal"],
-        employer_funding=ledger.book["employer"],
+        employer_funding=funded(ledger.book["rows"], "direct_employer"),
+        employer_reported_contributions=ledger.book["employer"],
+        salary_reductions=funded(ledger.book["rows"], "cafeteria_salary_reduction"),
         bank_interest=ledger.book["interest"],
         nj_treatment=ledger.plan.nj_treatment,
         remaining_receipts=dict(ledger.book["receipt_remaining"]),
     )
+
+
+def funded(rows, kind):
+    return sum((r["funded"] for r in rows if r["kind"] == kind), ZERO)
