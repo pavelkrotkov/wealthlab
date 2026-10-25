@@ -2,12 +2,12 @@
 
 from wealthlab.products.option_book import OptionBook
 from wealthlab.products.option_engine import complete_unwind
-from wealthlab.products.option_events import open_leg
 from wealthlab.products.option_financing import accrue
 from wealthlab.products.option_household_cash import settle
 from wealthlab.products.option_household_reporting import completed, finish  # noqa: F401
 from wealthlab.products.option_household_tax import events
 from wealthlab.products.option_household_validation import validate
+from wealthlab.products.option_opening import open_at_mark
 from wealthlab.products.option_reporting import snapshot
 from wealthlab.products.option_tax import yearend
 from wealthlab.products.option_timing import dividends, terminations
@@ -40,9 +40,7 @@ class Ledger:
         self.previous = mark.date
         dividends(self.state, mark)
         terminations(self.state, mark, same_day=False)
-        for leg in self.plan.case.legs:
-            if leg.opened == mark.date:
-                open_leg(self.state, leg, mark)
+        open_at_mark(self.state, mark)
         terminations(self.state, mark, same_day=True)
         yearend(self.state, mark)
         row = snapshot(self.state, mark)
