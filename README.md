@@ -142,3 +142,5 @@ Optimize supports [fixed conditional products with actual native exits](docs/adr
 Optimize can compare [new long/short and private-fund sleeve mixes funded from existing cash](docs/adr/0135-opening-sleeve-allocation-search.md). Fixed unit profiles, explicit bounds and locks preserve original capital and existing tax lots. The audit shows each cash debit, native costs and complete exit; tax assumptions and product terms remain fixed across unit choices.
 
 Optimize offers [complete life-policy funding paths](docs/adr/0136-complete-life-policy-paths.md): select supplied premium/event/value illustrations for the same opening policy, with actual cash, basis, failure settlement and protection checks.
+
+Optimize also provides a [full age-100 cash/stock example](docs/adr/0137-full-horizon-search-example.md) with cash, W-2 and spending controls, complete future tax/lot schedules and explicitly small demonstration samples.

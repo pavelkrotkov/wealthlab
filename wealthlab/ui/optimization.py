@@ -11,6 +11,7 @@ from wealthlab.optimization.life_example import extend as with_life_paths
 from wealthlab.optimization.product_example import extend as with_products
 from wealthlab.optimization.robustness_example import synthetic as robust
 from wealthlab.optimization.search import search
+from wealthlab.ui.optimization_horizon import show as horizon_starter
 from wealthlab.ui.optimization_results import display
 from wealthlab.ui.uploads import invalid, source
 
@@ -49,6 +50,11 @@ def show():
 
 
 def starter_case():
+    example = st.selectbox(
+        "Synthetic starter", ["Short composable examples", "Full age-100 cash and stock example"]
+    )
+    if example == "Full age-100 cash and stock example":
+        return horizon_starter()
     checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
     starter = robust() if checks else synthetic()
     for label, extend in (
