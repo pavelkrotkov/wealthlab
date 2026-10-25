@@ -6,6 +6,7 @@ from wealthlab.markets.household_run import run
 from wealthlab.markets.paths import generate
 from wealthlab.optimization.assessment import assess, score
 from wealthlab.optimization.compile import compile_candidate
+from wealthlab.optimization.robustness import check_all, validation_passed
 from wealthlab.optimization.validation import choices, validate
 
 
@@ -25,6 +26,7 @@ def search(case, progress=None):
     # Validation cannot choose a different candidate, even when the selected
     # policy fails. Preserve the unsuccessful validation as an actual result.
     held_out = validate_winner(case, winner)
+    robustness = check_all(case, winner)
     return dict(
         inputs=case.model_dump(mode="json"),
         status="best_evaluated_candidate" if winner else "no_feasible_evaluated_candidate",
@@ -37,6 +39,8 @@ def search(case, progress=None):
         training_batch=training.export(),
         selected_training=winner[2] if winner else None,
         held_out=held_out,
+        robustness=robustness,
+        configured_validation_passed=validation_passed(held_out, robustness),
     )
 
 

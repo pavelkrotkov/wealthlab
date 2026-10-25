@@ -10,6 +10,8 @@ from math import prod
 
 from wealthlab.household.calendar import months
 from wealthlab.optimization.market_validation import validate_markets
+from wealthlab.optimization.robustness_inputs import projection_paths
+from wealthlab.optimization.robustness_inputs import validate as validate_robustness
 from wealthlab.optimization.shared_terms import validate as validate_terms
 
 FIELDS = ("sale_policies", "harvest_policies", "ira_orders", "lot_funding_order")
@@ -36,6 +38,7 @@ def footprint(choice):
 def validate(case):
     validate_markets(case)
     validate_terms(case)
+    validate_robustness(case)
     identifiers, controlled = set(), set()
     for dimension in case.dimensions:
         if dimension.id in identifiers:
@@ -49,7 +52,7 @@ def validate(case):
         controlled.update(keys)
     count = prod(len(choices(d)) for d in case.dimensions)
     periods = len(list(months(case.household.start, case.household.end)))
-    work = periods * (count * case.training.paths + case.validation.paths)
+    work = periods * (count * case.training.paths + case.validation.paths + projection_paths(case))
     if count > case.maximum_candidates or work > case.maximum_projection_months:
         raise ValueError("Search exceeds the explicit candidate or projection-month budget.")
     return count

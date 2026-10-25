@@ -5,6 +5,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.ui.optimization_robustness import display as robustness
+
 
 def display(result):
     st.subheader("Evaluated policy choices")
@@ -16,6 +18,7 @@ def display(result):
     frame = pd.DataFrame(result["candidates"])
     st.dataframe(frame, hide_index=True)
     selected(result)
+    robustness(result)
     with st.expander("Reproduce inputs, selected household, realized paths and tax/cash audit"):
         st.json(result)
     st.download_button(

@@ -8,7 +8,7 @@ from wealthlab.markets.household_report import wilson
 from wealthlab.optimization.metrics import financial_metrics
 
 
-def assess(case, household, result):
+def assess(case, household, result, sampled=True):
     outcomes = result["outcomes"]
     count = len(outcomes)
     funded = sum(r["joint_feasible"] for r in outcomes)
@@ -22,9 +22,9 @@ def assess(case, household, result):
         unmet_constraints=[key for key, passed in checks.items() if not passed],
         paths=count,
         joint_success_fraction=funded / count,
-        joint_success_95_wilson=wilson(funded, count),
+        joint_success_95_wilson=interval(funded, count, sampled),
         reserve_success_fraction=reserved / count,
-        reserve_success_95_wilson=wilson(reserved, count),
+        reserve_success_95_wilson=interval(reserved, count, sampled),
         median_real_after_tax_exit_wealth=median(wealth) if all(exits) else None,
         downside_real_after_tax_exit_wealth=sorted(wealth)[ceil(0.05 * count) - 1]
         if all(exits)
@@ -78,3 +78,7 @@ def score(assessment):
 
 def exit_status(household, result):
     return [completed_exit(household, item["rows"]) for item in result["details"]]
+
+
+def interval(successes, count, sampled):
+    return wilson(successes, count) if sampled else None
