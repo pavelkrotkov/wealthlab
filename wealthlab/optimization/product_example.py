@@ -61,9 +61,10 @@ def account(identity, wrapper):
     )
 
 
-def add_factor(market):
+def add_factor(market, factor=None):
     market["assets"].append(
-        dict(
+        factor
+        or dict(
             id="exchange_prices",
             provenance="illustration",
             role="equity",
@@ -77,8 +78,9 @@ def add_factor(market):
     market["correlation"] = [[*row[:-1], 0, row[-1]] for row in original[:-1]]
     market["correlation"] += [[0] * (len(original) - 1) + [1, 0]]
     market["correlation"] += [[*original[-1][:-1], 0, original[-1][-1]]]
+    identity = market["assets"][-1]["id"]
     if market["historical"] is not None:
         history = market["historical"]
-        history["source"] += "; added synthetic zero-return exchange price proxy"
+        history["source"] += f"; added synthetic zero-return {identity} price proxy"
         for month in history["months"]:
-            month["mark_returns"]["exchange_prices"] = month["cash_yields"]["exchange_prices"] = 0
+            month["mark_returns"][identity] = month["cash_yields"][identity] = 0
