@@ -5,6 +5,7 @@ from itertools import chain
 
 from wealthlab.tax import (
     foreign_tax_household,
+    nj_residence_household,
     prior_payments,
     projection_monthly,
     recognition,
@@ -100,6 +101,7 @@ class TaxLedger:
         required_funding.begin(self, amounts, required_cash, start, end)
         self.nj_wage_withholding_addition = additional_nj_wages
         self.start_year(start.year)
+        self.case = nj_residence_household.observe(self.case, end)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
         event_cash = self.events(wallet, start, end, extra_events)
