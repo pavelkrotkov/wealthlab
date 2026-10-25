@@ -5,6 +5,7 @@ import streamlit as st
 from wealthlab.household.scenario import Scenario
 from wealthlab.products.qoz_compare import compare
 from wealthlab.products.qoz_example import synthetic
+from wealthlab.products.qoz_transition_example import synthetic as transition_example
 from wealthlab.ui.qoz_results import display
 from wealthlab.ui.uploads import invalid, source
 
@@ -16,7 +17,8 @@ def show():
         "Federal denied / deferral without the ten-year election / conditional ten-year "
         "election share the same "
         "contract economics. NJ has independent gain/basis and supplied limits; it cannot "
-        "grant a federal election that this policy denies."
+        "grant a federal election that this policy denies. Timely exit changes only "
+        "the exit/settlement constraint while retaining fund return, leverage and cost terms."
     )
     st.caption(
         "Calls are assumed optional, partially accepted subscriptions with no default penalty. "
@@ -30,12 +32,18 @@ def show():
         "sale recognizes tax before delayed settlement. The liquid reference uses the same "
         "asset returns, zero leverage/fees/carry and immediate settlement at the request. "
         "Only whole months and month-end calls/sales are supported. "
-        "Pass-through clocks, opening QOF interests, "
-        "transfers, return-of-capital distributions and 30-year exits require another profile."
+        "Pass-through clocks, opening QOF interests, transfers and return-of-capital "
+        "distributions need another profile. Confirmed timely next-year calls revise "
+        "the original return while preserving actual paid taxes/refunds; newly known "
+        "refunds arrive after observation."
     )
     uploaded = st.file_uploader("Load QOZ household JSON", type="json")
-    year = st.selectbox("QOZ starter investment regime", [2027, 2026])
-    if source(uploaded, synthetic(year).model_dump_json(indent=2), "qoz") is None:
+    profile = st.selectbox(
+        "QOZ starter investment regime",
+        ["2027 same-year", "2026 legacy", "2026 gain / 2027 investment"],
+    )
+    example = starter(profile)
+    if source(uploaded, example.model_dump_json(indent=2), "qoz") is None:
         return
     with st.form("qoz"):
         edited = st.text_area(
@@ -55,3 +63,9 @@ def calculate(edited):
         st.session_state.update(qoz_result=result, qoz_input=edited)
     except (ValueError, KeyError, TypeError) as error:
         invalid(error, "qoz")
+
+
+def starter(profile):
+    if profile == "2026 gain / 2027 investment":
+        return transition_example()
+    return synthetic(2026 if profile == "2026 legacy" else 2027)

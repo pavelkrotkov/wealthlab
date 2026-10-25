@@ -6,11 +6,14 @@ cash leaves the shared wallet. A gain cannot support duplicate elections.
 
 from wealthlab.products import qoz_economics as economics
 from wealthlab.products import qoz_source, qoz_tax
+from wealthlab.products.qoz_reconciliation import route_exclusion
 from wealthlab.products.qoz_units import new_units
 
 
 def fund(state, call, wallet):
-    row, _sold, deadline = qoz_source.source(state.lots, call)
+    row, sold, deadline = qoz_source.source(
+        state.lots, call, state.plan.prior_source_year_revision_assumed_confirmed
+    )
     funded = min(wallet.cash, call.amount)
     federal = qoz_source.elected_amount(
         row, funded, "federal", state.plan.federal, state.used, call.date <= deadline
@@ -41,6 +44,7 @@ def fund(state, call, wallet):
         nj=-elected["new_jersey"],
         character=row["federal_character"],
     )
+    exclusion = route_exclusion(state, sold, call, exclusion, audit)
     if not funded:
         return None, exclusion, audit
     tranche = dict(

@@ -29,6 +29,7 @@ class Ledger:
         self.economic = None
         self.economic_log = []
         self.stock_values = []
+        self.revisions = []
 
     def after_receipts(self, wallet, start, end):
         when = end - timedelta(days=1)
@@ -85,6 +86,7 @@ class Ledger:
         rows[-1]["qoz_audit"] = dict(
             terms=self.plan.model_dump(mode="json"),
             calls=self.calls,
+            source_return_revisions=self.revisions,
             months=self.log,
             economic_log=self.economic_log,
             stock_values=self.stock_values,

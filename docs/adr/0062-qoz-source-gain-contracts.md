@@ -1,6 +1,6 @@
 # ADR 0062: Dated QOZ source gains and actual fund cash
 
-Status: bounded same-source-year consumer for [issue #12](https://github.com/pavelkrotkov/wealthlab/issues/12). Cross-year investments remain blocked pending original-return reconciliation. No dependency added.
+Status: bounded same-source-year consumer for [issue #12](https://github.com/pavelkrotkov/wealthlab/issues/12). Cross-year investments require the dependent [original-return reconciliation consumer](0063-qoz-prior-source-returns.md). No dependency added.
 
 ## Reuse and ownership
 

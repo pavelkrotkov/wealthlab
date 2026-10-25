@@ -14,7 +14,9 @@ def display(result):
     st.caption(
         "These are conditional ending-wealth results, not fully liquidated rankings when "
         "NAV or settlement receivables remain. The liquid policy has disclosed leverage, "
-        "cost and liquidity differences; the three federal tax policies share one contract."
+        "cost and liquidity differences; the three federal tax policies share one contract. "
+        "Timely exit retains fund leverage/fee/carry rates and return observations, changing "
+        "only the sale constraint and settlement delay."
     )
     for name, rows in result["rows"].items():
         st.write(name)
@@ -37,6 +39,7 @@ def display(result):
                 for row in rows
             ]
         )
+        show_revisions(rows[-1]["qoz_audit"].get("source_return_revisions", []))
         with st.expander(f"{name} source gains, basis, debt and cash audit"):
             st.json(json.dumps(rows[-1]["qoz_audit"], default=str))
     st.download_button(
@@ -45,3 +48,24 @@ def display(result):
         file_name="qoz-comparison.json",
         mime="application/json",
     )
+
+
+def show_revisions(revisions):
+    if revisions:
+        st.caption(
+            "Prior cash rows remain historical. These dated source-year corrections "
+            "change remaining tax/refund positions; no instant refund funds a call."
+        )
+        st.dataframe(
+            [
+                dict(
+                    source_year=r["year"],
+                    observed=r["observed"],
+                    original_liability=r["old_result"]["total_liability"],
+                    revised_liability=r["final_result"]["total_liability"],
+                    remaining_refund=r["refund_scheduled"]["cash"],
+                    refund_date=r["refund_scheduled"]["date"],
+                )
+                for r in revisions
+            ]
+        )
