@@ -29,6 +29,7 @@ def test_actual_markets_editor_runs_automatic_matched_hsa_funding_control():
     assert bundle["comparison"]["result"]["outcomes"][0]["hsa_personal_deposits"] == 12000
     assert bundle["baseline"]["batch_id"] == bundle["comparison"]["result"]["batch_id"]
     assert any(m.label == "Funded HSA salary reductions" for m in app.metric)
+    check_funding_table(app)
 
 
 def test_automatic_control_uses_edited_inputs_instead_of_a_stale_example():
@@ -49,3 +50,9 @@ def test_supplied_policy_and_automatic_policy_cannot_silently_override_each_othe
     with pytest.raises(ValueError, match="not both"):
         policy_text(household, json.dumps(dict(household="supplied")), True)
     assert policy_text(household, "supplied", False) == "supplied"
+
+
+def check_funding_table(app):
+    table = next(d.value for d in app.dataframe if "HSA salary reductions" in d.value.columns)
+    assert table["HSA salary reductions"].tolist() == [6000, 0]
+    assert table["Personal HSA deposits"].tolist() == [0, 12000]

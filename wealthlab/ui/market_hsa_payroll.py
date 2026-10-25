@@ -58,21 +58,25 @@ def display(bundle, rows):
 
 
 def outcome_records(result, policy):
-    fields = (
-        "hsa_salary_reductions",
-        "hsa_salary_elections_unfilled",
-        "hsa_personal_deposits",
-        "hsa_external_employer_funding",
-        "hsa_ending_gross_assets",
-        "reported_employee_payroll",
-        "reported_tax_liability",
-        "net_cash_taxes_paid",
-        "ending_nominal_wealth",
-        "funded",
-        "provisional_tax_years",
-        "partial_tax_years",
-    )
+    fields = {
+        "hsa_salary_reductions": "HSA salary reductions",
+        "hsa_salary_elections_unfilled": "Unfilled salary elections",
+        "hsa_personal_deposits": "Personal HSA deposits",
+        "hsa_external_employer_funding": "External employer funding",
+        "hsa_ending_gross_assets": "Ending HSA gross assets",
+        "reported_employee_payroll": "Employee payroll tax",
+        "reported_tax_liability": "Reported tax liability",
+        "net_cash_taxes_paid": "Net cash tax paid",
+        "ending_nominal_wealth": "Ending nominal wealth",
+        "funded": "Spending funded",
+        "provisional_tax_years": "Provisional tax years",
+        "partial_tax_years": "Partial tax years",
+    }
     return [
-        dict(policy=policy, path=row["path"], **{k: row.get(k) for k in fields})
+        dict(
+            Policy=policy,
+            Path=row["path"],
+            **{label: row.get(key) for key, label in fields.items()},
+        )
         for row in result["outcomes"]
     ]
