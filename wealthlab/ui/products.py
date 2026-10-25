@@ -46,12 +46,7 @@ def long_short():
         "Cash yield is not inferred to be tax-free or deductible. Outside cash is a separate "
         "zero-return reserve; it can fund configured calls and receives distributions."
     )
-    mode = st.selectbox(
-        "Product market mode", ["deterministic", "monte_carlo", "historical", "stress"]
-    )
-    stress = st.selectbox(
-        "Product named stress", [*NAMES, "short_squeeze"], disabled=mode != "stress"
-    )
+    mode, stress = selection()
     uploaded = st.file_uploader("Load product economic case JSON", type="json")
     if source(uploaded, json.dumps(synthetic(mode, stress), indent=2), "long_short") is None:
         return
@@ -78,3 +73,21 @@ def calculate(edited):
         )
     except (ValueError, KeyError, TypeError) as error:
         invalid(error, "long_short")
+
+
+def selection():
+    """Persist non-widget choices when the product workspace unmounts its controls."""
+    saved = st.session_state.get("long_short_selection", {})
+    modes = ["deterministic", "monte_carlo", "historical", "stress"]
+    names = [*NAMES, "short_squeeze"]
+    mode = st.selectbox(
+        "Product market mode", modes, index=modes.index(saved.get("mode", modes[0]))
+    )
+    stress = st.selectbox(
+        "Product named stress",
+        names,
+        disabled=mode != "stress",
+        index=names.index(saved.get("stress", names[0])),
+    )
+    st.session_state["long_short_selection"] = dict(mode=mode, stress=stress)
+    return mode, stress

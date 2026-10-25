@@ -18,8 +18,8 @@ def tax_row(key, day, jurisdiction, amount, deferral, long_fraction, errors):
         economic_gain=amount,
         deferred=deferral,
         recognized=None if errors else recognized,
-        short_term=None if errors else recognized - long,
-        long_term=None if errors else long,
+        short_term=None if errors or jurisdiction == "nj" else recognized - long,
+        long_term=None if errors or jurisdiction == "nj" else long,
         unresolved=errors,
     )
 

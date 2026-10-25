@@ -12,7 +12,7 @@ def test_option_workspace_runs_dated_contracts_and_export(strategy):
         Path(__file__).resolve().parents[1] / "app.py", default_timeout=90
     ).run()
     app.radio[0].set_value("Products").run()
-    app.selectbox("product_workspace").set_value("Options overlays").run()
+    app.selectbox("products_workbench").set_value("Options overlays").run()
     app.selectbox("option_example").set_value(strategy).run()
     app.button(key="FormSubmitter:option_products-Run dated options").click().run()
     assert not app.exception and not app.error
@@ -29,7 +29,7 @@ def test_switching_strategy_hides_the_other_case_and_restores_edited_validated_i
         Path(__file__).resolve().parents[1] / "app.py", default_timeout=90
     ).run()
     app.radio[0].set_value("Products").run()
-    app.selectbox("product_workspace").set_value("Options overlays").run()
+    app.selectbox("products_workbench").set_value("Options overlays").run()
     editor = app.text_area("option_Covered call_editor")
     assert isinstance(editor.value, str)
     data = json.loads(editor.value)
@@ -39,7 +39,7 @@ def test_switching_strategy_hides_the_other_case_and_restores_edited_validated_i
     app.button(key="FormSubmitter:option_products-Run dated options").click().run()
     app.selectbox("option_example").set_value("Collar").run()
     assert not any("Dated option cash" in item.value for item in app.subheader)
-    app.selectbox("product_workspace").set_value("Long/short economics").run()
-    app.selectbox("product_workspace").set_value("Options overlays").run()
+    app.selectbox("products_workbench").set_value("Long/short economics").run()
+    app.selectbox("products_workbench").set_value("Options overlays").run()
     app.selectbox("option_example").set_value("Covered call").run()
     assert app.text_area("option_Covered call_editor").value == edited
