@@ -11,6 +11,7 @@ from wealthlab.household.projection import project
 from wealthlab.portfolio.household_example import synthetic as lot_example
 from wealthlab.portfolio.january_example import synthetic as january_example
 from wealthlab.products.household_example import synthetic as sleeve_example
+from wealthlab.products.option_household_example import synthetic as option_example
 from wealthlab.retirement.education_household_example import synthetic as education_example
 from wealthlab.retirement.hsa_distribution_example import synthetic as hsa_distribution_example
 from wealthlab.retirement.hsa_household_example import synthetic as hsa_example
@@ -75,6 +76,7 @@ def show():
 def examples():
     choices = (
         ("Load synthetic long-short household", sleeve_example),
+        ("Load synthetic actual option household", option_example),
         ("Load synthetic employee 401(k) household", workplace_example),
         ("Load synthetic 401(k) cash withdrawals", workplace_cash_example),
         ("Load synthetic separate-plan RMDs", workplace_rmd_example),
