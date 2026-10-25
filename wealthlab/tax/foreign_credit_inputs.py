@@ -39,7 +39,7 @@ class CreditIncome(TaxModel):
     id: Identifier
     owner_id: Identifier
     country: str = Field(pattern=r"^[A-Z]{2}$")
-    kind: Literal["wages", "interest", "dividends", "ordinary"]
+    kind: Literal["wages", "interest", "dividends", "ordinary", "long_term"]
     basket: Basket
     value: CreditAmount
     source_classification: str = Field(min_length=1, max_length=500)

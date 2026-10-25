@@ -27,11 +27,11 @@ def assessments(scenario, observed=None):
     return amounts, results
 
 
-def complete_case(annual):
+def complete_annual(annual):
     profile = annual.pr_federal.model_copy(update=dict(as_of=date(annual.policy.year, 12, 31)))
     rows = [r.income for r in profile.sources]
     full = annual.model_copy(update=dict(pr_federal=profile, federal_income=income(rows)))
-    return prepare(full)[0]
+    return full
 
 
 def binding(scenario, year):
@@ -54,7 +54,13 @@ def binding(scenario, year):
 
 def native_result(annual, observed):
     if observed is None:
-        case = complete_case(annual)
+        full = complete_annual(annual)
+        case, statuses = prepare(full)
+        if annual.pr_federal.gain_profile is not None:
+            from wealthlab.tax.pr_execution_federal import calculate as federal
+            from wealthlab.tax.pr_execution_gain_tax import assess
+
+            return assess(full, case, statuses, federal(full), 0)
         return dict(assessment=calculate(case, recognized(case), 0), actual_us_income_tax_paid=0)
     year = annual.policy.year
     observed = closing_observation(observed, year)

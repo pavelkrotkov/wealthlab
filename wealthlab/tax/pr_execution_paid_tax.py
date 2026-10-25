@@ -19,13 +19,18 @@ ZERO = Decimal(0)
 def evaluate(position):
     annual, us = position.case, position.result["federal"]
     case, statuses = prepare(annual)
+    actual = actual_income_tax(position)
+    if annual.pr_federal.gain_profile is not None:
+        from wealthlab.tax.pr_execution_gain_tax import assess
+
+        result = assess(annual, case, statuses, us, actual)
+        return dict(result, actual_net_federal_paid=position.net_paid["federal"])
     rows = recognized(case)
     taxable = [
         row
         for row in case.income
         if not excluded(row, getattr(case, row.owner), statuses[row.owner], annual.policy.year)
     ]
-    actual = actual_income_tax(position)
     # Reuse the native allocation with NIIT unchanged; substitute actual paid
     # ordinary income tax only after federal credits have reduced the liability.
     ordinary = min(actual, max(ZERO, us["income_tax"] - us["niit"]))

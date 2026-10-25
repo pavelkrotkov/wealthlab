@@ -13,6 +13,7 @@ from pydantic import Field
 
 from wealthlab.household.records import Identifier, Money
 from wealthlab.tax.facts import TaxModel
+from wealthlab.tax.pr_execution_gain_facts import PRGainProfile
 from wealthlab.tax.pr_residence_facts import Claim, Residence
 from wealthlab.tax.pr_source_facts import SourceIncome
 
@@ -30,6 +31,7 @@ class PRFederalProfile(TaxModel):
     primary: Residence
     spouse: Residence = Field(default_factory=Residence)
     sources: list[PRFederalSource]
+    gain_profile: PRGainProfile | None = None
     pr_regime: Literal["published_2025", "freeze_2025"]
     pr_wages_reported_on_form_499r2: Claim
     pr_allowed_deductions: Money = Decimal(0)

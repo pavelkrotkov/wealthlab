@@ -12,6 +12,9 @@ def validate(plan, scenario):
         if case.pr_federal is None:
             continue
         validate_coverage(case, scenario)
+        from wealthlab.tax.pr_execution_gain_household import validate as validate_gains
+
+        validate_gains(case, scenario)
         if case.pr_federal.people != people:
             raise ValueError(
                 "Prepared PR context must retain the household's actual stable people."

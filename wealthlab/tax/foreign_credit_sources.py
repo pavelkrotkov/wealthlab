@@ -15,9 +15,16 @@ KINDS = {
     "interest": "interest",
     "dividends": "dividends",
     "ordinary": "ordinary_noninvestment_income",
+    "long_term": "long_term",
 }
-SUPPORTED = {"wages_primary", "wages_spouse", *KINDS.values()}
-BASKETS = {"wages": "general", "ordinary": "general", "interest": "passive", "dividends": "passive"}
+SUPPORTED = {"wages_primary", "wages_spouse", *KINDS.values()} - {"long_term"}
+BASKETS = {
+    "wages": "general",
+    "ordinary": "general",
+    "interest": "passive",
+    "dividends": "passive",
+    "long_term": "passive",
+}
 
 
 def income_facts(case):
@@ -31,9 +38,12 @@ def income_facts(case):
 
 
 def reconcile(case):
+    from wealthlab.tax.pr_execution_credit_sources import extra_source_fields
+
     expected = income_facts(case)
+    fields = SUPPORTED | extra_source_fields(case)
     actual = case.annual.federal_income.model_dump()
-    if any(expected[field] != actual[field] for field in SUPPORTED):
+    if any(expected[field] != actual[field] for field in fields):
         raise ValueError(
             "Dated source rows must exactly reconcile to annual recognized federal income."
         )

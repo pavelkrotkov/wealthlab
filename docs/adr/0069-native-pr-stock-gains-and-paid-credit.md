@@ -1,0 +1,27 @@
+# 0069 — Native PR stock disposals and observed paid-US credit
+
+Status: conditional supported profiles; cross-border integration remains open.
+
+## Decision
+
+Reuse the actual household tax-lot book and existing `MarketableGain`, source slices, decree qualification, ordinary/A2/ABT and prepared federal engines. Each supplied gain retains stable person/source/trade identifiers. Array positions are derived only from observed receipts, so reordering or future source rows cannot redirect basis or recognize a sale early. The public source/decree types move into a dependency-only module; their fields and existing annual imports remain compatible.
+
+The bounded native bridge supports one specifically identified complete sale of an opening plain-stock lot per gain. The actual account owner, sale date, acquisition/holding start, federal basis and net sale proceeds must agree. PR basis and possession/local move-date values remain independent sourced facts. Neither the source receipt nor the country assessment adds proceeds to cash: only the existing lot trade pays the household. Actual annual income must reconcile to observed source rows before the prepared return runs. A missing/blocked/changed sale cannot leave a favorable invented gain or exemption.
+
+A complete gain profile explicitly selects ordinary, conditional decree or unresolved treatment, and separately allows/denies/withholds the local US-tax credit. A denied decree does not disable the ordinary alternative. Incentive claims require supplied compliance costs, including an explicit zero; positive costs must reconcile to an existing actual dated expense. The consumer compares the native ordinary alternative where it is independently calculable and retains cheaper ordinary treatment, rather than forcing a higher special tax.
+
+The shared year-end observer supplies actual US income-tax payment after native federal credits. Employee payroll and unclassified NIIT cannot enter the local credit. No second US tax subtraction, payment book or basis engine is created. The existing PR limitation applies to that observed payment; a scheduled or later US payment does not create a current credit.
+
+Positive mixed ordinary/15% credits are supported when every US-taxable receipt survives locally in those buckets at the same recognized basis and NIIT is zero. In that case Schedule C Part III has no US-taxable/local-exempt income and its paid-tax reduction is exactly zero. PR-service salary excluded federally does not enter that paid-tax allocation. Other positive mixed allocations, different recognized bases, unsupported special-law credits, positive US preferential FTC and unknown NIIT credit treatment remain guarded. This is a proved no-reduction case, not a gross-income allocation of preferential US tax.
+
+## Primary authority
+
+Checked October25,2026. Automatic local tax-reference vector discovery returned federal foreign-credit publications, not a supporting Puerto Rico Schedule C source; those related hits were not used as authority. Hacienda's [2025 individual instructions, revision February27,2026](https://hacienda.pr.gov/sites/default/files/inst_individuos_2025_27_feb_26.pdf), printed pages43–45, specify US paid tax after federal foreign credit, the PartIII reduction for locally exempt net income and separate regular/ABT credit computations. Its [2025 informational individual return](https://hacienda.pr.gov/sites/default/files/individuals_2025_rev._jul_18_25_informative.pdf), ScheduleC pages15–16 and ScheduleA2 pages8–9, supplies the net-source, exemption and preferential comparison fields. Residence, stock sourcing/elections and decree eligibility reuse the independently documented [dated PR rule profile](0121-puerto-rico-dated-decree-and-stock-gains.md); this bridge establishes no household eligibility.
+
+## Checks and limits
+
+An actual250-share sale pays25000 once, realizes federal10000/NJ9000 gains and preserves independent local12000 recognition. Derived US/PR gains are5000/5000; local pre/post gains are7000/5000. Matching ordinary/decree cases retain the same original shares, cash, salary and250 compliance expense; the conditional difference is750.
+
+A separate actual700000 sale executes the native same-basis pre-move oracle: US7353.75 is paid, then PR7646.25 after a positive7353.75 credit. Adding actual PR-service monthly W2 receipts produces US7419.38 and PR32831.62 after the same actual7419.38 payment; annual employee payroll stays9180 outside the credit. The native stock account reaches zero and cash is never duplicated. A small supplied4% case instead selects the cheaper computed ordinary tax. Invalid identities, basis, holding dates, costs, missing books, partial sales, NIIT and unsupported credits reject, and the actual editable UI clears stale results/exports after invalid replacement.
+
+Opening sale rights, whole supplied tax profiles, source classifications, actual-date FX and future-law assumptions remain explicit. Loss netting, partial/multi-lot allocation, treaty resourcing, independent AMT/preferential US credit, general later PR reassessment, automatic move eligibility and optimizer relocation controls require separate adapters. This layer does not close cross-border issue17. A subsequent owning rule correction must implement ScheduleC percentage rounding and distinct A2/ABT net denominators before claiming binding mixed-credit limits fully verified; the positive mixed payment oracle here is below either limit.

@@ -16,6 +16,18 @@ def native_pr():
 
 
 def synthetic(country="Puerto Rico"):
+    if country == "PR stock gains":
+        from wealthlab.tax.pr_execution_gain_example import synthetic_gain
+
+        return JurisdictionExecutionCase(scenario=synthetic_gain())
+    if country == "PR W2 and stock credit":
+        from wealthlab.tax.pr_execution_mixed_gain_example import mixed_credit
+
+        return JurisdictionExecutionCase(scenario=mixed_credit())
+    if country == "PR pre-move credit":
+        from wealthlab.tax.pr_execution_positive_gain_example import positive_credit
+
+        return JurisdictionExecutionCase(scenario=positive_credit())
     if country == "Spain":
         scenario, spain = single()
         return JurisdictionExecutionCase(scenario=scenario, spain=spain)

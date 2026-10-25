@@ -9,6 +9,11 @@ from wealthlab.tax.pr_residence import excluded
 
 def calculate(annual):
     case, statuses = prepare(annual)
+    gains = []
+    if annual.pr_federal.gain_profile is not None:
+        from wealthlab.tax.pr_execution_gains import federal as gain_sources
+
+        case, gains = gain_sources(annual, case)
     taxable = [
         row
         for row in case.income
@@ -22,6 +27,7 @@ def calculate(annual):
         additional_medicare=worldwide["additional_medicare"],
         total=result["income_tax"] + payroll,
         pr_residence=statuses,
+        pr_gain_allocations=gains,
         pr_source_inputs=annual.pr_federal.model_dump(mode="json"),
         pr_excluded_income=result["worldwide_gross"] - result["taxable_gross"],
     )

@@ -16,25 +16,33 @@ from wealthlab.tax.jurisdiction_execution_facts import JurisdictionExecutionCase
 from wealthlab.ui.uploads import invalid, source
 
 PREFIX = "jurisdiction_execution"
+EXAMPLES = {
+    "Puerto Rico": "pr",
+    "Spain": "es",
+    "PR stock gains": "pr_gains",
+    "PR pre-move credit": "pr_gain_credit",
+    "PR W2 and stock credit": "pr_mixed_credit",
+}
 
 
 def show():
-    st.header("Native country assessments and actual household cash")
+    st.header("Country assessments and actual household cash")
     st.warning(
-        "Conditional ordinary PR or full-year common-regime Spain facts. Legal residence and "
+        "Conditional PR ordinary/decree or full-year common-regime Spain facts. Legal residence "
+        "and "
         "source classifications are supplied per person/year. Spanish foreign-credit relief is "
         "explicitly denied in this comparison; unresolved treaty relief blocks execution. "
-        "Preferential gains, cross-year redeterminations and unknown foreign funding gains "
-        "require their supported dated profiles."
+        "Linked stock sales retain independent federal/PR/NJ bases. Positive mixed preferential "
+        "credits and unknown foreign funding gains require validated allocations."
     )
-    country = st.radio("Country execution example", ["Puerto Rico", "Spain"])
+    country = st.radio("Country execution example", list(EXAMPLES))
     uploaded = st.file_uploader("Load country execution JSON", type="json", key=PREFIX + "_upload")
-    prefix = PREFIX + ("_pr" if country == "Puerto Rico" else "_es")
+    prefix = PREFIX + "_" + EXAMPLES[country]
     if source(uploaded, synthetic(country).model_dump_json(indent=2), prefix) is None:
         return
     with st.form(prefix):
         edited = st.text_area(
-            "Native people/source/assessment facts and shared cash plan (JSON)",
+            "People/source/assessment facts and shared cash plan (JSON)",
             key=prefix + "_editor",
             height=460,
         )
@@ -58,7 +66,7 @@ def display(case, result):
     from wealthlab.ui.results import display as household_display
 
     household_display(Scenario.model_validate(result["scenario"]), result["rows"])
-    st.subheader("Native country assessment and actual paid-tax reconciliation")
+    st.subheader("Country assessments and actual tax payment reconciliation")
     st.json(result["country_assessments"])
     st.caption(
         f"Converged in {len(result['reconciliation'])} bounded checks. Each check starts the "

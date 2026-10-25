@@ -68,9 +68,14 @@ def household_annual(annual):
         r.model_copy(update=dict(id=key(r.owner_id, r.income.received.year, r.id)))
         for r in context.sources
     ]
-    return annual.model_copy(
-        update=dict(pr_federal=context.model_copy(update=dict(sources=sources)))
-    )
+    values = dict(sources=sources)
+    if context.gain_profile is not None:
+        gains = [
+            g.model_copy(update=dict(source_id=key(g.owner_id, annual.policy.year, g.source_id)))
+            for g in context.gain_profile.gains
+        ]
+        values["gain_profile"] = context.gain_profile.model_copy(update=dict(gains=gains))
+    return annual.model_copy(update=dict(pr_federal=context.model_copy(update=values)))
 
 
 def positive_excluded_tax(payment, permitted):
@@ -79,3 +84,14 @@ def positive_excluded_tax(payment, permitted):
         and payment.eligibility == "allowed"
         and any(identity not in permitted for identity in payment.income_ids)
     )
+
+
+def extra_source_fields(case):
+    context = case.annual.pr_federal
+    if context is not None and context.gain_profile is not None:
+        return {"long_term"}
+    if any(
+        r.kind == "long_term" and r.value.date.year == case.annual.policy.year for r in case.income
+    ):
+        raise ValueError("Dated capital-source rows require the native PR gain profile.")
+    return set()

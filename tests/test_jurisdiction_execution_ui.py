@@ -46,4 +46,4 @@ def test_native_spain_workbench_uses_actual_paid_ip_and_exports_real_foreign_cas
         irpf=0, wealth=0, solidarity=0
     )
     assert result["rows"][-1]["foreign_tax_paid"] > 0
-    assert any("actual paid-tax reconciliation" in s.value for s in page.subheader)
+    assert any("actual tax payment reconciliation" in s.value for s in page.subheader)

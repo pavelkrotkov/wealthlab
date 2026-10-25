@@ -34,7 +34,8 @@ def prepare(annual):
         role: federal_status(getattr(case, role), annual.policy.year)
         for role in context.people.values()
     }
-    reasons = guards(case) + [r for status in statuses.values() for r in status["reasons"]]
+    reasons = guards(case, allow_gains=context.gain_profile is not None)
+    reasons += [r for status in statuses.values() for r in status["reasons"]]
     if reasons:
         raise ValueError("; ".join(reasons))
     return case, statuses
