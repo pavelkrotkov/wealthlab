@@ -65,6 +65,8 @@ class ForeignObservedTax(TaxModel):
     assessment_id: Identifier
     source_income_year: int | None = Field(default=None, ge=1900, le=2145)
     record: CreditTaxCash
+    recognized_tax_native: Money | None = None
+    recognition_source: str = Field(default="", max_length=500)
 
 
 class ForeignTaxPlan(TaxModel):

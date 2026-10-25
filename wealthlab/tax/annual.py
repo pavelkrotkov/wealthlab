@@ -12,6 +12,7 @@ from wealthlab.tax.foreign_credit_facts import ForeignCredits
 from wealthlab.tax.nj_facts import NJDeductions, NJIncome
 from wealthlab.tax.nj_residence_inputs import NJResidencePlan
 from wealthlab.tax.policy import TaxPolicy
+from wealthlab.tax.pr_execution_facts import PRFederalProfile
 
 
 class Payments(TaxModel):
@@ -34,15 +35,14 @@ class AnnualCase(TaxModel):
     payments: Payments = Field(default_factory=Payments)
     foreign_credits: ForeignCredits = Field(default_factory=ForeignCredits)
     nj_residence: NJResidencePlan | None = None
+    pr_federal: PRFederalProfile | None = None
 
 
 def evaluate(case: AnnualCase) -> dict:
     """Payments describe cash already paid; they never reduce taxable income twice."""
-    from wealthlab.tax import federal, new_jersey, nj_residence, nj_residence_payments
+    from wealthlab.tax import new_jersey, nj_residence, nj_residence_payments
 
-    fed = federal.calculate(
-        case.filing, case.federal_income, case.federal_deductions, case.policy, case.foreign_credits
-    )
+    fed = federal_result(case)
     state_engine = nj_residence.calculate if case.nj_residence is not None else new_jersey.calculate
     state_extra = dict(profile=case.nj_residence) if case.nj_residence is not None else {}
     nj = state_engine(
@@ -82,4 +82,16 @@ def synthetic() -> AnnualCase:
         nj_deductions=NJDeductions(),
         nj_regime="published_2025",
         payments=Payments(),
+    )
+
+
+def federal_result(case):
+    if case.pr_federal is not None:
+        from wealthlab.tax.pr_execution_federal import calculate
+
+        return calculate(case)
+    from wealthlab.tax import federal
+
+    return federal.calculate(
+        case.filing, case.federal_income, case.federal_deductions, case.policy, case.foreign_credits
     )

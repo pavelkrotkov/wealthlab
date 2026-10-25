@@ -11,7 +11,7 @@ from wealthlab.employment.compensation import Ledger as CompensationLedger
 from wealthlab.employment.compensation_projection import prepare as prepare_compensation
 from wealthlab.employment.compensation_reporting import snapshot as compensation_snapshot
 from wealthlab.employment.wages import prepare as prepare_employment
-from wealthlab.household import debts
+from wealthlab.household import debts, tax_observation
 from wealthlab.household.calendar import money, months
 from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
@@ -33,7 +33,7 @@ from wealthlab.retirement.social_household import prepare_with_work as prepare
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
-def project(scenario: Scenario, market=None) -> list[dict]:
+def project(scenario: Scenario, market=None, *, tax_observer=None) -> list[dict]:
     scenario, social = prepare(prepare_compensation(prepare_employment(scenario)))
     validate_resolved(scenario)
     wallet = Wallet(scenario)
@@ -79,19 +79,16 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         if compensation:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
-        row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
-        row["net_wealth"] -= row.get("tax_position", 0) + row.get("foreign_tax_position", 0)
-        row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
-        row["net_wealth"] -= row.get("medical_owed", Decimal(0))
-        row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-        row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)
+        mark_wealth(row, wallet, debt_balances, fees_owed)
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
         observe_market(market, lots, row)
+        tax_observation.observe(tax_observer, tax_ledger, row, "monthly")
         rows.append(row)
     finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
     option_household.finish(options, rows)
+    tax_observation.observe(tax_observer, tax_ledger, rows[-1], "terminal")
     return rows
 
 
@@ -117,3 +114,12 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
 def observe_market(market, lots, row):
     if market:
         market.observe(lots, row)
+
+
+def mark_wealth(row, wallet, debt_balances, fees_owed):
+    row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
+    row["net_wealth"] -= row.get("tax_position", 0) + row.get("foreign_tax_position", 0)
+    row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
+    row["net_wealth"] -= row.get("medical_owed", Decimal(0))
+    row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
+    row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)

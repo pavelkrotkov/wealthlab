@@ -10,6 +10,8 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.tax.foreign_credit_refunds import validate_refund
+from wealthlab.tax.foreign_tax_translation import tax_value
+from wealthlab.tax.foreign_tax_translation import validate as validate_translation
 
 ZERO = Decimal(0)
 
@@ -33,6 +35,12 @@ def observe(case):
                 currency=record.value.currency,
                 native_amount=record.value.amount,
                 cash_fx=record.value.usd_per_unit,
+                cash_fx_source=record.value.fx_source,
+                tax_currency=tax_value(record).currency,
+                tax_native_amount=tax_value(record).amount,
+                tax_paid_date=tax_value(record).date.isoformat(),
+                tax_spot_fx=tax_value(record).usd_per_unit,
+                tax_fx_source=tax_value(record).fx_source,
                 **translated(record, original),
                 credit_year=original.value.date.year,
                 original_payment_id=original.id,
@@ -42,7 +50,8 @@ def observe(case):
 
 
 def validate_record(record, records, income):
-    if record.creditable_native > record.value.amount:
+    validate_translation(record)
+    if record.creditable_native > tax_value(record).amount:
         raise ValueError("Creditable tax cannot exceed the actually observed native tax amount.")
     if any(identity not in income for identity in record.income_ids):
         raise ValueError("Tax cash must link known included-income source identities.")
@@ -63,13 +72,13 @@ def validate_income_owner(record, income):
 def translated(record, original):
     sign = -1 if record.kind == "refund" else 1
     qualified = record.eligibility == "allowed" and record.tax_type == "income"
-    credit = money(record.creditable_native * original.value.usd_per_unit)
-    original_value = money(record.value.amount * original.value.usd_per_unit)
+    credit = money(record.creditable_native * tax_value(original).usd_per_unit)
+    original_value = money(tax_value(record).amount * tax_value(original).usd_per_unit)
     return dict(
         observed_cash_outflow_usd=sign * record.value.dollars() + record.fx_fee_usd,
         refund_fx_difference_usd=(
             record.value.dollars() - original_value if record.kind == "refund" else ZERO
         ),
-        credit_fx=original.value.usd_per_unit,
+        credit_fx=tax_value(original).usd_per_unit,
         credit_tax_usd=sign * credit if qualified else ZERO,
     )

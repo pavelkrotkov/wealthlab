@@ -38,6 +38,10 @@ def reconcile(case):
             "Dated source rows must exactly reconcile to annual recognized federal income."
         )
     validate_income_baskets(case)
+    if case.annual.pr_federal is not None:
+        from wealthlab.tax.pr_execution_credit_sources import included
+
+        included(case)
 
 
 def validate_income_baskets(case):

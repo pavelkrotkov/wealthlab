@@ -3,6 +3,10 @@
 The immutable plan supplies assessments, actual opening records and source
 classifications. Execution changes the shared wallet once, retains original
 native balances and refreshes only this book's federal credit facts.
+
+Actual bank cash, foreign levy translation and the country-recognized applied
+amount remain distinct. The latter changes only its assessment position; it
+does not withdraw a second payment or select US creditability.
 """
 
 from datetime import timedelta
@@ -12,10 +16,12 @@ from functools import partial
 from wealthlab.tax.foreign_tax_credits import carry_reasons, opening_carries, refresh
 from wealthlab.tax.foreign_tax_execution import pay_due
 from wealthlab.tax.foreign_tax_positions import position_reasons, snapshot
+from wealthlab.tax.foreign_tax_recognition import supplied
 from wealthlab.tax.foreign_tax_refunds import receive_refunds
 from wealthlab.tax.foreign_tax_reporting import report
 from wealthlab.tax.foreign_tax_sources import history, payment_record
 from wealthlab.tax.foreign_tax_validation import cash_records, validate
+from wealthlab.tax.pr_execution_credit_sources import household_annual
 
 ZERO = Decimal(0)
 
@@ -30,6 +36,7 @@ class ForeignTaxBook:
         self.payments = [(p.assessment_id, payment_record(p)) for p in self.plan.opening_payments]
         self.filled = {p.id: ZERO for p in self.plan.schedules}
         self.executions, self.schedule_by_payment = {}, {}
+        self.recognized_native = supplied(self.plan)
         self.reserved_ids = {p.record.id for p in cash_records(self.plan)}
         self.credit_results = {}
         self.month_records, self.log = [], []
@@ -47,7 +54,7 @@ class ForeignTaxBook:
         profile = self.profiles[year]
         return profile.model_copy(
             update=dict(
-                annual=annual or profile.annual,
+                annual=household_annual(annual or profile.annual),
                 as_of=when,
                 income=self.income_history(when),
                 opening_carries=opening_carries(self, year),

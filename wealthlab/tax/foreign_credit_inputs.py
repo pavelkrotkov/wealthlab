@@ -60,6 +60,7 @@ class CreditTaxCash(TaxModel):
     kind: Literal["payment", "withholding", "refund"]
     basket: Basket
     value: CreditAmount
+    tax_value: CreditAmount | None = None
     fx_fee_usd: Money = Decimal(0)
     creditable_native: Money
     eligibility: Claim

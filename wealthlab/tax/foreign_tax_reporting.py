@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from wealthlab.tax.foreign_credit_cash import observe
 from wealthlab.tax.foreign_tax_positions import remaining
+from wealthlab.tax.foreign_tax_recognition import amount as recognized_amount
 from wealthlab.tax.foreign_tax_sources import history
 
 ZERO = Decimal(0)
@@ -61,6 +62,7 @@ def enrich(book, rows):
             tax_type=assessments[row["id"]].tax_type,
             fx_fee_usd=records[row["id"]].fx_fee_usd,
             gross_cash_usd=records[row["id"]].value.dollars(),
+            local_recognized_tax_native=recognized_amount(book, records[row["id"]]),
         )
         for row in rows
     ]
