@@ -7,6 +7,7 @@ Positive recognition survives a loss in the other jurisdiction.
 """
 
 from wealthlab.products import drilling_cash as cash
+from wealthlab.products.drilling_settlement import funded
 from wealthlab.products.drilling_tax import ordinary_field
 from wealthlab.tax.facts import FederalIncome
 from wealthlab.tax.nj_business import BusinessIncome
@@ -16,6 +17,9 @@ from wealthlab.tax.nj_facts import NJIncome
 def fund_sale(ledger, observation, row):
     """Pay source creditors from actual property proceeds before recognizing funded costs."""
     if ledger.property_sold or not observation.exit_requested:
+        return
+    if not funded(ledger, observation):
+        row["blocked_exit"] = True
         return
     ledger.cash += observation.exit_gross_proceeds
     ledger.property_value = cash.ZERO
@@ -28,7 +32,7 @@ def fund_sale(ledger, observation, row):
 
 
 def execute(ledger, observation, wallet, row):
-    if sum(ledger.owed.values(), cash.ZERO) or ledger.call_owed:
+    if not ledger.property_sold:
         row["blocked_exit"] = True
         return []
     proceeds = ledger.cash

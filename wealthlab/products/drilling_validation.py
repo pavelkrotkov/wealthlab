@@ -37,6 +37,7 @@ def validate(scenario):
         raise ValueError(
             "Confirm supplied drilling terms, prelimited tax facts and unresolved liability risk."
         )
+    validate_niit(plan)
     validate_account(scenario, plan)
     validate_dates(scenario, plan)
     validate_records(plan)
@@ -51,3 +52,10 @@ def validate_dates(scenario, plan):
         or [o.date for o in plan.observations] != ends
     ):
         raise ValueError("Drilling observations must cover every complete household month end.")
+
+
+def validate_niit(plan):
+    if plan.federal_ordinary == "nonpassive_assumption" and not (
+        plan.ordinary_nonsection1411_classification_supplied_confirmed
+    ):
+        raise ValueError("Supply independent ordinary-income NIIT exclusion classification.")

@@ -16,7 +16,8 @@ def show():
     st.warning(
         "Conditional cash-basis synthetic contract. GP/LP labels establish neither "
         "deduction eligibility nor a guaranteed liability cap. SE/QBI/AMT facts and "
-        "deduction limits are independently supplied; full-tax optimization is unsupported."
+        "deduction limits are independently supplied. Ordinary NIIT exclusion also needs "
+        "its own supplied classification; full-tax optimization is unsupported."
     )
     st.caption(
         "Capital calls and creditor claims use actual household cash. Unpaid creditors "

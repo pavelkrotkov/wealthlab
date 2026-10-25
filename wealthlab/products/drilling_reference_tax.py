@@ -14,7 +14,8 @@ ZERO = Decimal(0)
 
 def recognition_date(ledger, observation):
     future_buys = any(
-        o.capital_call and observation.date < o.date <= (observation.date + timedelta(days=30))
+        (o.capital_call or ledger.call_owed)
+        and observation.date < o.date <= (observation.date + timedelta(days=30))
         for o in ledger.plan.observations
     )
     if not future_buys:

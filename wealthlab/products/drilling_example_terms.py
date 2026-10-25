@@ -36,6 +36,7 @@ def terms():
         legal_form="general_partner",
         federal_ordinary="nonpassive_assumption",
         working_interest_eligibility_supplied_confirmed=True,
+        ordinary_nonsection1411_classification_supplied_confirmed=True,
         se_classification="supplied_box14",
         se_classification_basis="Synthetic box14 facts; classification supplied independently",
         supplied_qbi_amt_history_and_limits_confirmed=True,

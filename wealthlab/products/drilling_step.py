@@ -25,8 +25,6 @@ def step(ledger, observation, wallet):
     ]
     if ledger.closed:
         return closed(ledger, observation, wallet), events
-    if ledger.property_sold and observation.residual_property_value:
-        raise ValueError("A sold drilling property cannot reappear in later marks.")
     row = cash.operating(ledger, observation, wallet)
     fund_sale(ledger, observation, row)
     events.extend(operating_income(ledger, observation, row))

@@ -68,3 +68,14 @@ def test_deferred_release_cannot_precede_the_funded_cost():
 
     with pytest.raises(ValueError, match="follow its funded source date"):
         project(change(short(), edit))
+
+
+def test_ordinary_niit_exclusion_cannot_follow_from_gp_or_nonpassive_label():
+    case = change(
+        short(),
+        lambda d: d["drilling_plan"].update(
+            ordinary_nonsection1411_classification_supplied_confirmed=False
+        ),
+    )
+    with pytest.raises(ValueError, match="independent ordinary-income NIIT"):
+        project(case)

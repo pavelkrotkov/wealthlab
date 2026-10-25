@@ -61,6 +61,7 @@ class DrillingPlan(TaxModel):
     account_id: Identifier
     legal_form: Literal["unconfirmed", "general_partner", "limited_partner"]
     federal_ordinary: Literal["unconfirmed", "nonpassive_assumption", "passive_assumption"]
+    ordinary_nonsection1411_classification_supplied_confirmed: bool = False
     working_interest_eligibility_supplied_confirmed: bool
     se_classification: Literal[
         "unconfirmed", "supplied_box14", "zero_under_supplied_classification"
