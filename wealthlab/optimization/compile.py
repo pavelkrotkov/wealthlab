@@ -14,6 +14,7 @@ from wealthlab.optimization import (
     new_life_controls,
     new_life_offers,
     option_allocations,
+    qoz_controls,
 )
 from wealthlab.optimization.account_controls import apply as account_changes
 from wealthlab.optimization.allocation_validation import validate as validate_allocations
@@ -31,6 +32,7 @@ def compile_candidate(case, selection):
     new_life_controls.validate(case)
     validate_options(case)
     drilling_controls.validate(case)
+    qoz_controls.validate(case)
     data = case.household.model_dump(mode="json")
     binding = case.binding.model_dump(mode="json")
     data.update(
@@ -48,6 +50,7 @@ def compile_candidate(case, selection):
     )
     new_life_offers.apply(data, case.new_life_opportunities, new_life_controls.selected(selection))
     drilling_controls.apply(data, binding, case, selection)
+    qoz_controls.apply(data, binding, case, selection)
     return Scenario.model_validate(data), HouseholdBinding.model_validate(binding)
 
 

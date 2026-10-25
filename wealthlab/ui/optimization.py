@@ -23,8 +23,9 @@ def show():
         "Life choices use complete supplied premium/event/value paths, including new policies "
         "funded by actual future premiums. Drilling choices require complete supplied profiles "
         "and an independent envelope valid for all candidates; full-tax drilling optimization "
-        "is unsupported. Other product "
-        "allocation and cross-border controls remain in progress."
+        "is unsupported. QOZ choices retain source stock and shared eligibility assumptions; "
+        "actual source sales, subscriptions, tax revisions and stock settlement execute natively. "
+        "Cross-border controls remain in progress."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "

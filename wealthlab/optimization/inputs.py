@@ -17,6 +17,7 @@ from wealthlab.optimization.exchange_paths import ExchangePath
 from wealthlab.optimization.life_paths import LifePath
 from wealthlab.optimization.new_life_inputs import NewLifeOffer
 from wealthlab.optimization.option_opportunity import OptionOpportunity, OptionUnits
+from wealthlab.optimization.qoz_inputs import QOZOffer
 from wealthlab.optimization.robustness_inputs import RobustnessCheck
 from wealthlab.portfolio.harvest_policy import HarvestPolicy
 from wealthlab.portfolio.policies import SalePolicy
@@ -50,6 +51,7 @@ class PolicyChoice(AccountControls):
     exchange_path: Identifier | None = None
     new_life_purchases: list[Identifier] | None = None
     drilling_offer: Identifier | None = None
+    qoz_offer: Identifier | None = None
     change_guardrail: bool = False
     guardrail: SpendingGuardrail | None = None
 
@@ -85,8 +87,9 @@ class PolicySearch(TaxModel):
     new_life_opportunities: list[NewLifeOffer] = Field(default_factory=list, max_length=32)
     drilling_offers: list[DrillingOffer] = Field(default_factory=list, max_length=32)
     drilling_envelope: DrillingEnvelope | None = None
+    qoz_offers: list[QOZOffer] = Field(default_factory=list, max_length=32)
     robustness: dict[Identifier, RobustnessCheck] = Field(default_factory=dict, max_length=12)
-    dimensions: list[Dimension] = Field(min_length=1, max_length=8)
+    dimensions: list[Dimension] = Field(min_length=1, max_length=32)
     targets: SearchTargets = Field(default_factory=SearchTargets)
     maximum_candidates: int = Field(default=128, ge=1, le=512)
     maximum_projection_months: int = Field(default=100000, ge=1, le=1000000)

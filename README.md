@@ -169,3 +169,5 @@ Optimize compares [complete supplied new life-policy purchases](docs/adr/0206-ne
 Optimize compares [complete conditional drilling participation profiles](docs/adr/0208-drilling-participation-search.md), including actual interests, liquid references and confirmed no entry. Independently supplied facts must cover all candidates and price paths; full-tax drilling optimization remains unsupported.
 
 Local [CLI and UI policy-search reports](docs/adr/0151-reproducible-local-policy-search.md) share the existing optimizer, input fingerprints, actual engine metadata and guarded report output. `python -m wealthlab optimize` re-executes selected bounded inputs or an imported audit rather than trusting archived results.
+
+Optimize compares [complete source-backed QOZ subscription profiles](docs/adr/0210-qoz-subscription-policy-search.md) using existing stock, actual prior-year revisions/refunds and settled exit cash. Liquid references cannot elect QOZ benefits; underlying eligibility assumptions and fees stay fixed.

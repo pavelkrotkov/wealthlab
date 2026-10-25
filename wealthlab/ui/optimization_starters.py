@@ -18,6 +18,7 @@ from wealthlab.optimization.life_example import extend as with_life_paths
 from wealthlab.optimization.new_life_example import extend as with_new_life
 from wealthlab.optimization.option_allocation_example import extend as with_new_options
 from wealthlab.optimization.product_example import extend as with_products
+from wealthlab.optimization.qoz_example import extend as with_qoz
 from wealthlab.optimization.robustness_example import synthetic as robust
 from wealthlab.ui.optimization_horizon import show as horizon_starter
 
@@ -55,6 +56,8 @@ def purchases(starter):
         starter = with_exchange_choices(starter)
     if st.checkbox("Add synthetic new life-policy purchase choices", key="new_life_starter"):
         starter = with_new_life(starter)
+    if st.checkbox("Add synthetic QOZ subscription choices", key="qoz_starter"):
+        starter = with_qoz(starter)
     if st.checkbox(
         "Add synthetic conditional drilling participation choices", key="drilling_starter"
     ):

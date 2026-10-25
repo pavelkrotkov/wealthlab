@@ -22,6 +22,7 @@ ALLOWED_PLANS = {
     "option_plan",
     "compensation_plan",
     "drilling_plan",
+    "qoz_plan",
 }
 
 
@@ -35,6 +36,7 @@ def validate(household, binding):
     validate_product_paths(household, binding)
     validate_contract_paths(household, binding)
     validate_option_ownership(household)
+    validate_qoz_path(household, binding)
 
 
 def validate_accounts(household):
@@ -102,3 +104,8 @@ def validate_contract_paths(household, binding):
     )
     if {item.account_id for item in binding.employers} != accounts:
         raise ValueError("Optimizer paths must bind every employer compensation account.")
+
+
+def validate_qoz_path(household, binding):
+    if household.qoz_plan and binding.qoz is None:
+        raise ValueError("Optimizer QOZ requires an explicit native entity-asset binding.")
