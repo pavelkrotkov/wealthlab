@@ -26,3 +26,13 @@ def test_invalid_edit_clears_the_previously_computed_spanish_result():
     assert not view.exception
     assert view.error
     assert "spain_result" not in view.session_state
+
+
+def test_products_router_selects_the_actual_spanish_annual_workbench():
+    view = AppTest.from_string(
+        "from wealthlab.ui.products import show\nshow()", default_timeout=90
+    ).run()
+    view.selectbox[0].select("Spain residency and taxes").run()
+    view.button[0].click().run()
+    assert not view.exception
+    assert view.session_state["spain_result"]["income"]["assessment"]["liability"] == 12787

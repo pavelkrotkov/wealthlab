@@ -60,3 +60,12 @@ def test_ip_overpayment_is_not_turned_into_an_unlimited_solidarity_credit():
     data["payments"] = [payment(30000)]
     with pytest.raises(ValueError, match="overpayment adapter"):
         evaluate(SpainCase.model_validate(data))
+
+
+def test_a_zero_cash_record_cannot_manufacture_an_actually_paid_ip_credit():
+    data = synthetic().model_dump(mode="json")
+    record = payment(100)
+    record["value"]["amount"] = "0"
+    data["payments"] = [record]
+    with pytest.raises(ValueError, match="actual converted payment cash"):
+        SpainCase.model_validate(data)

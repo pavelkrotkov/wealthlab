@@ -1,8 +1,8 @@
 """Observed cash settlements are independent of assessed liabilities and credit translation."""
 
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from wealthlab.household.records import Identifier, Money
 from wealthlab.tax.facts import TaxModel
@@ -21,3 +21,9 @@ class SpanishTaxPayment(TaxModel):
     recognized_tax_eur: Money
     tax_recognition_source: str = Field(min_length=1, max_length=500)
     reverses_id: Identifier | None = None
+
+    @model_validator(mode="after")
+    def paid_cash(self) -> Self:
+        if self.kind != "refund" and self.recognized_tax_eur > self.value.euros():
+            raise ValueError("Recognized positive tax cannot exceed actual converted payment cash.")
+        return self
