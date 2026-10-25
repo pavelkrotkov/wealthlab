@@ -17,7 +17,12 @@ use their own bounded profile; match, vesting, rollover and corrections remain s
 
 from decimal import Decimal
 
-from wealthlab.retirement import workplace_rmd, workplace_withdrawals
+from wealthlab.retirement import (
+    workplace_rmd,
+    workplace_roth,
+    workplace_roth_cash,
+    workplace_withdrawals,
+)
 from wealthlab.retirement.contribution_rules import workplace_limits
 from wealthlab.retirement.workplace_returns import apply as apply_returns
 from wealthlab.retirement.workplace_tax import events, summarize, tax_amounts
@@ -42,12 +47,14 @@ class Ledger:
         self.accounts = {a.id: a for a in scenario.accounts}
         self.birth_dates = {m.id: m.birth_date for m in scenario.members}
         self.rmd = workplace_rmd.make(scenario)
+        self.roth = workplace_roth.make(scenario)
 
     def month(self, wallet, amounts, start, end):
         cash_events, cash_summary = self.opening_transfers or workplace_withdrawals.month(
             self, wallet, start, end
         )
         self.opening_transfers = None
+        roth_events, roth_summary = workplace_roth_cash.month(self, wallet, start, end)
         context = next(y for y in self.plan.years if y.year == start.year)
         people = {p.id: p for p in context.contributors}
         remaining = gross_wages(amounts, self.rules, self.members)
@@ -61,13 +68,14 @@ class Ledger:
                     excluded[order.owner] += row["funded"]
         self.remaining_wages = remaining
         self.log.extend(rows)
-        summary = dict(summarize(rows), **cash_summary)
+        summary = dict(summarize(rows), **cash_summary, **roth_summary)
         summary["workplace_market_change"] = apply_returns(
             self.plan, wallet, start, end, self.market_log
         )
+        summary.update(workplace_roth.snapshot(self.roth, wallet))
         return (
             tax_amounts(amounts, self.rules, self.members, excluded),
-            [*cash_events, *events(self.members, excluded, start)],
+            [*cash_events, *roth_events, *events(self.members, excluded, start)],
             summary,
         )
 
@@ -81,6 +89,7 @@ class Ledger:
         funded = wallet.pay(wage_cap)
         wallet.balances[order.destination] += funded
         used["total"] += funded
+        workplace_roth.contribute(self.roth, order, funded)
         remaining[order.owner] -= funded
         if order.kind == "pretax_401k":
             used["pretax"] += funded

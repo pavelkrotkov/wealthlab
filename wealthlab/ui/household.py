@@ -25,6 +25,7 @@ from wealthlab.retirement.social_medicare_example import synthetic as withholdin
 from wealthlab.retirement.workplace_example import synthetic as workplace_example
 from wealthlab.retirement.workplace_rmd_example import synthetic as workplace_rmd_example
 from wealthlab.retirement.workplace_rollover_example import synthetic as rollover_example
+from wealthlab.retirement.workplace_roth_example import synthetic as roth_plan_example
 from wealthlab.retirement.workplace_withdrawal_example import synthetic as workplace_cash_example
 from wealthlab.tax.source_example import synthetic as source_example
 from wealthlab.ui import editor, files, results
@@ -77,6 +78,7 @@ def examples():
         ("Load synthetic 401(k) cash withdrawals", workplace_cash_example),
         ("Load synthetic separate-plan RMDs", workplace_rmd_example),
         ("Load synthetic direct plan rollover", rollover_example),
+        ("Load synthetic designated Roth plan cash", roth_plan_example),
         ("Load synthetic Social Security household", benefit_example),
         ("Load synthetic employment household", employment_example),
         ("Load synthetic employer compensation household", compensation_example),

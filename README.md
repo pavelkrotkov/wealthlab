@@ -99,3 +99,5 @@ Retirement / IRA withdrawals / **Direct plan rollover with withdrawals** adds [c
 Load **synthetic direct plan rollover** in Household for [actual separated-plan debits feeding the same-owner IRA ledger before withdrawals](docs/adr/0051-household-plan-rollovers.md). Source locks, current/prior RMD blocks and unfilled requests remain visible; zero-basis ordinary direct cash transfers create no spending receipt or contribution deduction.
 
 Markets / Household funding / **Direct plan rollovers** adds [actual source and IRA execution on shared realized paths](docs/adr/0052-plan-rollover-market-paths.md), per-path funded/unfilled transfers and matched policy comparisons. The two-year synthetic horizon and ordinary zero-basis transfer limits remain explicit.
+
+Load **synthetic designated Roth plan cash** in Household for [complete plan-contract cost pools, participation clocks, ordinary cash and actual payroll cost additions](docs/adr/0053-designated-roth-plan-cash.md). Federal pro-rata recognition stays separate from IRA ordering; independent NJ cost and its conditional treatment remain explicit.

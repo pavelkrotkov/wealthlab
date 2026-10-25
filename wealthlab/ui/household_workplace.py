@@ -7,6 +7,7 @@ import streamlit as st
 from wealthlab.retirement.workplace_example import template
 from wealthlab.ui.workplace_rmd import display as rmd_display
 from wealthlab.ui.workplace_rollovers import display as rollover_display
+from wealthlab.ui.workplace_roth import display as roth_display
 from wealthlab.ui.workplace_withdrawals import display as withdrawals
 
 
@@ -50,6 +51,7 @@ def display(rows):
     withdrawals(rows)
     rmd_display(rows)
     rollover_display(rows)
+    roth_display(rows)
     st.subheader("Employee 401(k) cash and wage reconciliation")
     total = sum(r["workplace_contributions"] for r in rows)
     pretax = sum(r["workplace_pretax"] for r in rows)
