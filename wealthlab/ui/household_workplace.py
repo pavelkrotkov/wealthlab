@@ -6,6 +6,7 @@ import streamlit as st
 
 from wealthlab.retirement.workplace_example import template
 from wealthlab.ui.workplace_rmd import display as rmd_display
+from wealthlab.ui.workplace_rollovers import display as rollover_display
 from wealthlab.ui.workplace_withdrawals import display as withdrawals
 
 
@@ -23,7 +24,9 @@ def controls(payload, scenario):
             "validate payroll dates. Pretax reduces federal/NJ income-tax wages, while employee "
             "payroll still includes it. Roth stays taxable. Limits share actual funded amounts. "
             "Future frozen-rule assumptions are conditional. No employer match, after-tax "
-            "non-Roth contributions or rollover are generated. Optional cash_withdrawals "
+            "non-Roth contributions are generated. Optional direct_rollovers request eligible "
+            "same-owner traditional IRA cash transfers from confirmed zero-basis sources. "
+            "Optional cash_withdrawals "
             "accepts confirmed ordinary eligible pretax 401(k) cash with zero federal/NJ basis, "
             "first-day dates, source withholding and age-55 separation access. Optional rmd "
             "settings "
@@ -46,6 +49,7 @@ def display(rows):
         return
     withdrawals(rows)
     rmd_display(rows)
+    rollover_display(rows)
     st.subheader("Employee 401(k) cash and wage reconciliation")
     total = sum(r["workplace_contributions"] for r in rows)
     pretax = sum(r["workplace_pretax"] for r in rows)

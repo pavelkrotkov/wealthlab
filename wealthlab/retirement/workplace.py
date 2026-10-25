@@ -37,12 +37,17 @@ class Ledger:
         self.log = []
         self.market_log = []
         self.withdrawal_log = []
+        self.rollover_log = []
+        self.opening_transfers = None
         self.accounts = {a.id: a for a in scenario.accounts}
         self.birth_dates = {m.id: m.birth_date for m in scenario.members}
         self.rmd = workplace_rmd.make(scenario)
 
     def month(self, wallet, amounts, start, end):
-        cash_events, cash_summary = workplace_withdrawals.month(self, wallet, start, end)
+        cash_events, cash_summary = self.opening_transfers or workplace_withdrawals.month(
+            self, wallet, start, end
+        )
+        self.opening_transfers = None
         context = next(y for y in self.plan.years if y.year == start.year)
         people = {p.id: p for p in context.contributors}
         remaining = gross_wages(amounts, self.rules, self.members)

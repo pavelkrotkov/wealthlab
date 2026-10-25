@@ -26,6 +26,8 @@ class Funding:
         self.audit = []
 
     def month(self, context, wallet, start, end):
+        if self.plan is None:
+            return {}
         people = {p.id: p for p in context.contributors}
         rows = []
         for order in sorted(self.plan.orders, key=lambda o: o.date):

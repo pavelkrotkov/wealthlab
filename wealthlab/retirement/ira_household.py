@@ -89,7 +89,9 @@ def summarize(orders, reconciled):
 def make(scenario):
     if scenario.ira_plan is None:
         return None
-    if scenario.ira_plan.contributions is not None:
+    from wealthlab.retirement.workplace_rollover_validation import orders as rollovers
+
+    if scenario.ira_plan.contributions is not None or rollovers(scenario):
         from wealthlab.retirement.ira_household_dynamic import Ledger as DynamicLedger
 
         return DynamicLedger(scenario)

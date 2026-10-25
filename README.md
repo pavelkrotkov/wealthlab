@@ -95,3 +95,5 @@ Load the synthetic separate-plan RMD household for [complete plan groups, requir
 In Markets, select **Workplace RMDs** for [the same plan requirements on realized paths, explicit illiquidity failures and matched catch-up policies](docs/adr/0049-workplace-rmd-market-paths.md). Required transfers and their shortfalls remain separate from ordinary spending cash.
 
 Retirement / IRA withdrawals / **Direct plan rollover with withdrawals** adds [confirmed incoming qualified-plan cash and independently supplied federal/NJ basis](docs/adr/0050-incoming-ira-rollovers.md). Received IRA assets create no spending cash or ordinary contribution deduction; actual household source transfers remain the next retirement adapter.
+
+Load **synthetic direct plan rollover** in Household for [actual separated-plan debits feeding the same-owner IRA ledger before withdrawals](docs/adr/0051-household-plan-rollovers.md). Source locks, current/prior RMD blocks and unfilled requests remain visible; zero-basis ordinary direct cash transfers create no spending receipt or contribution deduction.
