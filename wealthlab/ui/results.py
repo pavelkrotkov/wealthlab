@@ -17,6 +17,7 @@ from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
 from wealthlab.ui.household_ira import display as ira_summary
 from wealthlab.ui.household_ira_deposits import display as ira_deposit_summary
+from wealthlab.ui.household_life import display as life_summary
 from wealthlab.ui.household_lots import display as lot_summary
 from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
@@ -59,6 +60,8 @@ HIDDEN = [
     "workplace_roth_audit",
     "workplace_roth_contracts",
     "social_security_work_audit",
+    "life_policy_values",
+    "life_policy_audit",
 ]
 
 
@@ -104,6 +107,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 employer_tranches=rows[-1].get("employer_tranches", []),
                 employer_events=rows[-1].get("employer_event_log", []),
                 exchange_fund=rows[-1].get("exchange_fund_audit"),
+                life_policies=rows[-1].get("life_policy_audit"),
             )
         )
 
@@ -135,3 +139,4 @@ def account_summaries(rows):
     workplace_summary(rows)
     sleeve_summary(rows)
     option_summary(rows)
+    life_summary(rows)

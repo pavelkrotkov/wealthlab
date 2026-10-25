@@ -106,6 +106,7 @@ def metrics(scenario, row, start, end):
         + row["funding_shortfall"]
         - row["fees_unfunded"]
         - row.get("tax_unfunded", Decimal(0))
+        - row.get("life_payment_unfunded", Decimal(0))
         - row.get("medicare_arrears_paid", Decimal(0))
         - row.get("medical_arrears_paid", Decimal(0))
     )
@@ -118,4 +119,5 @@ def metrics(scenario, row, start, end):
     row["reserve_target"] += money(
         row.get("tax_annualized_run_rate", Decimal(0)) * Decimal(str(scenario.reserve_years))
     )
+    row["reserve_target"] += row.get("life_reserve_target", Decimal(0))
     return row

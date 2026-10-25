@@ -32,7 +32,15 @@ class Account(Record):
     owner: Identifier
     currency: Currency
     wrapper: Literal[
-        "cash", "taxable", "traditional", "roth", "hsa", "education", "property", "employer"
+        "cash",
+        "taxable",
+        "traditional",
+        "roth",
+        "hsa",
+        "education",
+        "property",
+        "employer",
+        "insurance",
     ]
     balance: Money
     monthly_fee: Money

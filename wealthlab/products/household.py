@@ -63,12 +63,15 @@ class CombinedLedger:
         return {key: value for book in self.books for key, value in book.summary.items()}
 
 
-def make(scenario):
+def make(scenario, tax_ledger=None):
     from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
+    from wealthlab.products.life_household import Ledger as LifeLedger
 
     books: list = [Ledger(scenario)] if scenario.sleeve_plan else []
     if scenario.exchange_fund_plan:
         books.append(ExchangeLedger(scenario))
+    if scenario.life_plan:
+        books.append(LifeLedger(scenario, tax_ledger))
     return CombinedLedger(books) if books else None
 
 

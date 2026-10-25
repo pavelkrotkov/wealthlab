@@ -3,7 +3,14 @@
 from decimal import Decimal
 from itertools import chain
 
-from wealthlab.tax import payments, prior_payments, recognition, source_withholding, state_deduction
+from wealthlab.tax import (
+    payments,
+    prior_payments,
+    recognition,
+    required_funding,
+    source_withholding,
+    state_deduction,
+)
 from wealthlab.tax.annual import evaluate
 from wealthlab.tax.funding_accounts import AccountFunding
 from wealthlab.tax.projection_validation import validate
@@ -89,6 +96,7 @@ class TaxLedger:
         Income-tax withholding uses entered wage rates; year-end settlement reconciles tax.
         """
         self.source_receipts = []
+        required_funding.begin(self, amounts, required_cash, start, end)
         self.nj_wage_withholding_addition = additional_nj_wages
         self.start_year(start.year)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
@@ -101,9 +109,8 @@ class TaxLedger:
         prior_paid = prior_payments.pay(self, wallet)
         if receipt_hook is not None:
             event_cash += self.apply_events(wallet, start, end, receipt_hook(wallet, start, end))
-        # Wrapper funding can lower the remaining cash bill after receipts.
-        required = required_cash() if callable(required_cash) else required_cash
-        sold = self.funding.fund(self, wallet, required, amounts, start, end)
+        # The shared quote observes wrapper reductions and earlier product sales.
+        self.fund_required(wallet, Decimal(0), start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
         result = evaluate(self.case)
         requested = payments.ledger_request(self, amounts, result, start, end)
@@ -122,7 +129,7 @@ class TaxLedger:
             tax_estimates_paid=estimates,
             tax_payment_gap=max(Decimal(0), sum(requested.values()) - paid),
             prior_tax_paid=prior_paid + paid_after_sale,
-            funding_sale_proceeds=sold,
+            funding_sale_proceeds=required_funding.finish(self),
             tax_refund_received=received,
             taxable_state_refund=taxable_refund,
             tax_event_cash=event_cash,
@@ -131,6 +138,10 @@ class TaxLedger:
             ),
             tax_source_receipts=list(self.source_receipts),
         )
+
+    def fund_required(self, wallet, additional, start, end):
+        """Fund actual required cash with the same tax, basis and source restrictions."""
+        return required_funding.fund(self, wallet, additional, start, end)
 
     def events(self, wallet, start, end, extra_events=()) -> Decimal:
         return self.apply_events(wallet, start, end, chain(self.plan.events, extra_events))
