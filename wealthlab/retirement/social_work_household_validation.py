@@ -32,3 +32,5 @@ def validate_opening(plan):
         raise ValueError(
             "Manual/opening W2 amounts need earned-month classification for work tests."
         )
+    if any(i.partnership_se_earnings_primary or i.partnership_se_earnings_spouse for i in incomes):
+        raise ValueError("Partnership SE needs earned-month classification for work tests.")

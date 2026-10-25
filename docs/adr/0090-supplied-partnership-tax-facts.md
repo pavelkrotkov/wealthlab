@@ -18,7 +18,7 @@ Tax-Calculator otherwise derives QBI from the entire `e26270` amount. We use **`
 
 ## Existing scope guards
 
-The old pre-FRA no-work bridge now includes supplied positive partnership SE earnings alongside wages, preserving its conservative rejection until the earnings-test adapter supports them. The existing combined IRA contribution workbench rejects partnership SE compensation until a dedicated compensation/MAGI adapter is supplied. These guards avoid silently treating new earned amounts as absent. Consumer-generated events must also validate these unsupported combinations before projection.
+The old pre-FRA no-work bridge now includes supplied positive partnership SE earnings alongside wages, preserving its conservative rejection until the earnings-test adapter supports them. The existing combined IRA contribution workbench rejects partnership SE compensation until a dedicated compensation/MAGI adapter is supplied. These guards avoid silently treating new earned amounts as absent. The newer earned-W2-only household work-test adapter also rejects supplied partnership SE in annual facts or dated events, including signed adjustments, until it has earned-month classification. Consumer-generated events must also validate these unsupported combinations before projection.
 
 ## Evidence and checks
 
