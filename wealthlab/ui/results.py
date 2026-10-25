@@ -24,12 +24,16 @@ from wealthlab.ui.household_lots import display as lot_summary
 from wealthlab.ui.household_lots import scope_note as lot_scope_note
 from wealthlab.ui.household_medicare import display as medicare_summary
 from wealthlab.ui.household_options import display as option_summary
+from wealthlab.ui.household_property import display as property_summary
 from wealthlab.ui.household_social_work import display as social_work_summary
 from wealthlab.ui.household_workplace import display as workplace_summary
 from wealthlab.ui.private_fund_household_results import route_household as sleeve_summary
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [
+    "property_audit",
+    "property_positions",
+    "property_closing_events",
     "advisory_fee_assessments",
     "advisory_fee_audit",
     "account_balances",
@@ -127,6 +131,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                     life_policies=rows[-1].get("life_policy_audit"),
                     qoz=rows[-1].get("qoz_audit"),
                     advisory_fees=rows[-1].get("advisory_fee_audit"),
+                    property=rows[-1].get("property_audit"),
                     drilling=rows[-1].get("drilling_audit"),
                 )
             )
@@ -151,6 +156,7 @@ def comparison(scenario: Scenario) -> None:
 
 
 def account_summaries(rows):
+    property_summary(rows)
     ira_summary(rows)
     ira_deposit_summary(rows)
     hsa_summary(rows)

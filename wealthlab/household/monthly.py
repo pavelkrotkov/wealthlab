@@ -6,6 +6,7 @@ old bill does not falsely increase the current recurring spending target.
 """
 
 from decimal import Decimal
+from functools import partial
 
 from wealthlab.household import advisory_household as advisory
 from wealthlab.household import debts, flows, needs
@@ -56,15 +57,14 @@ def month(
     row.update(payroll)
     advisory.prepare(products, wallet, start, end, fees_owed, tax_ledger)
     if tax_ledger is not None:
-        required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
-        required_cash += medicare_household.required(medicare)
+        required_cash = partial(needs.required, scenario, debt_balances, start, end, fees_owed)
         row.update(
             tax_ledger.month(
                 taxable,
                 wallet,
                 start,
                 end,
-                required_quote(required_cash, education, hsa, products),
+                required_quote(required_cash, education, hsa, products, medicare),
                 [*extra_events, *employee_events],
                 receipt_hook=receipt_hook(ira, hsa, education, products, options),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
@@ -98,6 +98,7 @@ def metrics(scenario, row, start, end):
             missed_schedule(row),
             row.get("medical_owed", 0) > 0,
             row.get("option_failed", False),
+            row.get("property_product_failure", False),
             row.get("workplace_rmd_shortfall", 0) > 0,
             row.get("workplace_rmd_unresolved_prior", 0) > 0,
         )
@@ -125,6 +126,11 @@ def metrics(scenario, row, start, end):
     return row
 
 
-def required_quote(required_cash, education, hsa, products):
+def required_quote(required_cash, education, hsa, products, medicare=None):
     """Optional product bills and newly observed advisory fees stay live until funding."""
-    return lambda: required_cash + wrapper_required(education, hsa) + advisory.current_due(products)
+    return lambda: (
+        required_cash()
+        + medicare_household.required(medicare)
+        + wrapper_required(education, hsa)
+        + advisory.current_due(products)
+    )

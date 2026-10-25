@@ -13,7 +13,7 @@ from wealthlab.employment.compensation_projection import prepare as prepare_comp
 from wealthlab.employment.compensation_reporting import snapshot as compensation_snapshot
 from wealthlab.employment.wages import prepare as prepare_employment
 from wealthlab.household import advisory_household as advisory
-from wealthlab.household import debts
+from wealthlab.household import debts, property_household
 from wealthlab.household.calendar import money, months
 from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
@@ -50,7 +50,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
     hsa = hsa_household.make(scenario)
     education = education_household.make(scenario)
     options = option_household.make(scenario, market)
-    products = sleeves.make(scenario, tax_ledger=tax_ledger, lots=lots)
+    products = sleeves.make(scenario, tax_ledger=tax_ledger, lots=lots, debt_balances=debt_balances)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
         live, market_events = start_market(scenario, market, lots, products, wallet, hsa, start)
@@ -117,6 +117,7 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
 
 
 def observe_market(market, lots, row, products, wallet, end, hsa):
+    row.update(property_household.observe(products, row))
     if market:
         market.observe(lots, row)
     advisory.observe(products, wallet, end - timedelta(days=1), hsa, "completed_month_end")

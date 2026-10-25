@@ -9,6 +9,7 @@ from wealthlab.employment.example import synthetic as employment_example
 from wealthlab.household.advisory_advance_example import synthetic as advisory_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
+from wealthlab.household.property_example import synthetic as property_example
 from wealthlab.portfolio.household_example import synthetic as lot_example
 from wealthlab.portfolio.january_example import synthetic as january_example
 from wealthlab.portfolio.saving_example import synthetic as saving_example
@@ -80,6 +81,7 @@ def show():
 
 def examples():
     choices = (
+        ("Load synthetic sourced home and lien close", property_example),
         ("Load synthetic observed advance advisory fees", advisory_example),
         ("Load synthetic long-short household", sleeve_example),
         ("Load synthetic actual option household", option_example),
