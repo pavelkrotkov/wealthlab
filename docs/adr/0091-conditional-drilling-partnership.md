@@ -27,3 +27,11 @@ Existing annual returns, actual dated withholding/payments/refunds and accrued u
 ## Reproducible checks
 
 Independent checks reconcile contribution/cost/distribution/exit conservation; actual recourse exceeding original capital; creditor and call nonduplication; separate federal/NJ basis, noncash depletion/depreciation and limitations; positive recapture with denied/deferred losses; delayed recognition after exit; actual share gains, locked exits and December recognition; annual liability and unpaid-tax reconciliation; unknown-source rejection; and actual editable UI submission with stale-result clearing.
+
+The shared life-policy ledger executes before drilling, retaining its actual
+premium funding, failure exits and independent insurance-income/NIIT adapter.
+Mixed synthetic checks show a $1,000 premium leaving $500 of the drilling call
+and its underlying creditors unpaid without duplicating that debt, and an actual
+$500 MEC policy loan completing the drilling call while preserving the policy
+loan, recognized income and additional tax exactly once. Policy net surrender
+equity and drilling net property equity both survive the generic Household audit.
