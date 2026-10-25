@@ -1,6 +1,7 @@
 """Account ownership, actual-cash and complete tax assumptions precede household execution."""
 
 from wealthlab.products.household_accounts import excluded_accounts, validate_type
+from wealthlab.products.option_exchange_accounts import validate as validate_product_ownership
 from wealthlab.products.option_household_scope import validate_calendar, validate_tax
 from wealthlab.products.option_validation import validate as validate_case
 
@@ -46,6 +47,7 @@ def validate_opening(plan, account):
 
 
 def validate_dependencies(scenario, market):
+    validate_product_ownership(scenario)
     if market is not None:
         raise ValueError(
             "Options need explicit dated marks; generated market binding is unfinished."
