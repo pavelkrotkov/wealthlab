@@ -23,6 +23,8 @@ from wealthlab.retirement.medicare_household_example import synthetic as medicar
 from wealthlab.retirement.social_household_example import synthetic as benefit_example
 from wealthlab.retirement.social_medicare_example import synthetic as withholding_example
 from wealthlab.retirement.workplace_example import synthetic as workplace_example
+from wealthlab.retirement.workplace_withdrawal_example import synthetic as workplace_cash_example
+from wealthlab.tax.source_example import synthetic as source_example
 from wealthlab.ui import editor, files, results
 
 
@@ -70,6 +72,7 @@ def examples():
     choices = (
         ("Load synthetic long-short household", sleeve_example),
         ("Load synthetic employee 401(k) household", workplace_example),
+        ("Load synthetic 401(k) cash withdrawals", workplace_cash_example),
         ("Load synthetic Social Security household", benefit_example),
         ("Load synthetic employment household", employment_example),
         ("Load synthetic employer compensation household", compensation_example),
@@ -78,6 +81,7 @@ def examples():
         ("Load synthetic IRA contribution household", ira_deposit_example),
         ("Load synthetic cash HSA household", hsa_example),
         ("Load synthetic payroll HSA household", hsa_payroll_example),
+        ("Load synthetic pension with source withholding", source_example),
         ("Load synthetic invested HSA household", hsa_invested_example),
         ("Load synthetic nonqualified HSA household", hsa_distribution_example),
         ("Load synthetic current medical bills", medical_example),

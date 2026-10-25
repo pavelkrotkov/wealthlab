@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+from wealthlab.tax import source_withholding
 from wealthlab.tax.annual import AnnualCase
 from wealthlab.tax.facts import FederalIncome
 from wealthlab.tax.nj_facts import NJIncome
@@ -35,7 +36,7 @@ def scheduled(case: AnnualCase, amounts: dict[str, Decimal], rules: list[IncomeR
     )
 
 
-def event(case: AnnualCase, item: TaxEvent) -> AnnualCase:
+def event(case: AnnualCase, item: TaxEvent, state_deduction_mode="entered") -> AnnualCase:
     fed = add_fields(case.federal_income, item.federal)
     nj = add_fields(case.nj_income, item.new_jersey)
     business = add_fields(nj.business, item.new_jersey.business)
@@ -46,9 +47,10 @@ def event(case: AnnualCase, item: TaxEvent) -> AnnualCase:
     deductions = case.nj_deductions.model_copy(
         update={"njbest": case.nj_deductions.njbest + item.njbest_contributions}
     )
-    return case.model_copy(
+    updated = case.model_copy(
         update={"federal_income": fed, "nj_income": nj, "nj_deductions": deductions}
     )
+    return source_withholding.credit(updated, item.withholding, state_deduction_mode)
 
 
 def social_cash(amounts, rules):

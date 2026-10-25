@@ -42,9 +42,10 @@ def summary(rows):
 def paid(row):
     return sum(
         (
-            row[key]
+            row.get(key, ZERO)
             for key in (
                 "tax_withheld",
+                "tax_source_withholding",
                 "tax_estimates_paid",
                 "tax_settlement_paid",
                 "prior_tax_paid",

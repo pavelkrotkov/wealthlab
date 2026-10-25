@@ -15,6 +15,7 @@ from wealthlab.retirement.contribution_validation import validate_order
 from wealthlab.retirement.workplace_products import validate_products
 from wealthlab.retirement.workplace_returns import validate as validate_returns
 from wealthlab.retirement.workplace_wages import validate_wages
+from wealthlab.retirement.workplace_withdrawal_validation import validate as validate_withdrawals
 from wealthlab.tax.projection_validation import validate as validate_tax
 
 
@@ -42,6 +43,7 @@ def validate(scenario):
     validate_returns(scenario)
     validate_years(scenario)
     validate_wages(scenario)
+    validate_withdrawals(scenario)
 
 
 def validate_years(scenario):
