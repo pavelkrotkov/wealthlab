@@ -28,6 +28,7 @@ HIDDEN = [
     "account_balances",
     "debt_balances",
     "annual_tax",
+    "tax_source_receipts",
     "funding_basis",
     "employer_tranches",
     "employer_event_log",

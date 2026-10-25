@@ -11,6 +11,7 @@ from wealthlab.tax.annual import AnnualCase
 from wealthlab.tax.facts import FederalIncome, TaxModel
 from wealthlab.tax.liquidation import FundingSource
 from wealthlab.tax.nj_facts import NJIncome
+from wealthlab.tax.source_withholding import SourceWithholding
 
 
 class IncomeRule(TaxModel):
@@ -38,6 +39,17 @@ class TaxEvent(TaxModel):
     federal: FederalIncome
     new_jersey: NJIncome
     njbest_contributions: Money = Decimal(0)
+    withholding: SourceWithholding | None = None
+
+    @model_validator(mode="after")
+    def reconcile_receipt(self) -> Self:
+        if self.withholding is not None:
+            net = self.withholding.gross_cash - self.withholding.total
+            if self.cash_received != net:
+                raise ValueError(
+                    "Source withholding must reconcile gross cash to net cash received."
+                )
+        return self
 
 
 class EstimatedPayment(TaxModel):

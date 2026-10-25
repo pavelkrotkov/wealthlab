@@ -85,3 +85,5 @@ Markets / Household funding / **Invested HSA** runs [actual positions, yield, sa
 Load **synthetic payroll HSA household** for [qualifying section125 salary reductions sharing actual wages, employee401k room and HSA eligibility](docs/adr/0044-household-payroll-hsa.md). Salary reductions, personal deductions and external employer funding remain distinct; conditional NJ liability and withholding use independent wage treatment.
 
 Markets / Household funding / **HSA payroll and employment** adds [automatic matched salary-versus-personal funding controls under observed employer shocks](docs/adr/0045-hsa-funding-employment-comparison.md). Actual funded deposits, reported taxes, dated payments/refunds and cash availability remain separate; the control uses submitted inputs and the same realized paths.
+
+Load the synthetic pension with source withholding household for [net receipt, actual tax credit and delayed refund reconciliation](docs/adr/0046-source-withholding.md). Only net cash can fund optional wrapper deposits.

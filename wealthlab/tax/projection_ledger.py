@@ -3,7 +3,7 @@
 from decimal import Decimal
 from itertools import chain
 
-from wealthlab.tax import payments, prior_payments, recognition, state_deduction
+from wealthlab.tax import payments, prior_payments, recognition, source_withholding, state_deduction
 from wealthlab.tax.annual import evaluate
 from wealthlab.tax.funding_accounts import AccountFunding
 from wealthlab.tax.projection_validation import validate
@@ -40,6 +40,7 @@ class TaxLedger:
         self.refunds = []
         self.refund_receipts = []
         self.closed_returns = {}
+        self.source_receipts = []
 
     @property
     def owed(self):
@@ -85,9 +86,9 @@ class TaxLedger:
         """Recognize this month's income, then pay only available cash.
 
         Payroll withholding follows cumulative calculated employee liability;
-        income-tax withholding uses explicit user-entered wage percentages.
-        Year-end settlement later reconciles the remaining tax balance.
+        Income-tax withholding uses entered wage rates; year-end settlement reconciles tax.
         """
+        self.source_receipts = []
         self.nj_wage_withholding_addition = additional_nj_wages
         self.start_year(start.year)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
@@ -125,6 +126,10 @@ class TaxLedger:
             tax_refund_received=received,
             taxable_state_refund=taxable_refund,
             tax_event_cash=event_cash,
+            tax_source_withholding=sum(
+                (r["total_withheld"] for r in self.source_receipts), Decimal(0)
+            ),
+            tax_source_receipts=list(self.source_receipts),
         )
 
     def events(self, wallet, start, end, extra_events=()) -> Decimal:
@@ -134,7 +139,9 @@ class TaxLedger:
         cash = Decimal(0)
         for item in items:
             if start <= item.date < end:
-                self.case = recognition.event(self.case, item)
+                self.case = recognition.event(self.case, item, self.plan.state_deduction_mode)
+                if item.withholding is not None:
+                    self.source_receipts.append(source_withholding.receipt(item))
                 wallet.deposit(item.cash_received)
                 cash += item.cash_received
         return cash

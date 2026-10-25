@@ -7,12 +7,14 @@ import streamlit as st
 from wealthlab.tax.household_reporting import annual_results
 from wealthlab.tax.household_reporting import revisions as return_revisions
 from wealthlab.tax.payments import missed_schedule
+from wealthlab.ui.source_withholding import display as source_receipts
 
 
 def display(rows: list[dict]) -> None:
     if "annual_tax" not in rows[-1]:
         st.info("Taxes are omitted. Enable household tax assumptions to include them.")
         return
+    source_receipts(rows)
     annual = annual_results(rows)
     revisions = return_revisions(rows)
     records = [
