@@ -15,7 +15,10 @@ def finish(ledger, rows):
 
 
 def recognition_audit(ledger):
+    from wealthlab.products.option_deferrals import validate as validate_deferrals
     from wealthlab.products.option_recognition import recognition
     from wealthlab.products.option_tax_rows import stock_recognition
 
-    return recognition(ledger.state) + stock_recognition(ledger.state)
+    rows = recognition(ledger.state) + stock_recognition(ledger.state)
+    validate_deferrals(ledger.plan.case.tax, rows)
+    return rows

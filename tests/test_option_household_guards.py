@@ -49,3 +49,11 @@ def test_missing_monthly_quote_coverage_and_generated_market_binding_are_explici
 
     with pytest.raises(ValueError, match="generated market binding"):
         make(synthetic(), object())
+
+
+def test_future_mistyped_deferral_cannot_silently_allow_a_household_capital_loss():
+    data = synthetic().model_dump(mode="json")
+    case = data["option_plan"]["case"]
+    case["tax"].update(straddle="supplied_deferrals", federal_deferrals={"unknown:future": "100"})
+    with pytest.raises(ValueError, match="unmatched recognition ID"):
+        project(Scenario.model_validate(data))
