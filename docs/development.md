@@ -1,6 +1,6 @@
 # Development and review
 
-The household cash-flow editor and verification screen are implemented. Tax, market, product and optimization modules remain on the issue backlog.
+The household, tax, retirement, market and product workbenches have implemented conditional slices; see the [current coverage matrix](model-coverage.md). Optimizer, jurisdiction and complete release integration remain active work. The [local user guide](local-user-guide.md) recommends the complete installation, including the pinned Owl tables used by SSA/RMD calculations. The environment below also includes development checks; core-only installation is explicitly limited.
 
 Use Python 3.12 and uv. Keep local build/cache/temp artifacts inside the selected repository:
 
