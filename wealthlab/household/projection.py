@@ -13,7 +13,7 @@ from wealthlab.employment.compensation_projection import prepare as prepare_comp
 from wealthlab.employment.compensation_reporting import snapshot as compensation_snapshot
 from wealthlab.employment.wages import prepare as prepare_employment
 from wealthlab.household import advisory_household as advisory
-from wealthlab.household import debts
+from wealthlab.household import debts, tax_observation
 from wealthlab.household.calendar import money, months
 from wealthlab.household.funding import Wallet
 from wealthlab.household.monthly import month
@@ -32,10 +32,11 @@ from wealthlab.retirement import (
     workplace_rollovers,
 )
 from wealthlab.retirement.social_household import prepare_with_work as prepare
+from wealthlab.tax.foreign_tax_redetermination_reporting import finish as foreign_finish
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
-def project(scenario: Scenario, market=None) -> list[dict]:
+def project(scenario: Scenario, market=None, *, tax_observer=None) -> list[dict]:
     scenario, social = prepare(prepare_compensation(prepare_employment(scenario)))
     validate_resolved(scenario)
     wallet = Wallet(scenario)
@@ -81,19 +82,17 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         if compensation:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
-        row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
-        row["net_wealth"] -= row.get("tax_position", 0) + row.get("foreign_tax_position", 0)
-        row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
-        row["net_wealth"] -= row.get("medical_owed", Decimal(0))
-        row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-        row["net_wealth"] -= product_liabilities(row)
+        mark_wealth(row, wallet, debt_balances, fees_owed)
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
         observe_market(market, lots, row, products, wallet, end, hsa)
+        tax_observation.observe(tax_observer, tax_ledger, row, "monthly")
         rows.append(row)
     finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
     option_household.finish(options, rows)
+    foreign_finish(tax_ledger, rows)
+    tax_observation.observe(tax_observer, tax_ledger, rows[-1], "terminal")
     return rows
 
 
@@ -127,7 +126,17 @@ def start_market(scenario, market, lots, products, wallet, hsa, start):
     return market.start(scenario, lots, start) if market else (scenario, ())
 
 
-def product_liabilities(row):
-    """Subtract uncovered negative book equity once, not creditors already netted inside NAV."""
-    keys = ("sleeve_liability", "option_liability", "drilling_recourse_liability")
-    return sum((row.get(key, Decimal(0)) for key in keys), Decimal(0))
+def mark_wealth(row, wallet, debt_balances, fees_owed):
+    """Deduct external obligations once; internal product debt is already netted in NAV."""
+    liabilities = (
+        "tax_position",
+        "foreign_tax_position",
+        "medicare_owed",
+        "medical_owed",
+        "hsa_investment_fees_owed",
+        "sleeve_liability",
+        "option_liability",
+        "drilling_recourse_liability",
+    )
+    row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
+    row["net_wealth"] -= sum((row.get(key, Decimal(0)) for key in liabilities), Decimal(0))

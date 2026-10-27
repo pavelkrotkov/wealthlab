@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.tax.pr_credit_allocation import allocation
 from wealthlab.tax.pr_credit_limit import limited
 from wealthlab.tax.pr_local_rates import abt, regular
 from wealthlab.tax.pr_residence import MET
@@ -35,9 +36,12 @@ def calculate(annual, slices, us_paid):
     special = money(sum((totals[key] * RATES[key] for key in RATES if key != "lt15"), Decimal(0)))
     base = max(Decimal(0), totals["ordinary"] + totals["lt15"] - exemption)
     tentative = abt(base, wage_only=wage_only(annual, slices))
-    source_net = foreign_net(slices, base)
-    credit = limited(regular_tax, us_paid, source_net, base)
-    alternate_credit = limited(tentative, us_paid, source_net, base)
+    # A2 line11 retains the signed ordinary column before summing A-H for C.
+    a2_ordinary = totals["ordinary"] - exemption
+    a2_base = max(Decimal(0), a2_ordinary + totals["lt15"])
+    source = source_allocation(slices, exemption)
+    credit = limited(regular_tax, us_paid, source["source_net"], a2_base)
+    alternate_credit = limited(tentative, us_paid, source["source_net"], base)
     regular_net = regular_tax - credit["allowed"]
     alternate_net = tentative - alternate_credit["allowed"]
     return dict(
@@ -50,9 +54,13 @@ def calculate(annual, slices, us_paid):
         regular_tax=regular_tax,
         special_in_lieu_tax=special,
         regular_credit=credit,
+        a2_ordinary_net_before_tax_floor=a2_ordinary,
+        regular_net_income=a2_base,
+        regular_source_allocation=source,
         abt_net_income=base,
         abt=tentative,
         abt_credit=alternate_credit,
+        abt_source_allocation=source,
         additional_abt=max(Decimal(0), alternate_net - regular_net),
         income_tax=max(regular_net, alternate_net) + special,
         next_abt_credit=max(Decimal(0), alternate_net - regular_net),
@@ -67,11 +75,11 @@ def grouped(slices):
     return totals
 
 
-def foreign_net(slices, base):
+def source_allocation(slices, exemption):
     eligible = [item.row for item in slices if item.treatment in {"ordinary", "lt15"}]
     gross = sum((row.pr_amount for row in eligible), Decimal(0))
     foreign = sum((row.pr_amount for row in eligible if row.pr_source == "US"), Decimal(0))
-    return base * foreign / gross if gross else Decimal(0)
+    return allocation(gross, foreign, exemption)
 
 
 def wage_only(annual, slices):

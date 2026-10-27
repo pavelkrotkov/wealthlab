@@ -10,6 +10,7 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.tax.foreign_credit_carries import use_carries
+from wealthlab.tax.pr_execution_credit_sources import included
 
 ZERO = Decimal(0)
 BASKETS = ("general", "passive")
@@ -17,7 +18,7 @@ BASKETS = ("general", "passive")
 
 def calculate(case, baseline, cash_rows):
     fed, year = baseline["federal"], case.annual.policy.year
-    current = [row for row in case.income if row.value.date.year == year]
+    current = included(case)
     gross = sum((row.value.dollars() for row in current), ZERO)
     tax_remaining, audit, used = fed["regular_tax_before_credits"], [], {}
     for basket in BASKETS:

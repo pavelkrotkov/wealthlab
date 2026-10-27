@@ -65,6 +65,8 @@ class ForeignObservedTax(TaxModel):
     assessment_id: Identifier
     source_income_year: int | None = Field(default=None, ge=1900, le=2145)
     record: CreditTaxCash
+    recognized_tax_native: Money | None = None
+    recognition_source: str = Field(default="", max_length=500)
 
 
 class ForeignTaxPlan(TaxModel):
@@ -77,4 +79,7 @@ class ForeignTaxPlan(TaxModel):
     refunds: list[ForeignObservedTax] = Field(default_factory=list)
     credit_profiles: list[ForeignCreditCase] = Field(min_length=1)
     allow_household_sales: bool = False
+    prior_return_redetermination: Claim = "unresolved"
+    redetermination_other_costs_complete_confirmed: bool = False
+    redetermination_source: str = Field(default="", max_length=500)
     source: str = Field(min_length=1, max_length=500)

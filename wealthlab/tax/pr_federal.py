@@ -2,44 +2,51 @@
 
 from decimal import Decimal
 
-from taxcalc import Calculator, Policy
-
 from wealthlab.household.calendar import money
 from wealthlab.tax import federal
 from wealthlab.tax.facts import Deductions
-from wealthlab.tax.federal_engine import records
 from wealthlab.tax.mapping import record
+from wealthlab.tax.pr_federal_engine import values as prepared_values
 from wealthlab.tax.pr_inputs import income
 from wealthlab.tax.pr_us_credit import credit
 
 
-def calculate(case, taxable_rows, foreign_rows):
+def calculate(case, taxable_rows, foreign_rows, *, native_credits=None):
     policy_year, scale, label = case.baseline.policy.valuation()
     gross = sum(row.federal_amount for row in case.income)
     taxable_gross = sum(row.federal_amount for row in taxable_rows)
     ratio = taxable_gross / gross if gross else Decimal(0)
-    policy = Policy()
-    policy.set_year(policy_year)
-    # Policy.STD is year x filing status: [0] selects the entire current-year
-    # row, including joint; it does not select only the single-filer amount.
-    standard = (policy.STD[0] * float(ratio)).tolist()
-    policy.implement_reform(
-        {"STD": {policy_year: standard}, "AlimonyReceived_frac_in_AGI": {policy_year: 1.0}},
-        print_warnings=False,
-    )
     taxable = income(taxable_rows)
-    calc = Calculator(
-        policy=policy,
-        records=records(record(case.baseline.filing, taxable, Deductions(), scale), policy_year),
+    raw = prepared_values(
+        record(case.baseline.filing, taxable, Deductions(), scale, native_credits),
+        policy_year,
+        ratio,
+        federal.OUTPUTS,
     )
-    calc.advance_to_year(policy_year)
-    calc.calc_all()
-    values = {name: money(float(calc.array(name)[0]) * scale) for name in federal.OUTPUTS}
+    values = {name: money(value * scale) for name, value in raw.items()}
     if values["refund"]:
         raise ValueError(
             "Federal refundable-credit residence eligibility needs a supported profile."
         )
     result = federal.breakdown(values, taxable, label)
     result.update(worldwide_gross=gross, taxable_gross=taxable_gross, standard_ratio=ratio)
-    result["foreign_credit"] = credit(case, result, foreign_rows)
+    result["foreign_credit"] = (
+        credit(case, result, foreign_rows)
+        if native_credits is None
+        else native_credit_audit(native_credits, result)
+    )
     return result
+
+
+def native_credit_audit(credits, result):
+    """Native taxbc is the same prepared return's regular tax before any credit."""
+    if credits.eligibility == "allowed" and credits.regular > result["regular_tax_before_credits"]:
+        raise ValueError("PR prepared regular credit exceeds its actual pre-credit regular tax.")
+    return dict(
+        method="One native prepared-policy e07300/e62900 computation; legacy subtraction bypassed",
+        supplied_regular=credits.regular,
+        supplied_amt=credits.alternative_minimum,
+        actual_regular=result["foreign_tax_credit"],
+        eligibility=credits.eligibility,
+        source=credits.source,
+    )

@@ -1,4 +1,9 @@
-"""Edit and execute foreign tax cash through the same household projection and wallet."""
+"""Edit and execute foreign tax cash through the same household projection and wallet.
+
+The original-return screen reuses this exact input/execution/export lifecycle
+with its own public example and explicit treatment notice. An invalid replacement
+clears both the previous result and export instead of retaining stale tax savings.
+"""
 
 import json
 
@@ -10,12 +15,15 @@ from wealthlab.tax.foreign_tax_example import synthetic
 from wealthlab.ui.uploads import invalid, source
 
 
-def show():
+def show(*, example=None, notice=None):
     st.header("Actual household foreign-tax cash")
     st.warning(
-        "Supplied conditional assessments and ordinary US credit profiles. Country residence, "
-        "PR/Spanish assessment adapters and later original-return redetermination remain "
-        "separate work. Unknown foreign gain/source/basis prevents a funding-success conclusion."
+        notice
+        or (
+            "Supplied conditional assessments and ordinary US credit profiles. Native country "
+            "assessment execution is available in Country cash. Unknown foreign gain/source/basis "
+            "or unconfirmed original-return treatment blocks a funding-success conclusion."
+        )
     )
     st.caption(
         "One wallet pays required foreign taxes before optional products/saving. Native USD/EUR "
@@ -23,7 +31,8 @@ def show():
         "and native US credit order. Payroll and independent mainland NJ stay visible."
     )
     uploaded = st.file_uploader("Load foreign-tax household JSON", type="json")
-    if source(uploaded, synthetic().model_dump_json(indent=2), "foreign_tax_household") is None:
+    example = example or synthetic()
+    if source(uploaded, example.model_dump_json(indent=2), "foreign_tax_household") is None:
         return
     with st.form("foreign_tax_household"):
         edited = st.text_area(
