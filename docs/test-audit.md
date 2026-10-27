@@ -6,13 +6,13 @@ The rule in [AGENTS.md](../AGENTS.md) requires user buy-in before adding complex
 
 | Main snapshot | Before | After | Removed |
 | --- | ---: | ---: | ---: |
-| Collected pytest cases | 2,646 | 2,405 | 241 |
-| Test function definitions | 1,779 | 1,597 | 182 |
+| Collected pytest cases | 2,646 | 2,406 | 240 |
+| Test function definitions | 1,779 | 1,598 | 181 |
 | Test modules | 716 | 648 | 68 |
 
-Applied 151 exact source-audit patches and two scrutinized partial patches: 153 existing test files changed, including 68 complete test-module deletions and one removed test helper (`tests/local_file_cases.py`). All 69 complete file deletions matched the audited files byte for byte. No production code, workflow, dependency, quality threshold or future-feature test was changed. No replacement tests were added.
+Applied 150 exact source-audit patches and two scrutinized partial patches: 152 existing test files changed, including 68 complete test-module deletions and one removed test helper (`tests/local_file_cases.py`). All 69 complete file deletions matched the audited files byte for byte. No production code, workflow, dependency, quality threshold or future-feature test was changed. No replacement tests were added.
 
-The restored foreign-credit eligibility control and NJ wash-sale override remain in `tests/test_foreign_credit_ui.py` and `tests/test_lot_tax_ui.py`.
+The restored foreign-credit eligibility control and NJ wash-sale override remain in `tests/test_foreign_credit_ui.py` and `tests/test_lot_tax_ui.py`. Independent PR review also retained the existing `test_generated_price_form_requires_explicit_replacement_confirmation` in `tests/test_exchange_fund_ui.py`: it is the sole check that supplied observations are replaced by generated prices only after explicit confirmation. That complete file now matches the original main snapshot.
 
 ## Changed contexts retained deliberately
 
@@ -90,6 +90,8 @@ tests/test_spain_ui.py
 
 ## Validation
 
-Both collections succeeded: 2,646 cases before and 2,405 after. The single full post-pruning run passed all **2,405 tests** with **93.75% branch-aware coverage** in **561.96 seconds**. Ruff lint, formatting, typing and the unchanged complexity/maintainability/size gates passed across **1,468 first-party Python files**. The 85% coverage requirement remains unchanged. Test and production files stayed frozen throughout that run; this report’s validation paragraph was completed afterward.
+Initial collections succeeded: 2,646 cases before and 2,405 after. Final review restores one existing case, yielding 2,406. The single full post-pruning run passed all **2,405 tests** with **93.75% branch-aware coverage** in **561.96 seconds**. Ruff lint, formatting, typing and the unchanged complexity/maintainability/size gates passed across **1,468 first-party Python files**. The 85% coverage requirement remains unchanged. Test and production files stayed frozen throughout that run; this report’s validation paragraph was completed afterward.
 
 These are local results for this main-only code/test tree. Fresh public-head CI and independent review remain required before merge.
+
+The existing exchange-price replacement confirmation check was restored after the full run; its focused UI verification and fresh CI validate the final head. The full-run coverage above belongs to the frozen 2,405-case checkpoint, not a claimed second full run.
