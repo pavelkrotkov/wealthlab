@@ -44,6 +44,7 @@ def main():
         [
             "Household",
             "Annual tax",
+            "Cross-border",
             "Tax lots",
             "Retirement",
             "Markets",
@@ -60,6 +61,7 @@ def main():
     routes = {
         "Household": "household",
         "Annual tax": "tax",
+        "Cross-border": "cross_border",
         "Tax lots": "lots",
         "Retirement": "retirement_workspace",
         "Markets": "markets",

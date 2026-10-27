@@ -24,8 +24,9 @@ def code_roots(repository_root: Path) -> set[Path]:
             raise ValueError("Cannot resolve code repository metadata safely.")
         gitdir = (root / text.removeprefix("gitdir: ")).resolve()
         common = (gitdir / (gitdir / "commondir").read_text(encoding="utf-8").strip()).resolve()
-        if common.name == ".git":
-            roots.add(common.parent)
+        if common.name != ".git":
+            raise ValueError("Cannot resolve code repository metadata safely.")
+        roots.add(common.parent)
     for pointer in (common / "worktrees").glob("*/gitdir"):
         roots.add(Path(pointer.read_text(encoding="utf-8").strip()).parent.resolve())
     return roots
