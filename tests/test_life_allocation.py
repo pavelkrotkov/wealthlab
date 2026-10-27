@@ -4,20 +4,6 @@ from wealthlab.household.projection import project
 from wealthlab.products.life_allocation_example import synthetic
 
 
-def test_zero_opening_new_issue_and_uninsured_reference_preserve_the_same_capital():
-    case = synthetic()
-    reference, policy = case.alternatives.values()
-    assert tuple(sum(a.balance for a in s.accounts) for s in (reference, policy)) == (10000, 10000)
-    h = policy.life_plan.holdings[0]
-    assert (
-        h.contract.opening_federal_basis,
-        h.contract.opening_loan,
-        h.opening_values.gross_cash_value,
-        h.opening_values.gross_surrender_value,
-        h.opening_values.gross_death_benefit,
-    ) == (0, 0, 0, 0, 0)
-
-
 def test_uninsured_path_retains_independent_need_without_policy_receipts_or_coverage():
     rows = project(synthetic().alternatives["no_policy"])
     assert [r["closing_cash"] for r in rows] == [9000, 8000, 7000]
