@@ -61,7 +61,7 @@ def main():
     routes = {
         "Household": "household",
         "Annual tax": "tax",
-        "Cross-border": "foreign_credits",
+        "Cross-border": "cross_border",
         "Tax lots": "lots",
         "Retirement": "retirement_workspace",
         "Markets": "markets",

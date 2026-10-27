@@ -1,0 +1,46 @@
+# ADR 0140: Conditional Spanish annual income and wealth assessments
+
+Status: vertical annual/UI foundation for issue #16, with independently supplied classifications. No new dependency. `wealthlab.tax.spain_inputs.SpainCase` and `wealthlab.tax.spain.evaluate` provide the annual interface for the separate cross-border/household adapter in #17.
+
+## Profile and recognition boundary
+
+One named person supplies a calendar year, confirmed ordinary full-year residence, individual filing, a required region and complete worldwide fiscal inputs. The initial published 2025 profiles are Madrid, Catalonia and Castilla-La Mancha. Other regions, joint aggregation, special regimes and nonresidents return blocked scopes. A later year requires an explicit frozen-2025 policy; this is a hypothetical policy, not a claim about subsequently enacted law. An arrival date never establishes eligibility or prorates the year.
+
+General/savings classifications, eligible state/regional minima, reductions and recognized losses are independently supplied after applicable integration, repurchase, carry and other limits. The model computes the separate state/regional schedules and subtracts the minimum's quota through each schedule, including unused minimum against savings. It does not reconstruct a raw business return or Spanish loss history. Allowed, deferred, denied and unknown current recognition remain distinct in the retained inputs. Deferred/denied losses create no current saving or cash.
+
+US retirement, insurance and partnership labels do not determine Spanish income or wealth treatment. Each item supplies its own Spanish classification/source and treaty treatment/source. Unknown income blocks IRPF and the dependent wealth cap; an unknown wealth exemption blocks wealth while retaining an independently resolved income assessment. Exemption with progression requires a further rate adapter and remains blocked. Citizenship is an explicit supplied US/other/unknown tag; it is not a decision about every nationality or treaty exception. Treaty credit/resourcing qualification and bilateral optimization belong to #17; `full_bilateral_optimization_supported` is always false.
+
+## Valuation, ownership and actual payment observations
+
+Each native amount retains its currency, date, EUR conversion and source. A disposal has separate translated proceeds and acquisition cost; converting a net dollar gain once is unsupported. Supplied fiscal asset values and debt balances use December 31 dates/FX. A fiscal value needs its own valuation source and does not inherit a household market mark.
+
+Ownership applies before a per-person exemption. Principal-home exemption claims are bounded by the owned value and the combined EUR 300000 ceiling. Related debt deductions are bounded by the financed asset's nonexempt proportion; general eligible debts are allocated proportionately when computing nonproductive net assets. Home value above the exemption is not treated as nonproductive. Other exemptions and debt eligibility remain independently supplied facts.
+
+Observed tax records separately retain settlement ID, owner, liability year, tax type, cash date/currency/FX, independently recognized EUR tax and its source. Refunds identify an original payment and cannot reverse more recognized tax than it contained. Actual refund cash can translate at a different receipt FX while the supplied original tax reversal remains unchanged. This annual view accepts observed records; it does not execute household payments, sell assets or create spendable cash from a credit.
+
+## IP and solidarity order
+
+The engine keeps net wealth, regional exempt minimum, gross quota, nonproductive quota, eligible quota, cap reduction and capped quota separate. The 60% ceiling uses the income bases before reductions, adjusted for the supplied prelimited long-held gain exclusion and relevant patrimonial-company dividends. The related savings-quota exclusion uses the published proportional formula. The 80% maximum reduction preserves each tax's minimum quota.
+
+The current forms establish a sequential calculation:
+
+1. Model 714 gross IP box29 becomes capped IP box40 before foreign credits/regional bonuses.
+2. Model 718 box152 imports that capped IP box40; its own eligible quota enters box153 and its combined cap produces box200.
+3. Madrid's temporary replacement bonus uses the positive difference between capped IP and capped solidarity quotas.
+4. Model 718 box205 credits independently observed IP actually paid, rather than an unpaid assessment. Foreign/regional credits remain supplied prelimited entitlements.
+
+No circular fixed point or `max(IP, solidarity)` shortcut is used. IP overpayments require another adapter. Assessment liabilities and observed cash remain separate; an unpaid IP bill creates no solidarity credit. The outputs expose both taxes even when a later observed payment would change the available credit.
+
+## Primary sources and independent checks
+
+Checked October 25, 2026. Existing QMD `tax-references` vector discovery and actual supporting US treaty-credit passages were read. Related US/NY hits do not establish Spanish domestic law. [2025 Publication 514](https://www.irs.gov/pub/irs-prior/p514--2025.pdf), page43, keeps treaty source/credit limitations separate. No synchronization or new index was needed.
+
+[AEAT residence guidance](https://sede.agenciatributaria.gob.es/Sede/no-residentes/residencia-personas-fisicas-juridicas/persona-fisica-residente-espana.html) distinguishes presence/economic/family criteria and full-year status. [2025 state general quota](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-estatal.html) and the [regional index](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico.html) support the separate schedules. Tests use published accumulated quotas at Madrid/Catalonia boundaries. [Article66/76](https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764) and the [2025 savings table](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-ahorro/gravamen-estatal.html) support the 30% combined top savings rate. [Madrid's official minima](https://www.comunidad.madrid/atencion-contribuyente/beneficios-fiscales) support its distinct synthetic regional minimum; actual eligibility stays supplied.
+
+The [2025 wealth manual](https://sede.agenciatributaria.gob.es/Sede/Ayuda/25Manual/714.shtml), published March 17, 2026, provides fiscal values, exempt minima, regional scales and debt rules. Its [joint-cap rules](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/limite-cuota-integra-cuota-minima-patrimonio/reglas.html) and [Toledo example](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/limite-cuota-integra-cuota-minima-patrimonio/ejemplo.html) independently fix general quota12407, savings380, gross IP112354.37, nonproductive quota3511.07 and final IP22470.87. The example's solidarity/payment extensions are additional synthetic assumptions, not facts attributed to its taxpayer.
+
+[2025 Model 714](https://www.boe.es/buscar/pdf/2026/BOE-A-2026-7041-consolidado.pdf), printed model page10, and [2025 Model 718](https://www.boe.es/boe/dias/2026/06/29/pdfs/BOE-A-2026-14011.pdf), BOE pages89530–89531, establish the numbered order above. Both relevant Model 718 pages were visually inspected. [Law 38/2022 Article 3](https://www.boe.es/buscar/act.php?id=BOE-A-2022-22684) supplies solidarity's minimum, schedule, cap and actual-IP credit. [AEAT Madrid2025](https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/madrid.html) supplies the temporary bonus. The June2026 Model 718 order applies first to 2025 and extends cap treatment to obligation-real profiles; blocking those profiles here is an implementation limit, not a claim of legal ineligibility.
+
+[Official treaty documents](https://www.irs.gov/businesses/international-businesses/spain-tax-treaty-documents) include the 1990 Convention and 2013 Protocol/MOU. Their pension-fund definition does not itself establish an individual's Spanish income/wealth exemption. PETETE details for discovered V1291-22/V0251-25 were unavailable during research; secondary mirrors were discovery leads only and did not become model rules.
+
+Checks cover official quotas, minimum allocation, 2025 savings rates, independent IP cap arithmetic, actual-paid credit/Madrid sequencing, separate acquisition/disposal FX, ownership/exempt debt, refund identity/FX, rejected excess claims, blocked classification/residence scopes and actual form submission/export/stale-result clearing. Public inputs are synthetic or explicitly attributed public numerical oracles.
