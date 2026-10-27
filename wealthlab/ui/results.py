@@ -32,6 +32,7 @@ from wealthlab.ui.private_fund_household_results import route_household as sleev
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [
+    "jurisdiction_totals",
     "property_audit",
     "property_positions",
     "property_closing_events",

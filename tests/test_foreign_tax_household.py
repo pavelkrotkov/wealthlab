@@ -20,6 +20,29 @@ def test_actual_foreign_payment_and_native_credit_reconcile_ending_wealth_once()
     assert first["annual_tax"]["federal"]["foreign_tax_credit"] == Decimal("6724.50")
     assert not first["foreign_tax_unresolved"]
     assert total(rows, "foreign_tax_paid") == Decimal(11000)
+    totals = {row["jurisdiction"]: row for row in rows[-1]["jurisdiction_totals"]}
+    assert (totals["ES"], totals["US federal"]) == (
+        dict(
+            jurisdiction="ES",
+            currency="EUR",
+            assessed_native=10000,
+            paid_usd=11000,
+            refunded_usd=0,
+            payment_fees_usd=0,
+            net_cash_usd=11000,
+            assessment_status="allowed",
+        ),
+        dict(
+            jurisdiction="US federal",
+            currency="USD",
+            assessed_native=Decimal("14374.50"),
+            paid_usd=Decimal("14374.50"),
+            refunded_usd=0,
+            payment_fees_usd=0,
+            net_cash_usd=Decimal("14374.50"),
+            assessment_status="closed",
+        ),
+    )
 
 
 def test_foreign_payment_and_domestic_settlement_reduce_opening_wealth_without_repaying_payroll():
