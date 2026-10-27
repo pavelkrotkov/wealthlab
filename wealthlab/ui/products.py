@@ -32,6 +32,8 @@ def show():
         "Whole-life contract cash and taxes": "life_contracts",
         "Whole life versus liquid saving": "life_comparisons",
         "Drilling partnerships": "drilling",
+        "Spain residency and taxes": "spain",
+        "Spain annual tax schedules": "spain_assessments",
     }
     workbench = saved_select("Product workbench", list(workbenches), key="products_workbench")
     module = workbenches[workbench]

@@ -31,7 +31,10 @@ def controls(payload, scenario):
             "and conditional long-only harvesting use actual current marks and household tax. "
             "Targets use gross pre-tax household assets; later tax/spending can change weights. "
             "Account target-weight rebalances run after harvesting using sale proceeds only. "
-            "Tax-budget policies require a separate annual-forecast adapter. Unresolved "
+            "Tax-budget policies require dated tax_budget_forecasts with complete annual non-lot "
+            "income/deduction assumptions, source/date and explicit exclusions. Forecast payments "
+            "must be zero; estimates never become actual tax or cash. Later required sales may "
+            "exceed a decision estimate. Unresolved "
             "year-end wash windows default to blocking. Select january_reconcile to observe the "
             "following January and revise the original return. Posted IRA deduction/basis "
             "elections are preserved, even if a larger deduction later becomes permitted. "
@@ -69,6 +72,7 @@ def template(scenario):
         year_end_wash_policy="block",
         post_horizon_purchases="unconfirmed",
         funding_sources=[],
+        tax_budget_forecasts=[],
         rebalances=[],
         complete_ownership_and_outside_purchases_confirmed=False,
         monthly_settlement_and_cash_sweep_confirmed=False,
