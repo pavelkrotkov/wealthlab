@@ -6,7 +6,6 @@ symlinks cannot be overwritten. Temporary files stay in that selected directory.
 """
 
 import os
-import subprocess
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -16,34 +15,21 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 def code_roots(repository_root: Path) -> set[Path]:
     """A linked worktree must also protect the main checkout and sibling worktrees."""
     root = repository_root.resolve()
+    roots = {root}
     marker = root / ".git"
-    if not marker.exists() and not marker.is_symlink():
-        return {root}
-    roots = git_roots(root)
-    # Git may report a separate metadata directory as its main worktree.
-    # Without a checkout marker there, the real main location is unknown.
-    if root not in roots or any(not (path / ".git").exists() for path in roots):
-        raise ValueError("Cannot resolve code repository metadata safely.")
+    common = marker
+    if marker.is_file():
+        text = marker.read_text(encoding="utf-8").strip()
+        if not text.startswith("gitdir: "):
+            raise ValueError("Cannot resolve code repository metadata safely.")
+        gitdir = (root / text.removeprefix("gitdir: ")).resolve()
+        common = (gitdir / (gitdir / "commondir").read_text(encoding="utf-8").strip()).resolve()
+        if common.name != ".git":
+            raise ValueError("Cannot resolve code repository metadata safely.")
+        roots.add(common.parent)
+    for pointer in (common / "worktrees").glob("*/gitdir"):
+        roots.add(Path(pointer.read_text(encoding="utf-8").strip()).parent.resolve())
     return roots
-
-
-def git_roots(root):
-    """Ask Git for unquoted NUL-delimited checkout paths without ambient routing."""
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), "worktree", "list", "--porcelain", "-z"],
-            check=True,
-            capture_output=True,
-            timeout=5,
-            env={key: value for key, value in os.environ.items() if not key.startswith("GIT_")},
-        )
-    except (OSError, subprocess.SubprocessError) as error:
-        raise ValueError("Cannot resolve code repository metadata safely.") from error
-    return {
-        Path(os.fsdecode(field.removeprefix(b"worktree "))).resolve()
-        for field in result.stdout.split(b"\0")
-        if field.startswith(b"worktree ")
-    }
 
 
 def write_new(text: str, directory: Path, filename: str, repository_root=None) -> Path:
