@@ -8,6 +8,7 @@ which exceeds this receipt needs a separate supported funding profile.
 
 def receive_refunds(book, wallet, start, end):
     from wealthlab.tax.foreign_credit_cash import observe
+    from wealthlab.tax.foreign_tax_recognition import validate_refund
     from wealthlab.tax.foreign_tax_sources import payment_record
 
     for refund in sorted(book.plan.refunds, key=lambda r: (r.record.value.date, r.record.id)):
@@ -19,6 +20,7 @@ def receive_refunds(book, wallet, start, end):
         if record.fx_fee_usd > record.value.dollars():
             raise ValueError("This foreign refund profile requires cash sufficient for its fee.")
         observe(trial)
+        validate_refund(book, record)
         wallet.deposit(record.value.dollars())
         if wallet.pay(record.fx_fee_usd) != record.fx_fee_usd:
             raise ValueError("A foreign refund receipt must cover its explicit cash fee.")

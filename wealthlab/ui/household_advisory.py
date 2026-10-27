@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.household.advisory_example import plan
+from wealthlab.household.report import encode
 
 
 def controls(payload, scenario):
@@ -17,7 +18,9 @@ def controls(payload, scenario):
         ):
             return None
         st.caption(
-            "Use explicit sources, dated accrual periods, day counts and marginal AUM tiers. "
+            "Declare sourced progressive marginal tiers or whole-relationship breakpoint rates "
+            "on the complete covered base; breakpoint upper limits are inclusive. "
+            "Use actual days/day count or an explicitly source-confirmed fixed annual fraction. "
             "Original defaults are hypothetical, not an adviser quote. Each bill uses current "
             "supported net account equity or sourced native life net-cash/net-surrender values, "
             "after product marks and before optional saving/deposits. Embedded costs remain "
@@ -30,7 +33,7 @@ def controls(payload, scenario):
         )
         default = payload.get("advisory_fee_plan") or plan(scenario).model_dump(mode="json")
         return st.text_area(
-            "Sourced advisory schedules, tiers and coverage (JSON)",
+            "Sourced advisory rate methods, periods and coverage (JSON)",
             json.dumps(default, indent=2),
             height=350,
             key="advisory_editor",
@@ -43,9 +46,11 @@ def display(rows):
         return
     st.subheader("Outer advisory assessments and actual fee cash")
     st.caption(
-        "All simultaneous schedules share one observed snapshot. Marginal tiers apply only "
-        "to their own AUM bands. Days equal exclusive accrual end minus accrual start; no monthly "
-        "fraction or deduction is inferred. Reserved cash still belongs to the household. "
+        "All simultaneous schedules share one observed snapshot. The declared rate method "
+        "applies marginal bands or one whole-relationship breakpoint rate. Actual days remain "
+        "exclusive accrual end minus accrual start; a supplied fixed annual fraction replaces "
+        "only the variable fee factor, never observation/payment dates or refund rights. "
+        "No period fraction or tax deduction is inferred. Reserved cash belongs to the household. "
         "Opening/completed snapshots are observed before billing; future dates are blocked. "
         "Month-end payment is never relabeled as first-day cash. "
         "Assessments create a bill, not a product trade or basis adjustment. Existing arrears "
@@ -59,5 +64,5 @@ def display(rows):
         "fees_owed",
     ]
     st.dataframe(pd.DataFrame(rows)[fields], hide_index=True, width="stretch")
-    with st.expander("Sourced fee bases, marginal bands and payment audit"):
-        st.json(audit)
+    with st.expander("Sourced fee bases, rate methods, period factors and payment audit"):
+        st.json(encode(audit))

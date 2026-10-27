@@ -5,6 +5,8 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
+from pydantic import BaseModel
+
 from wealthlab.household.scenario import Scenario
 from wealthlab.local_files import write_new
 
@@ -29,7 +31,7 @@ def loads(raw: bytes | str) -> Scenario:
     return Scenario.model_validate(value)
 
 
-def fingerprint(scenario: Scenario) -> str:
+def fingerprint(scenario: BaseModel) -> str:
     return hashlib.sha256(scenario.model_dump_json().encode()).hexdigest()
 
 

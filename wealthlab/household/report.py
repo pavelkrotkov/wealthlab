@@ -12,6 +12,8 @@ from decimal import Decimal
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
+from pydantic import BaseModel
+
 from wealthlab.household.projection import project
 from wealthlab.household.storage import MAX_BYTES, fingerprint, loads
 
@@ -48,11 +50,7 @@ def payload(scenario, rows):
         synthetic=scenario.synthetic,
         input_sha256=fingerprint(scenario),
         source_revision=revision(),
-        dependencies={
-            name: version(name)
-            for name in ("numpy", "pydantic", "taxcalc", "QuantLib", "streamlit")
-        }
-        | {"owlplanner": owl_version()},
+        dependencies=dependencies(),
         taxes_modeled=scenario.tax_plan is not None,
         inputs=scenario.model_dump(mode="json"),
         months=rows,
@@ -79,6 +77,8 @@ def json_value(value):
         return str(value)
     if isinstance(value, date):
         return value.isoformat()
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="python")
     raise ValueError("Unsupported structured report value; no audit was flattened.")
 
 
@@ -104,3 +104,9 @@ def compare(baseline_path, candidate_path):
         ending_wealth_change_usd=after[-1]["net_wealth"] - before[-1]["net_wealth"],
         full_tax_optimization_supported=False,
     )
+
+
+def dependencies():
+    return {
+        name: version(name) for name in ("numpy", "pydantic", "taxcalc", "QuantLib", "streamlit")
+    } | {"owlplanner": owl_version()}

@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from wealthlab.employment.compensation_inputs import CompensationPlan
 from wealthlab.employment.inputs import EmploymentPlan
 from wealthlab.household.advisory_inputs import AdvisoryPlan
+from wealthlab.household.property_inputs import PropertyPlan
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
 from wealthlab.household.validation import validate_dates, validate_references
@@ -21,7 +22,6 @@ from wealthlab.products.drilling_inputs import DrillingPlan
 from wealthlab.products.exchange_fund_inputs import ExchangeFundPlan
 from wealthlab.products.household_inputs import SleevePlan
 from wealthlab.products.life_household_inputs import LifeHouseholdPlan
-from wealthlab.products.life_household_records import validate_ownership as validate_life_ownership
 from wealthlab.products.option_household_inputs import OptionPlan
 from wealthlab.products.qoz_inputs import QOZPlan
 from wealthlab.retirement.education_household_inputs import EducationHouseholdPlan
@@ -80,6 +80,7 @@ class Scenario(BaseModel):
     qoz_plan: QOZPlan | None = None
     advisory_fee_plan: AdvisoryPlan | None = None
     drilling_plan: DrillingPlan | None = None
+    property_plan: PropertyPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -89,5 +90,4 @@ class Scenario(BaseModel):
             raise ValueError("Foreign tax cash execution requires the household annual tax plan.")
         validate_dates(self)
         validate_references(self)
-        validate_life_ownership(self)
         return self
