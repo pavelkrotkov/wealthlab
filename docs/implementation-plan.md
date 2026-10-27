@@ -193,7 +193,7 @@ Acceptance:
 
 Compare dated moves among supported jurisdictions without counting tax credits or exemptions twice.
 
-Delivered foundation: [dated paid-tax FX, ordinary source/basket limits and native US credit order](adr/0064-dated-foreign-credit-facts.md), with editable UI, actual cash audit and original carry vintages. Person residence, jurisdiction adapters, actual foreign-tax household funding and original-return redeterminations remain subsequent layers; this foundation does not complete the ticket.
+Delivered foundation: [dated paid-tax FX, ordinary source/basket limits and native US credit order](adr/0064-dated-foreign-credit-facts.md), with editable UI, actual cash audit and original carry vintages. The [shared foreign-tax cash consumer](adr/0065-household-foreign-tax-cash.md) executes actual payments, linked withholding, refunds and original carry vintages before optional flows. The [dated NJ residence profile](adr/0066-dated-nj-residence-and-return-units.md) executes independent person/source return units and actual positive year-end household settlement. PR/Spain jurisdiction adapters, independent state prepayment/refund positions, complete original-return redeterminations and unsupported source profiles remain subsequent layers; these foundations do not complete the ticket.
 
 Acceptance:
 - Person-specific status, sourcing, residency periods, treaty assumptions, foreign tax credit baskets/timing and FX are explicit and validated.

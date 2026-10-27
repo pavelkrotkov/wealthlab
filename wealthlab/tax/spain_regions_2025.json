@@ -1,0 +1,376 @@
+{
+  "year": 2025,
+  "verified": "2026-10-25",
+  "regions": {
+    "andalusia": {
+      "income": [
+        ["0", "0", ".095"],
+        ["13000", "1235", ".12"],
+        ["21100", "2207", ".15"],
+        ["35200", "4322", ".185"],
+        ["60000", "8910", ".225"]
+      ],
+      "ordinary_under65_minimum": "5790",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "difference",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-andalucia.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/andalucia.html",
+      "eligible_minima": ["700000", "1250000", "1500000"]
+    },
+    "aragon": {
+      "income": [
+        ["0", "0", ".095"],
+        ["13072.50", "1241.89", ".12"],
+        ["21210", "2218.39", ".15"],
+        ["36960", "4580.89", ".185"],
+        ["52500", "7455.79", ".205"],
+        ["60000", "8993.29", ".23"],
+        ["80000", "13593.29", ".24"],
+        ["90000", "15993.29", ".25"],
+        ["130000", "25993.29", ".255"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-aragon.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "asturias": {
+      "income": [
+        ["0", "0", ".09"],
+        ["12450", "1120.50", ".12"],
+        ["17707.20", "1751.36", ".14"],
+        ["33007.20", "3893.36", ".192"],
+        ["53407.20", "7810.16", ".215"],
+        ["70000", "11377.62", ".225"],
+        ["90000", "15877.62", ".25"],
+        ["175000", "37127.62", ".26"]
+      ],
+      "ordinary_under65_minimum": "6105",
+      "wealth_minimum": "700000",
+      "wealth": [
+        ["0", "0", ".0022"],
+        ["167129.45", "367.68", ".0033"],
+        ["334252.88", "919.19", ".0056"],
+        ["668499.75", "2790.97", ".0102"],
+        ["1336999.51", "9609.67", ".0148"],
+        ["2673999.01", "29397.26", ".0197"],
+        ["5347998.03", "82075.05", ".0248"],
+        ["10695996.06", "214705.40", ".03"]
+      ],
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-principado-asturias.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunidad-autonoma-principado-asturias.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "balearic": {
+      "income": [
+        ["0", "0", ".09"],
+        ["10000", "900", ".1125"],
+        ["18000", "1800", ".1425"],
+        ["30000", "3510", ".175"],
+        ["48000", "6660", ".19"],
+        ["70000", "10840", ".2175"],
+        ["90000", "15190", ".2275"],
+        ["120000", "22015", ".2375"],
+        ["175000", "35077.50", ".2475"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "3000000",
+      "wealth": [
+        ["0", "0", ".0028"],
+        ["170472.04", "477.32", ".0041"],
+        ["340937.04", "1176.23", ".0069"],
+        ["681869.75", "3528.67", ".0124"],
+        ["1336739.51", "11649.06", ".0179"],
+        ["2727479", "36543.30", ".0235"],
+        ["5454958", "100639.06", ".029"],
+        ["10909915.99", "258832.84", ".0345"]
+      ],
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-illes-balears.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunidad-autonoma-illes-balears.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "3000000"
+      ]
+    },
+    "canarias": {
+      "income": [
+        ["0", "0", ".09"],
+        ["13748", "1237.32", ".115"],
+        ["19422", "1889.83", ".14"],
+        ["35924", "4200.11", ".185"],
+        ["57566", "8203.88", ".235"],
+        ["93268", "16593.85", ".25"],
+        ["123745", "24213.10", ".26"]
+      ],
+      "ordinary_under65_minimum": "5606",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-canarias.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "cantabria": {
+      "income": [
+        ["0", "0", ".085"],
+        ["13000", "1105", ".11"],
+        ["21000", "1985", ".145"],
+        ["35200", "4044", ".18"],
+        ["60000", "8508", ".225"],
+        ["90000", "15258", ".245"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": [
+        ["0", "0", ".0024"],
+        ["167129.45", "401.11", ".0036"],
+        ["334252.88", "1002.75", ".0061"],
+        ["668499.75", "3041.66", ".0109"],
+        ["1336999.51", "10328.31", ".0157"],
+        ["2673999.01", "31319.20", ".0206"],
+        ["5347998.03", "86403.58", ".0254"],
+        ["10695996.06", "222242.73", ".0303"]
+      ],
+      "bonus": "cantabria",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-cantabria.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunidad-autonoma-cantabria.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/cantabria.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "castilla_leon": {
+      "income": [
+        ["0", "0", ".09"],
+        ["12450", "1120.50", ".12"],
+        ["20200", "2050.50", ".14"],
+        ["35200", "4150.50", ".185"],
+        ["53407.20", "7518.83", ".215"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-castilla-leon.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "extremadura": {
+      "income": [
+        ["0", "0", ".08"],
+        ["12450", "996", ".10"],
+        ["20200", "1771", ".16"],
+        ["24200", "2411", ".175"],
+        ["35200", "4336", ".21"],
+        ["60000", "9544", ".235"],
+        ["80200", "14291", ".24"],
+        ["99200", "18851", ".245"],
+        ["120200", "23996", ".25"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "500000",
+      "wealth": [
+        ["0", "0", ".003"],
+        ["167129.45", "501.39", ".0045"],
+        ["334252.88", "1253.44", ".0075"],
+        ["668499.75", "3760.30", ".0135"],
+        ["1336999.51", "12785.04", ".0195"],
+        ["2673999.01", "38856.53", ".0255"],
+        ["5347998.03", "107043.51", ".0315"],
+        ["10695996.06", "275505.45", ".0375"]
+      ],
+      "bonus": "full",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-extremadura.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunidad-autonoma-extremadura.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/extremadura.html",
+      "eligible_minima": [
+        "500000",
+        "600000",
+        "700000",
+        "800000"
+      ]
+    },
+    "galicia": {
+      "income": [
+        ["0", "0", ".09"],
+        ["12985.35", "1168.68", ".1165"],
+        ["21068.60", "2110.38", ".149"],
+        ["35200", "4215.96", ".184"],
+        ["60000", "8779.16", ".225"]
+      ],
+      "ordinary_under65_minimum": "5789",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "supplied",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-galicia.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/galicia.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "murcia": {
+      "income": [
+        ["0", "0", ".095"],
+        ["12450", "1182.75", ".112"],
+        ["20200", "2050.75", ".133"],
+        ["34000", "3886.15", ".179"],
+        ["60000", "8540.15", ".225"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "difference",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-region-murcia.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/region-murcia.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "la_rioja": {
+      "income": [
+        ["0", "0", ".08"],
+        ["12450", "996", ".106"],
+        ["20200", "1817.50", ".136"],
+        ["35200", "3857.50", ".178"],
+        ["40000", "4711.90", ".183"],
+        ["50000", "6541.90", ".19"],
+        ["60000", "8441.90", ".245"],
+        ["120000", "23141.90", ".27"]
+      ],
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "difference",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-rioja.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/rioja.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "valencia": {
+      "income": [
+        ["0", "0", ".09"],
+        ["12000", "1080", ".12"],
+        ["22000", "2280", ".15"],
+        ["32000", "3780", ".175"],
+        ["42000", "5530", ".20"],
+        ["52000", "7530", ".225"],
+        ["62000", "9780", ".25"],
+        ["72000", "12280", ".265"],
+        ["100000", "19700", ".275"],
+        ["150000", "33450", ".285"],
+        ["200000", "47700", ".295"]
+      ],
+      "ordinary_under65_minimum": "6105",
+      "wealth_minimum": "1000000",
+      "wealth": [
+        ["0", "0", ".0025"],
+        ["167129.45", "417.82", ".0037"],
+        ["334252.88", "1036.18", ".0062"],
+        ["668499.75", "3108.51", ".0112"],
+        ["1336999.51", "10595.71", ".0162"],
+        ["2673999.01", "32255.10", ".0212"],
+        ["5347998.03", "88943.88", ".0262"],
+        ["10695996.06", "229061.43", ".035"]
+      ],
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunitat-valenciana.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunitat-valenciana.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "1000000"
+      ]
+    },
+    "madrid": {
+      "income": null,
+      "ordinary_under65_minimum": "5956.65",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "difference",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-madrid.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas/madrid.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    },
+    "catalonia": {
+      "income": null,
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "500000",
+      "wealth": null,
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-cataluna.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escalas-autonomicas/comunidad-autonoma-cataluna.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "500000"
+      ]
+    },
+    "castilla_la_mancha": {
+      "income": null,
+      "ordinary_under65_minimum": "5550",
+      "wealth_minimum": "700000",
+      "wealth": null,
+      "bonus": "none",
+      "income_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c15-calculo-impuesto-determinacion-cuotas-integras/gravamen-base-liquidable-general/gravamen-autonomico/comunidad-autonoma-castilla-mancha.html",
+      "wealth_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-cuota-integra/regla-general/escala-estatal.html",
+      "wealth_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-4-determinacion-base-liquidable-integra/determinacion-base-liquidable-patrimonio-no-gravamen/sujetos-pasivos-residentes-ccaa.html",
+      "personal_minimum_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2025/c14-adecuacion-impuesto-circunstancias-personales/minimo-autonomico-personal-familiar/cuadro-minimos-personales-familiares-estatal-autonomicos.html",
+      "bonus_source": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/patrimonio-2025/c-5-determinacion-cuota-ingresar/deducciones-bonificaciones-autonomicas/bonificaciones-autonomicas.html",
+      "eligible_minima": [
+        "700000"
+      ]
+    }
+  }
+}

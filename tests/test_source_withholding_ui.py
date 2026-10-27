@@ -17,6 +17,8 @@ def test_household_source_withholding_example_projects_and_displays_cash_reconci
     assert table.iloc[0]["Gross cash"] == 10000
     assert table.iloc[0]["Net cash received"] == 8000
     assert table.iloc[0]["Federal tax withheld"] == 2000
+    assert table.iloc[0]["Foreign tax withheld"] == 0
+    assert table.iloc[0]["Foreign payment identity"] is None
 
 
 def labelled(items, label):
