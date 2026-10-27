@@ -7,13 +7,13 @@ modified draft. Reruns with the same selected file must preserve manual edits.
 
 import streamlit as st
 
-from wealthlab.household.storage import MAX_BYTES
+from wealthlab.household.storage import MAX_BYTES, MAX_MB
 
 
 def read(uploaded):
     raw = uploaded.getvalue()
     if len(raw) > MAX_BYTES:
-        raise ValueError("Import exceeds the 2 MB limit.")
+        raise ValueError(f"Import exceeds the {MAX_MB} MB limit.")
     try:
         return raw.decode("utf-8-sig")
     except UnicodeDecodeError as error:

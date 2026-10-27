@@ -10,7 +10,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from wealthlab.household.report import dependencies, revision
-from wealthlab.household.storage import MAX_BYTES, fingerprint
+from wealthlab.household.storage import MAX_BYTES, MAX_MB, fingerprint
 from wealthlab.optimization.inputs import PolicySearch
 from wealthlab.optimization.search import search
 
@@ -21,7 +21,7 @@ def loads(raw):
     data = raw.encode("utf-8") if isinstance(raw, str) else raw
     if len(data) > MAX_BYTES:
         raise ValueError(
-            "Policy search exceeds the 2 MB input limit; use the separate input export."
+            f"Policy search exceeds the {MAX_MB} MB input limit; use the separate input export."
         )
     try:
         text = data.decode("utf-8-sig")

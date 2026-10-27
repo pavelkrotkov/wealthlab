@@ -11,6 +11,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from wealthlab import country_report
 from wealthlab.household import report
 from wealthlab.local_files import write_new
 from wealthlab.local_launch import serve
@@ -83,7 +84,7 @@ def emit(text, options):
 
 def calculate(options):
     if options.command == "project":
-        return report.run(options.scenario)
+        return country_report.run(options.scenario)
     if options.command == "compare":
-        return report.compare(options.baseline, options.candidate)
+        return country_report.compare(options.baseline, options.candidate)
     return policy_report.run(options.scenario)

@@ -7,6 +7,7 @@ import streamlit as st
 from wealthlab.tax.household_reporting import annual_results
 from wealthlab.tax.household_reporting import revisions as return_revisions
 from wealthlab.tax.payments import missed_schedule
+from wealthlab.ui.jurisdiction_totals import display as jurisdiction_totals
 from wealthlab.ui.source_withholding import display as source_receipts
 
 
@@ -48,5 +49,6 @@ def display(rows: list[dict]) -> None:
             "before subsequent refund receipts or arrears payments."
         )
     st.dataframe(records, hide_index=True, width="stretch")
+    jurisdiction_totals(rows)
     with st.expander("Annual tax calculations and policy assumptions"):
         st.json(json.loads(json.dumps(annual, default=str)))

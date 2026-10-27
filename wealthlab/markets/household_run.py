@@ -1,15 +1,14 @@
 """Run policies on the same realized batch; never optimize with future path knowledge."""
 
-from wealthlab.household.projection import project
+from wealthlab.markets.country_projection import path as project_path
 from wealthlab.markets.employment_compile import audit
 from wealthlab.markets.household_compile import compile_marks
-from wealthlab.markets.household_execution import Execution
 from wealthlab.markets.household_report import aggregate, summarize
 from wealthlab.markets.household_validation import validate, validate_batch
 from wealthlab.markets.medical_inflation import audit as medical_audit
 
 
-def run(scenario, batch, binding, indices=None, progress=None):
+def run(scenario, batch, binding, indices=None, progress=None, *, country=None):
     validate_batch(scenario, batch)
     indices = list(range(len(batch.mark_returns))) if indices is None else list(indices)
     if not indices or len(indices) != len(set(indices)):
@@ -19,11 +18,12 @@ def run(scenario, batch, binding, indices=None, progress=None):
     outcomes, details = [], []
     for index in indices:
         case = compile_marks(scenario, batch, binding, index)
-        rows = project(case, market=Execution(case, batch, binding, index))
+        rows, country_audit = project_path(case, batch, binding, index, country)
         outcomes.append(summarize(case, rows, index))
         details.append(
             dict(
                 path=index,
+                **country_audit,
                 rows=rows,
                 employment_changes=audit(case, binding),
                 medical_bill_indexing=medical_audit(scenario, case, binding),
@@ -35,6 +35,7 @@ def run(scenario, batch, binding, indices=None, progress=None):
         batch_id=batch.metadata["batch_id"],
         indices=indices,
         household=scenario.model_dump(mode="json"),
+        country_context=country.model_dump(mode="json") if country is not None else None,
         binding=binding.model_dump(mode="json"),
         aggregate=aggregate(scenario, batch, outcomes),
         outcomes=outcomes,

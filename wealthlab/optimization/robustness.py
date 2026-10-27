@@ -61,7 +61,7 @@ def check(case, item, identity, baseline, selected, name="scenario", path_progre
 def replay(case, inputs, batch, sampled, progress=None):
     household, binding = inputs
     try:
-        result = run(household, batch, binding, progress=progress)
+        result = run(household, batch, binding, progress=progress, country=case.country_context)
     except ValueError as error:
         return dict(results=None, assessment=dict(eligible=False), unsupported_reason=str(error))
     return dict(results=result, assessment=assess(case, household, result, sampled=sampled))
