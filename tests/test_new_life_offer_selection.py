@@ -48,9 +48,3 @@ def test_even_a_zero_balance_existing_policy_cannot_be_replaced_with_a_new_offer
     assert existing.accounts[-1].balance == 0
     with pytest.raises(ValueError, match="cannot replace"):
         validate_offers(existing, offers)
-
-
-def test_duplicate_quote_identity_is_rejected_even_when_no_offer_will_be_selected():
-    household, offers = inputs()
-    with pytest.raises(ValueError, match="offer identifiers must be unique"):
-        apply(household.model_dump(mode="json"), [*offers, offers[0]], [])

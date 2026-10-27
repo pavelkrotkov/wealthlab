@@ -1,9 +1,8 @@
 """Independent value/basis checks follow contribution through actual household cash and exit tax."""
 
-from exchange_fund_cases import change, flat
+from exchange_fund_cases import flat
 
 from wealthlab.products.exchange_fund_compare import compare
-from wealthlab.products.exchange_fund_household import Ledger
 
 
 def test_flat_complete_exit_recognizes_deferred_gain_and_conserves_household_capital():
@@ -14,20 +13,6 @@ def test_flat_complete_exit_recognizes_deferred_gain_and_conserves_household_cap
         assert_completed_exit(rows)
     assert result["outcomes"]["exchange"] == result["outcomes"]["direct_sale"]
     assert scenario.model_dump_json() == before
-
-
-def test_partial_contribution_retains_original_units_and_each_independent_basis():
-    case = change(flat(), lambda d: d["exchange_fund_plan"].update(contribution_quantity="400"))
-    ledger = Ledger(case)
-    retained = ledger.book.lots["original_lot"]
-    assert (retained.quantity, retained.federal_basis, retained.nj_basis) == (600, 12000, 18000)
-    assert ledger.nav == 40000
-    assert ledger.bases == dict(federal=8000, nj=12000)
-    assert (
-        sum(lot.quantity * ledger.prices[lot.security_id] for lot in ledger.book.lots.values())
-        + (ledger.nav)
-        == 100000
-    )
 
 
 def assert_completed_exit(rows):

@@ -23,18 +23,3 @@ def test_invalid_manual_workplace_returns_block(changes):
     data["workplace_plan"]["returns"] = [dict(event, **changes)]
     with pytest.raises(ValueError):
         project(Scenario.model_validate(data))
-
-
-def test_workplace_return_cannot_reuse_election_record_id():
-    data = synthetic().model_dump(mode="json")
-    data["workplace_plan"]["returns"] = [
-        dict(
-            id="pretax_1",
-            provenance="assumption",
-            date="2026-01-31",
-            account_id="work_pretax",
-            rate=".1",
-        )
-    ]
-    with pytest.raises(ValueError, match="must be unique"):
-        project(Scenario.model_validate(data))

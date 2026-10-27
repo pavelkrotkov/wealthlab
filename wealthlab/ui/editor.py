@@ -17,6 +17,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import MAX_BYTES
 from wealthlab.ui.compensation import controls as compensation_controls
 from wealthlab.ui.employment import controls as employment_controls
+from wealthlab.ui.foreign_tax_household import controls as foreign_tax_controls
 from wealthlab.ui.household_advisory import controls as advisory_controls
 from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.household_education import controls as education_controls
@@ -68,6 +69,7 @@ def editor(scenario: Scenario) -> Scenario | None:
         uploads = tables(payload)
         plans = dict(
             tax_plan=tax_controls(payload, scenario),
+            foreign_tax_plan=foreign_tax_controls(payload, scenario),
             social_security=benefit_controls(payload, scenario),
             social_work_plan=social_work_controls(payload, scenario),
             employment_plan=employment_controls(payload, scenario),

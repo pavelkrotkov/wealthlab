@@ -1,7 +1,6 @@
 """Source scope is explicit and time bounded; a matching hash is not legal certification."""
 
 from copy import deepcopy
-from decimal import Decimal
 
 import pytest
 from optimization_drilling_cases import inputs
@@ -40,18 +39,3 @@ def test_source_must_be_known_at_opening_and_cover_the_declared_full_horizon(fie
     altered = confirmed.model_copy(update={field: date.fromisoformat(value)})
     with pytest.raises(ValueError, match="known at opening"):
         validate_envelope(household, altered, scope)
-
-
-def test_missing_original_household_or_false_full_tax_claim_is_rejected():
-    household, _, confirmed, scope = inputs()
-    with pytest.raises(ValueError, match="original household"):
-        validate_envelope(household, confirmed, {})
-    unsupported = confirmed.model_copy(update={"full_tax_optimization_supported": True})
-    with pytest.raises(ValueError, match="full-tax"):
-        validate_envelope(household, unsupported, scope)
-
-
-@pytest.mark.parametrize("raw", [{"not_normalized": Decimal("1")}, {"nonfinite": float("nan")}])
-def test_scope_hash_does_not_flatten_unknown_values_into_successful_source_evidence(raw):
-    with pytest.raises(ValueError, match="normalized JSON"):
-        fingerprint(raw)

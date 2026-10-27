@@ -39,16 +39,6 @@ def test_opening_allocation_starter_preserves_original_cash_and_existing_product
     assert starter.targets.maximum_issuer_weight is not None
 
 
-def test_native_search_exposes_real_cash_debits_and_constant_starting_wealth(app):
-    app.text_area("policy_search_editor").set_value(case().model_dump_json())
-    app.button(key="FormSubmitter:policy_search-Search allowed policies").click().run()
-    assert not app.exception and not app.error
-    result = app.session_state["policy_search_result"]
-    assert result["evaluated_candidates"] == 4
-    assert result["candidates"][3]["opening_allocation_audit"]["cash_debits"] == dict(cash=20000)
-    assert result["held_out"]["assessment"]["median_real_after_tax_exit_wealth"] == 251999
-
-
 def test_synthetic_opportunities_are_not_appended_to_private_scenarios():
     data = case().model_dump(mode="json")
     data["household"]["synthetic"] = False

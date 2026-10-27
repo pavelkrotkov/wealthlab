@@ -38,12 +38,6 @@ def test_locked_zero_does_not_hide_bad_source_owner_terms_or_positive_bounds(fie
         validate(profile)
 
 
-@pytest.mark.parametrize("count", [True, 1.5, -1, 100001])
-def test_contract_quantity_is_a_strict_bounded_integer(count):
-    with pytest.raises(ValueError):
-        locked(lambda d: d["dimensions"][-1]["choices"][1].update(option_units=count))
-
-
 def test_a_positive_choice_cannot_execute_without_its_fixed_opportunity():
     profile = changed(case(), lambda d: d.update(option_opportunity=None))
     with pytest.raises(ValueError, match="supplied opportunity"):

@@ -26,6 +26,7 @@ from wealthlab.retirement import (
 from wealthlab.retirement.household_receipts import receipt_hook
 from wealthlab.retirement.household_receipts import required as wrapper_required
 from wealthlab.retirement.hsa_payroll import month as hsa_payroll
+from wealthlab.tax.foreign_tax_household import receipt_priority
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -57,6 +58,7 @@ def month(
     row.update(payroll)
     advisory.prepare(products, wallet, start, end, fees_owed, tax_ledger)
     if tax_ledger is not None:
+        priority = receipt_priority(tax_ledger)
         required_cash = partial(needs.required, scenario, debt_balances, start, end, fees_owed)
         row.update(
             tax_ledger.month(
@@ -66,7 +68,7 @@ def month(
                 end,
                 required_quote(required_cash, education, hsa, products, medicare),
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa, education, products, options),
+                receipt_hook=receipt_hook(ira, hsa, education, products, options, priority),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
                 additional_nj_wages=payroll.get("hsa_payroll_contributions", Decimal(0)),
             )
@@ -99,6 +101,7 @@ def metrics(scenario, row, start, end):
             row.get("medical_owed", 0) > 0,
             row.get("option_failed", False),
             row.get("property_product_failure", False),
+            bool(row.get("foreign_tax_unresolved")),
             row.get("workplace_rmd_shortfall", 0) > 0,
             row.get("workplace_rmd_unresolved_prior", 0) > 0,
         )
@@ -109,6 +112,7 @@ def metrics(scenario, row, start, end):
         + row["funding_shortfall"]
         - row["fees_unfunded"]
         - row.get("tax_unfunded", Decimal(0))
+        - row.get("foreign_tax_unfunded", Decimal(0))
         - row.get("life_payment_unfunded", Decimal(0))
         - row.get("medicare_arrears_paid", Decimal(0))
         - row.get("medical_arrears_paid", Decimal(0))

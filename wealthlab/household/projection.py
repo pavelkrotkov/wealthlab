@@ -82,11 +82,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
         row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
-        row["net_wealth"] -= row.get("tax_position", Decimal(0))
-        row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
-        row["net_wealth"] -= row.get("medical_owed", Decimal(0))
-        row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-        row["net_wealth"] -= product_liabilities(row)
+        row["net_wealth"] -= additional_liabilities(row)
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
@@ -128,7 +124,16 @@ def start_market(scenario, market, lots, products, wallet, hsa, start):
     return market.start(scenario, lots, start) if market else (scenario, ())
 
 
-def product_liabilities(row):
-    """Subtract uncovered negative book equity once, not creditors already netted inside NAV."""
-    keys = ("sleeve_liability", "option_liability", "drilling_recourse_liability")
+def additional_liabilities(row):
+    """Subtract obligations once, excluding creditors already netted inside account NAV."""
+    keys = (
+        "tax_position",
+        "foreign_tax_position",
+        "medicare_owed",
+        "medical_owed",
+        "hsa_investment_fees_owed",
+        "sleeve_liability",
+        "option_liability",
+        "drilling_recourse_liability",
+    )
     return sum((row.get(key, Decimal(0)) for key in keys), Decimal(0))

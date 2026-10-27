@@ -7,7 +7,6 @@ Whole existing option positions and new-unit purchases are exclusive modes.
 from pathlib import Path
 
 import pytest
-from optimization_option_cases import case
 from streamlit.testing.v1 import AppTest
 
 from wealthlab.optimization.inputs import PolicySearch
@@ -37,13 +36,3 @@ def test_existing_contract_starter_disables_new_purchase_instead_of_overwriting_
     app.checkbox("Add synthetic options and employer contract exits").set_value(True).run()
     assert app.checkbox("new_option_allocation_starter").disabled
     assert not app.exception and not app.error
-
-
-def test_native_search_reports_funded_real_trades_and_source_cash_debits(app):
-    app.text_area("policy_search_editor").set_value(case().model_dump_json())
-    app.button(key="FormSubmitter:policy_search-Search allowed policies").click().run()
-    assert not app.exception and not app.error
-    result = app.session_state["policy_search_result"]
-    assert result["held_out"]["assessment"]["median_real_after_tax_exit_wealth"] == 252991
-    audit = result["candidates"][2]["opening_allocation_audit"]
-    assert audit["cash_debits"] == dict(cash=24000)

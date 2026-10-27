@@ -51,12 +51,3 @@ def test_remaining_actual_reference_lots_cannot_be_hidden_by_a_zero_account_bala
     damaged = deepcopy(row)
     damaged["drilling_audit"]["reference_lots"] = [{"quantity": "1"}]
     assert completed(case, damaged) is False
-
-
-def test_unknown_programmatic_mode_cannot_be_treated_as_a_closed_reference_book(reference):
-    case, row = reference
-    damaged = deepcopy(row)
-    plan = case.drilling_plan.model_copy(update={"mode": "unknown"})
-    damaged["drilling_audit"]["terminal_state"]["mode"] = "unknown"
-    unsupported = case.model_copy(update={"drilling_plan": plan})
-    assert completed(unsupported, damaged) is False

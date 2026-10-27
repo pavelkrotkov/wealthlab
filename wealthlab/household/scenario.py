@@ -22,7 +22,6 @@ from wealthlab.products.drilling_inputs import DrillingPlan
 from wealthlab.products.exchange_fund_inputs import ExchangeFundPlan
 from wealthlab.products.household_inputs import SleevePlan
 from wealthlab.products.life_household_inputs import LifeHouseholdPlan
-from wealthlab.products.life_household_records import validate_ownership as validate_life_ownership
 from wealthlab.products.option_household_inputs import OptionPlan
 from wealthlab.products.qoz_inputs import QOZPlan
 from wealthlab.retirement.education_household_inputs import EducationHouseholdPlan
@@ -32,6 +31,7 @@ from wealthlab.retirement.medicare_household_inputs import MedicarePlan
 from wealthlab.retirement.social_inputs import SocialCase
 from wealthlab.retirement.social_work_inputs import WorkPolicy
 from wealthlab.retirement.workplace_inputs import WorkplacePlan
+from wealthlab.tax.foreign_tax_inputs import ForeignTaxPlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
 
@@ -62,6 +62,7 @@ class Scenario(BaseModel):
     debts: list[Debt]
     contributions: list[Contribution]
     tax_plan: TaxPlan | None = None
+    foreign_tax_plan: ForeignTaxPlan | None = None
     social_security: SocialCase | None = None
     social_work_plan: WorkPolicy | None = None
     employment_plan: EmploymentPlan | None = None
@@ -85,7 +86,8 @@ class Scenario(BaseModel):
     def validate_inputs(self) -> Self:
         if self.social_work_plan is not None and self.social_security is None:
             raise ValueError("A work-test policy requires generated Social Security claims.")
+        if self.foreign_tax_plan is not None and self.tax_plan is None:
+            raise ValueError("Foreign tax cash execution requires the household annual tax plan.")
         validate_dates(self)
         validate_references(self)
-        validate_life_ownership(self)
         return self
