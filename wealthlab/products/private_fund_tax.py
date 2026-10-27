@@ -10,6 +10,7 @@ from decimal import Decimal
 from wealthlab.markets.wrapper_compile import event_id
 from wealthlab.products.conditional_allocations import audit, events
 from wealthlab.products.household_inputs import SleeveAllocation
+from wealthlab.products.private_fund_character import character
 
 
 class BasisBook:
@@ -65,7 +66,7 @@ class BasisBook:
                 id=event_id(self.account_id, when, "fund_cash_exit"),
                 provenance="assumption",
                 date=when,
-                federal={self.contract.federal_capital_character: values["federal"]},
+                federal={character(self.contract, when): values["federal"]},
                 new_jersey=dict(dispositions=values["new_jersey"]),
                 federal_loss=self.contract.federal_exit_loss,
                 new_jersey_loss=self.contract.new_jersey_exit_loss,

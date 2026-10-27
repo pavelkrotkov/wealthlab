@@ -1,4 +1,4 @@
-"""The real product workspace runs all three original synthetic contract examples."""
+"""The real product workspace runs original pre-owned and new-cash synthetic contract examples."""
 
 from pathlib import Path
 
@@ -6,7 +6,10 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 
-@pytest.mark.parametrize("strategy", ["Covered call", "Collar", "Four-leg synthetic exposure"])
+@pytest.mark.parametrize(
+    "strategy",
+    ["Covered call", "Collar", "Four-leg synthetic exposure", "Cash-funded new covered call"],
+)
 def test_option_workspace_runs_dated_contracts_and_export(strategy):
     app = AppTest.from_file(
         Path(__file__).resolve().parents[1] / "app.py", default_timeout=90
@@ -19,6 +22,11 @@ def test_option_workspace_runs_dated_contracts_and_export(strategy):
     result = app.session_state[f"option_{strategy}_result"]
     assert result["ending"]["shares"] == 0
     assert len(result["stress"]) == 9
+    # This example starts as cash: the displayed stock must come from an
+    # actual purchase, with all entry and assignment fees included once.
+    if strategy == "Cash-funded new covered call":
+        assert result["stock_trades"][0]["action"] == "buy"
+        assert result["ending"]["cash"] == 13496
     assert any("Dated option cash" in item.value for item in app.subheader)
 
 

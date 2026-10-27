@@ -1,5 +1,7 @@
 """Every observed option mark participates in joint product feasibility, not only ending cash."""
 
+from wealthlab.markets.life_reporting import outcome as life_outcome
+
 FIELDS = dict(
     margin_triggered="triggered",
     margin_unresolved="margin",
@@ -50,9 +52,12 @@ def combined(rows, options):
 def outcome(rows, funded):
     options = states(rows[-1].get("option_mark_audit", []))
     products = combined(rows, options)
+    life_failures, life = life_outcome(rows)
+    products["constraints_failed"].update(life_failures)
     failures = products["constraints_failed"]
     return dict(
         **{f"product_{key}_months": months(dates) for key, dates in products.items()},
+        **life,
         product_feasible=not failures,
         joint_feasible=funded and not failures,
         first_product_failure=min(failures, default=None),
