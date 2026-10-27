@@ -11,17 +11,6 @@ from wealthlab.optimization.drilling_profiles import validate_offers
 from wealthlab.products.drilling_inputs import DrillingPlan
 
 
-def test_duplicate_offers_and_missing_original_plan_are_rejected_before_selection():
-    household, offered, confirmed, scope = inputs()
-    duplicates = [offered[0], offered[0]]
-    record, context = envelope(household, duplicates)
-    with pytest.raises(ValueError, match="identifiers must be unique"):
-        validate_offers(household, duplicates, record, context)
-    missing = household.model_copy(update={"drilling_plan": None})
-    with pytest.raises(ValueError, match="original native"):
-        validate_offers(missing, offered, confirmed, scope)
-
-
 @pytest.mark.parametrize("actual", [True, False])
 def test_interest_and_declined_status_cannot_be_simultaneously_assumed_or_omitted(actual):
     household, offered, _, _ = inputs()

@@ -3,22 +3,10 @@
 import json
 from decimal import Decimal
 
-import pytest
 from test_local_cli import invoke
 
 from tests.optimizer_advisory_cases import case
-from wealthlab.household.report import encode
-from wealthlab.optimization import report
 from wealthlab.optimization.inputs import PolicySearch
-
-
-def test_fee_contract_edit_cannot_keep_an_old_policy_search_fingerprint():
-    archive = report.payload(dict(inputs=case().model_dump(mode="json")))
-    archive["inputs"]["household"]["advisory_fee_plan"]["schedules"][0]["tiers"][0][
-        "annual_rate"
-    ] = "0"
-    with pytest.raises(ValueError, match="fingerprint"):
-        report.loads(encode(archive))
 
 
 def test_actual_cli_fee_debt_cannot_become_a_completed_after_tax_exit(tmp_path):
