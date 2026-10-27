@@ -88,6 +88,10 @@ class Ledger:
             terms=self.plan.model_dump(mode="json"),
             calls=self.calls,
             source_return_revisions=self.revisions,
+            final_source_returns={
+                str(year): self.tax_ledger.closed_returns[year].result
+                for year in sorted({r["year"] for r in self.revisions})
+            },
             months=self.log,
             economic_log=self.economic_log,
             stock_values=self.stock_values,
