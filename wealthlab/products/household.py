@@ -5,7 +5,7 @@ months, including its debt, while the available cash comes from the current
 household wallet rather than a separate synthetic investor reserve.
 """
 
-from wealthlab.household import advisory_household
+from wealthlab.household import advisory_household, property_household
 from wealthlab.products.conditional_allocations import audit as tax_audit
 from wealthlab.products.conditional_allocations import events as tax_events
 from wealthlab.products.household_cash import execute
@@ -54,9 +54,9 @@ class Ledger:
 
 
 class CombinedLedger:
-    def __init__(self, books, advisory=None, priority=None):
+    def __init__(self, books, advisory=None, priority=None, property_book=None):
         self.books, self.advisory = books, advisory
-        self.priority = priority
+        self.priority, self.property_book = priority, property_book
 
     def after_receipts(self, wallet, start, end):
         for book in self.books:
@@ -69,7 +69,7 @@ class CombinedLedger:
         return {key: value for book in self.books for key, value in book.summary.items()}
 
 
-def make(scenario, tax_ledger=None, lots=None):
+def make(scenario, tax_ledger=None, lots=None, debt_balances=None):
     from wealthlab.products.drilling_household import Ledger as DrillingLedger
     from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
     from wealthlab.products.life_household import Ledger as LifeLedger
@@ -86,9 +86,16 @@ def make(scenario, tax_ledger=None, lots=None):
         books.append(QOZLedger(scenario, lots, tax_ledger))
     if scenario.drilling_plan:
         books.append(DrillingLedger(scenario))
+    property_book = property_household.attach(books, scenario, debt_balances)
     advisory = advisory_household.attach(books, scenario)
     append_saving(books, scenario, tax_ledger)
-    return CombinedLedger(books, advisory, receipt_priority(tax_ledger)) if books else None
+    return (
+        CombinedLedger(
+            books, advisory, priority=receipt_priority(tax_ledger), property_book=property_book
+        )
+        if books
+        else None
+    )
 
 
 def completed(ledger):

@@ -5,6 +5,7 @@ import json
 import pandas as pd
 import streamlit as st
 
+from wealthlab.household.report import encode
 from wealthlab.ui.optimization_robustness import display as robustness
 
 
@@ -13,14 +14,17 @@ def display(result):
     st.caption(
         f"Evaluated {result['evaluated_candidates']} of {result['grid_candidates']} allowed "
         "combinations. This is the best evaluated feasible candidate, not a global optimum. "
-        "Sampling intervals measure Monte Carlo sampling uncertainty, not model correctness."
+        "Sampling intervals measure Monte Carlo sampling uncertainty, not model correctness. "
+        "Advisory columns distinguish actual assessments, paid cash and ending debt. "
+        "All candidates retain the same sourced fee contract and observe their own native "
+        "balances; no precomputed AUM or optional zero-fee contract is substituted."
     )
     frame = pd.DataFrame(result["candidates"])
     st.dataframe(frame, hide_index=True)
     selected(result)
     robustness(result)
     with st.expander("Reproduce inputs, selected household, realized paths and tax/cash audit"):
-        st.json(result)
+        st.json(encode(result))
     st.download_button(
         "Export policy search inputs",
         json.dumps(result["inputs"], indent=2),
@@ -29,7 +33,7 @@ def display(result):
     )
     st.download_button(
         "Export policy search audit",
-        json.dumps(result, default=str),
+        encode(result),
         "policy-search-audit.json",
         "application/json",
     )
@@ -48,7 +52,7 @@ def selected(result):
     st.write("Training-selected policy:", result["selection"])
     held_out = result["held_out"]
     st.subheader("Separate validation sample — selection remains frozen")
-    st.json(held_out["assessment"])
+    st.json(encode(held_out["assessment"]))
     if held_out["assessment"]["eligible"]:
         st.success("The selected candidate also meets the targets on the held-out sample.")
     else:

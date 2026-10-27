@@ -2,6 +2,8 @@
 
 from statistics import median
 
+from wealthlab.optimization.advisory_metrics import actual as advisory_metrics
+
 
 def financial_metrics(result):
     outcomes = result["outcomes"]
@@ -16,6 +18,7 @@ def financial_metrics(result):
             r["closing_cash"] for item in result["details"] for r in item["rows"]
         ),
         **issuer_metrics(outcomes),
+        **advisory_metrics(result),
     )
 
 

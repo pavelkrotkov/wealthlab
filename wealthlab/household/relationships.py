@@ -2,6 +2,8 @@
 
 from typing import TYPE_CHECKING
 
+from wealthlab.products.life_household_records import validate_ownership as validate_life_ownership
+
 if TYPE_CHECKING:
     from wealthlab.household.scenario import Scenario
 
@@ -16,6 +18,8 @@ def validate_owners(scenario: "Scenario") -> None:
     for income in scenario.incomes:
         if income.stop_at_retirement and income.owner not in members:
             raise ValueError("Retirement-linked income requires a specific member owner.")
+
+    validate_life_ownership(scenario)
 
 
 def validate_currencies(scenario: "Scenario", records: list) -> None:

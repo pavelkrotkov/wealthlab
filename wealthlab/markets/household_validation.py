@@ -8,6 +8,7 @@ basis events, so that convention requires a separate adapter.
 """
 
 from wealthlab.household.calendar import months
+from wealthlab.markets.cash_scope import cash_only
 from wealthlab.markets.drilling_compile import validate as validate_drilling
 from wealthlab.markets.employer_validation import validate as validate_employers
 from wealthlab.markets.exchange_compile import validate as validate_exchange
@@ -62,7 +63,7 @@ def validate_bindings(scenario, batch, binding):
     confirm_scope(binding)
     identities = [b.security_id for b in binding.securities]
     actual = actual_securities(scenario)
-    if not any(
+    if not cash_only(scenario) and not any(
         (
             actual,
             binding.hsa_securities,
@@ -74,10 +75,11 @@ def validate_bindings(scenario, batch, binding):
             binding.options,
             binding.drilling,
             binding.qoz,
+            scenario.property_plan,
         )
     ):
         raise ValueError(
-            "Bind securities, supported wrappers, employer accounts or medical bill inflation."
+            "Bind securities or supported wrappers, employer, property or medical cash profiles."
         )
     if len(identities) != len(set(identities)) or set(identities) != actual:
         raise ValueError("Bind every linked security exactly once.")
