@@ -6,6 +6,7 @@ from decimal import Decimal
 from wealthlab.household.calendar import months
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.employer_compile import compile_plans as compile_employers
+from wealthlab.markets.exchange_compile import compile_plan as compile_exchange
 from wealthlab.markets.hsa_compile import compile_plan as compile_hsa
 from wealthlab.markets.medical_inflation import compile_bills
 from wealthlab.markets.option_compile import compile_plan as compile_options
@@ -18,6 +19,7 @@ def compile_marks(scenario, batch, binding, index):
     compile_plans(payload, scenario, batch, binding, index)
     compile_employers(payload, scenario, batch, binding, index)
     compile_sleeves(payload, scenario, batch, binding, index)
+    compile_exchange(payload, scenario, batch, binding, index)
     compile_bills(payload, scenario, batch, binding, index)
     compile_hsa(payload, scenario, batch, binding, index)
     compile_options(payload, scenario, batch, binding, index)
