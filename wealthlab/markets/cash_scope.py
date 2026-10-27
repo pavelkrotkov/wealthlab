@@ -8,6 +8,7 @@ active native investment book merely because its opening balance is zero.
 
 CASH_PLANS = {
     "tax_plan",
+    "foreign_tax_plan",
     "employment_plan",
     "social_work_plan",
     "medicare_plan",

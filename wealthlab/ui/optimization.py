@@ -32,7 +32,8 @@ def show():
         "Fixed personal-home observations, liens and declared closes execute natively; "
         "property terms are shared across choices. Retained equity stays illiquid, and an "
         "uncompleted close cannot rank as after-tax exit cash. "
-        "Cross-border controls remain in progress."
+        "A fixed native PR/Spain context can reconcile each candidate's actual country tax. "
+        "Relocation choices and unmapped foreign income/basis changes remain unsupported."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "

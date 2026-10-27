@@ -25,6 +25,7 @@ from wealthlab.portfolio.policies import SalePolicy
 from wealthlab.portfolio.rebalance_inputs import RebalancePolicy
 from wealthlab.portfolio.saving_inputs import SavingPolicy
 from wealthlab.retirement.distribution_inputs import WithdrawalOrder
+from wealthlab.tax.country_path_inputs import CountryContext
 from wealthlab.tax.facts import TaxModel
 
 
@@ -79,6 +80,7 @@ class PolicySearch(TaxModel):
     """A common household and market model with independently seeded validation."""
 
     household: Scenario
+    country_context: CountryContext | None = None
     binding: HouseholdBinding
     training: MarketCase
     validation: MarketCase

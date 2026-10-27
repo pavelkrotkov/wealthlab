@@ -8,7 +8,7 @@ from wealthlab.optimization.advisory_metrics import actual as advisory_metrics
 def financial_metrics(result):
     outcomes = result["outcomes"]
     return dict(
-        median_net_cash_tax=median(r["net_cash_taxes_paid"] for r in outcomes),
+        **tax_cash(result),
         maximum_drawdown=max(r["net_wealth_drawdown"] for r in outcomes),
         maximum_funding_shortfall=max(r["funding_shortfall"] for r in outcomes),
         median_discretionary_reduction=median(
@@ -30,6 +30,24 @@ def issuer_metrics(outcomes):
         maximum_known_issuer_weight=max(
             (r["max_security_weight"] for r in outcomes if r["max_security_weight"] is not None),
             default=None,
+        ),
+    )
+
+
+def foreign_cash(rows):
+    return sum(row.get("foreign_tax_cash_outflow", 0) for row in rows)
+
+
+def tax_cash(result):
+    outcomes = result["outcomes"]
+    return dict(
+        median_net_cash_tax=median(
+            r["net_cash_taxes_paid"] + foreign_cash(item["rows"])
+            for r, item in zip(outcomes, result["details"], strict=True)
+        ),
+        median_domestic_net_cash_tax=median(r["net_cash_taxes_paid"] for r in outcomes),
+        median_foreign_net_cash_tax=median(
+            foreign_cash(item["rows"]) for item in result["details"]
         ),
     )
 

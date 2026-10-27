@@ -12,6 +12,7 @@ from wealthlab.optimization.advisory_example import extend as with_advisory
 from wealthlab.optimization.allocation_example import extend as with_allocations
 from wealthlab.optimization.collectible_example import synthetic as collectible_starter
 from wealthlab.optimization.contract_example import extend as with_contracts
+from wealthlab.optimization.country_example import synthetic as country_starter
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.drilling_example import confirm_synthetic
 from wealthlab.optimization.drilling_example import extend as with_drilling
@@ -36,6 +37,7 @@ def show():
             "Full age-100 cash and stock example",
             "Gold treated as collectible sale timing",
             "Source-matched retirement and employer vesting",
+            "Fixed PR country tax and retirement wages",
         ],
     )
     starter = preset(example)
@@ -65,6 +67,13 @@ def show():
 
 
 def preset(example):
+    if example == "Fixed PR country tax and retirement wages":
+        st.caption(
+            "Fixed synthetic PR residence and US-source wages; retirement changes actual "
+            "dated wages and both native country tax bills. No relocation or eligibility "
+            "choice. Default age-100 safety remains unproved by this short example."
+        )
+        return country_starter()
     if example == "Full age-100 cash and stock example":
         return horizon_starter()
     if example == "Gold treated as collectible sale timing":

@@ -57,6 +57,7 @@ def evaluate(case, selection, index, batch, path_progress=None):
             household,
             batch,
             binding,
+            country=case.country_context,
             progress=observe(path_progress, f"Training candidate {index + 1}", batch),
         )
     except ValueError as error:
@@ -85,6 +86,7 @@ def validate_winner(case, winner, path_progress=None):
             household,
             batch,
             binding,
+            country=case.country_context,
             progress=observe(path_progress, "Independent validation", batch),
         )
     except ValueError as error:

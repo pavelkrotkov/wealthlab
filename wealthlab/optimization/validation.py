@@ -10,6 +10,7 @@ from math import prod
 
 from wealthlab.household.calendar import months
 from wealthlab.optimization import (
+    country_context,
     drilling_controls,
     employment_controls,
     exchange_paths,
@@ -64,6 +65,7 @@ def footprint(choice):
 
 
 def validate(case):
+    country_context.validate(case)
     validate_markets(case)
     validate_allocations(case)
     life_paths.validate(case)
@@ -89,6 +91,7 @@ def validate(case):
     count = prod(len(choices(d)) for d in case.dimensions)
     periods = len(list(months(case.household.start, case.household.end)))
     work = periods * (count * case.training.paths + case.validation.paths + projection_paths(case))
+    work *= country_context.projection_passes(case)
     if count > case.maximum_candidates or work > case.maximum_projection_months:
         raise ValueError("Search exceeds the explicit candidate or projection-month budget.")
     return count
