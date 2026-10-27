@@ -25,6 +25,7 @@ ALLOWED_PLANS = {
     "advisory_fee_plan",
     "drilling_plan",
     "qoz_plan",
+    "property_plan",
 }
 
 
@@ -53,6 +54,7 @@ def validate_accounts(household):
             "education",
             "insurance",
             "employer",
+            "property",
         }
         for a in household.accounts
     ):
@@ -65,6 +67,7 @@ def validate_accounts(household):
         ("education", "education_plan"),
         ("insurance", "life_plan"),
         ("employer", "compensation_plan"),
+        ("property", "property_plan"),
     ):
         if (
             any(a.wrapper == wrapper for a in household.accounts)

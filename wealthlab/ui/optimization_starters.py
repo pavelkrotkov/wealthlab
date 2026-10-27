@@ -23,6 +23,7 @@ from wealthlab.optimization.life_example import extend as with_life_paths
 from wealthlab.optimization.new_life_example import extend as with_new_life
 from wealthlab.optimization.option_allocation_example import extend as with_new_options
 from wealthlab.optimization.product_example import extend as with_products
+from wealthlab.optimization.property_example import extend as with_property
 from wealthlab.optimization.qoz_example import extend as with_qoz
 from wealthlab.optimization.robustness_example import synthetic as robust
 from wealthlab.ui.optimization_horizon import show as horizon_starter
@@ -54,6 +55,14 @@ def show():
     ):
         if st.checkbox(label, key=label):
             starter = extend(starter)
+    if st.checkbox("Add fixed synthetic home and native mortgage close", key="property_context"):
+        starter = with_property(starter)
+        st.caption(
+            "The common household includes an original $300,000 home and $60,000 lien. "
+            "Every policy retains the same June close, costs, tax assumptions and home marks. "
+            "This example explicitly disables the issuer limit: home issuer/factor coverage "
+            "remains unmeasured. Retained homes remain illiquid and block completed-exit ranking."
+        )
     return advisory(purchases(starter))
 
 
