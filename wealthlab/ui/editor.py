@@ -17,6 +17,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import MAX_BYTES
 from wealthlab.ui.compensation import controls as compensation_controls
 from wealthlab.ui.employment import controls as employment_controls
+from wealthlab.ui.foreign_tax_household import controls as foreign_tax_controls
 from wealthlab.ui.household_advisory import controls as advisory_controls
 from wealthlab.ui.household_benefits import controls as benefit_controls
 from wealthlab.ui.household_education import controls as education_controls
@@ -26,6 +27,7 @@ from wealthlab.ui.household_life import controls as life_controls
 from wealthlab.ui.household_lots import controls as lot_controls
 from wealthlab.ui.household_medicare import controls as medicare_controls
 from wealthlab.ui.household_options import controls as option_controls
+from wealthlab.ui.household_property import controls as property_controls
 from wealthlab.ui.household_sleeves import controls as sleeve_controls
 from wealthlab.ui.household_social_work import controls as social_work_controls
 from wealthlab.ui.household_workplace import controls as workplace_controls
@@ -67,6 +69,7 @@ def editor(scenario: Scenario) -> Scenario | None:
         uploads = tables(payload)
         plans = dict(
             tax_plan=tax_controls(payload, scenario),
+            foreign_tax_plan=foreign_tax_controls(payload, scenario),
             social_security=benefit_controls(payload, scenario),
             social_work_plan=social_work_controls(payload, scenario),
             employment_plan=employment_controls(payload, scenario),
@@ -81,6 +84,7 @@ def editor(scenario: Scenario) -> Scenario | None:
             option_plan=option_controls(payload, scenario),
             life_plan=life_controls(payload, scenario),
             advisory_fee_plan=advisory_controls(payload, scenario),
+            property_plan=property_controls(payload, scenario),
         )
         submitted = st.form_submit_button("Validate and project", type="primary")
     if not submitted:

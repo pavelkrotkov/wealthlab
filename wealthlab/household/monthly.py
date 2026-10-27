@@ -6,6 +6,7 @@ old bill does not falsely increase the current recurring spending target.
 """
 
 from decimal import Decimal
+from functools import partial
 
 from wealthlab.household import advisory_household as advisory
 from wealthlab.household import debts, flows, needs
@@ -25,6 +26,7 @@ from wealthlab.retirement import (
 from wealthlab.retirement.household_receipts import receipt_hook
 from wealthlab.retirement.household_receipts import required as wrapper_required
 from wealthlab.retirement.hsa_payroll import month as hsa_payroll
+from wealthlab.tax.foreign_tax_household import receipt_priority
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -56,17 +58,17 @@ def month(
     row.update(payroll)
     advisory.prepare(products, wallet, start, end, fees_owed, tax_ledger)
     if tax_ledger is not None:
-        required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
-        required_cash += medicare_household.required(medicare)
+        priority = receipt_priority(tax_ledger)
+        required_cash = partial(needs.required, scenario, debt_balances, start, end, fees_owed)
         row.update(
             tax_ledger.month(
                 taxable,
                 wallet,
                 start,
                 end,
-                required_quote(required_cash, education, hsa, products),
+                required_quote(required_cash, education, hsa, products, medicare),
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa, education, products, options),
+                receipt_hook=receipt_hook(ira, hsa, education, products, options, priority),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
                 additional_nj_wages=payroll.get("hsa_payroll_contributions", Decimal(0)),
             )
@@ -98,6 +100,8 @@ def metrics(scenario, row, start, end):
             missed_schedule(row),
             row.get("medical_owed", 0) > 0,
             row.get("option_failed", False),
+            row.get("property_product_failure", False),
+            bool(row.get("foreign_tax_unresolved")),
             row.get("workplace_rmd_shortfall", 0) > 0,
             row.get("workplace_rmd_unresolved_prior", 0) > 0,
         )
@@ -108,6 +112,7 @@ def metrics(scenario, row, start, end):
         + row["funding_shortfall"]
         - row["fees_unfunded"]
         - row.get("tax_unfunded", Decimal(0))
+        - row.get("foreign_tax_unfunded", Decimal(0))
         - row.get("life_payment_unfunded", Decimal(0))
         - row.get("medicare_arrears_paid", Decimal(0))
         - row.get("medical_arrears_paid", Decimal(0))
@@ -125,6 +130,11 @@ def metrics(scenario, row, start, end):
     return row
 
 
-def required_quote(required_cash, education, hsa, products):
+def required_quote(required_cash, education, hsa, products, medicare=None):
     """Optional product bills and newly observed advisory fees stay live until funding."""
-    return lambda: required_cash + wrapper_required(education, hsa) + advisory.current_due(products)
+    return lambda: (
+        required_cash()
+        + medicare_household.required(medicare)
+        + wrapper_required(education, hsa)
+        + advisory.current_due(products)
+    )

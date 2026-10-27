@@ -1,6 +1,7 @@
 """A drilling interest owns its complete account and cannot duplicate another funding/basis book."""
 
 from wealthlab.products.drilling_option_accounts import validate as validate_options
+from wealthlab.products.household_accounts import excluded_accounts as funding_accounts
 
 
 def validate_account(scenario, plan):
@@ -21,12 +22,12 @@ def validate_account(scenario, plan):
 
 
 def excluded_accounts(scenario):
-    blocked = {c.destination for c in scenario.contributions}
-    blocked |= {s.account_id for s in scenario.tax_plan.funding_sources}
-    blocked |= {a.id for a in scenario.lot_plan.case.accounts} if scenario.lot_plan else set()
+    blocked = funding_accounts(scenario)
     blocked |= (
         {s.account_id for s in scenario.sleeve_plan.sleeves} if scenario.sleeve_plan else set()
     )
     if scenario.exchange_fund_plan:
         blocked.add(scenario.exchange_fund_plan.account_id)
+    if scenario.qoz_plan:
+        blocked.add(scenario.qoz_plan.account_id)
     return blocked

@@ -75,10 +75,11 @@ def validate_bindings(scenario, batch, binding):
             binding.options,
             binding.drilling,
             binding.qoz,
+            scenario.property_plan,
         )
     ):
         raise ValueError(
-            "Bind securities, supported wrappers, employer accounts or medical bill inflation."
+            "Bind securities or supported wrappers, employer, property or medical cash profiles."
         )
     if len(identities) != len(set(identities)) or set(identities) != actual:
         raise ValueError("Bind every linked security exactly once.")

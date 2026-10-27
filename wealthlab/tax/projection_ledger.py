@@ -4,14 +4,15 @@ from decimal import Decimal
 from itertools import chain
 
 from wealthlab.tax import (
-    payments,
+    foreign_tax_household,
+    jurisdiction_observation,
     prior_payments,
+    projection_monthly,
     recognition,
     required_funding,
     source_withholding,
     state_deduction,
 )
-from wealthlab.tax.annual import evaluate
 from wealthlab.tax.funding_accounts import AccountFunding
 from wealthlab.tax.projection_validation import validate
 from wealthlab.tax.settlement import close_year
@@ -29,6 +30,7 @@ class TaxLedger:
     def __init__(self, plan, scenario, lots=None):
         validate(plan, scenario)
         self.plan = plan
+        self.foreign = foreign_tax_household.make(scenario)
         self.lots = lots
         self.provisional_returns = set()
         qoz = scenario.qoz_plan
@@ -101,6 +103,7 @@ class TaxLedger:
         required_funding.begin(self, amounts, required_cash, start, end)
         self.nj_wage_withholding_addition = additional_nj_wages
         self.start_year(start.year)
+        self.case = jurisdiction_observation.observe(self.case, end)
         received, taxable_refund = prior_payments.receive(self, wallet, end)
         self.case = recognition.scheduled(self.case, amounts, self.plan.income_rules)
         event_cash = self.events(wallet, start, end, extra_events)
@@ -109,36 +112,25 @@ class TaxLedger:
                 wallet, start, end, pre_receipt_hook(wallet, start, end)
             )
         prior_paid = prior_payments.pay(self, wallet)
+        foreign_tax_household.before_optional(self, wallet, start, end)
         if receipt_hook is not None:
             event_cash += self.apply_events(wallet, start, end, receipt_hook(wallet, start, end))
         # The shared quote observes wrapper reductions and earlier product sales.
         self.fund_required(wallet, Decimal(0), start, end)
         paid_after_sale = prior_payments.pay(self, wallet)
-        result = evaluate(self.case)
-        requested = payments.ledger_request(self, amounts, result, start, end)
-        before = self.case.payments
-        self.case, paid = payments.pay(self.case, wallet, requested, self.plan.state_deduction_mode)
-        estimates = (
-            self.case.payments.federal_estimates
-            - before.federal_estimates
-            + self.case.payments.nj_estimates
-            - before.nj_estimates
-        )
-        self.result = evaluate(self.case)
-        return dict(
-            social_security_cash=recognition.social_cash(amounts, self.plan.income_rules),
-            tax_withheld=paid - estimates,
-            tax_estimates_paid=estimates,
-            tax_payment_gap=max(Decimal(0), sum(requested.values()) - paid),
-            prior_tax_paid=prior_paid + paid_after_sale,
-            funding_sale_proceeds=required_funding.finish(self),
-            tax_refund_received=received,
-            taxable_state_refund=taxable_refund,
-            tax_event_cash=event_cash,
-            tax_source_withholding=sum(
-                (r["total_withheld"] for r in self.source_receipts), Decimal(0)
-            ),
-            tax_source_receipts=list(self.source_receipts),
+        foreign_tax_household.reconcile_required(self, wallet, start, end)
+        paid, estimates = projection_monthly.pay_current(self, wallet, amounts, start, end)
+        return projection_monthly.report(
+            self,
+            amounts,
+            start,
+            end,
+            paid,
+            estimates,
+            prior_paid + paid_after_sale,
+            received,
+            taxable_refund,
+            event_cash,
         )
 
     def fund_required(self, wallet, additional, start, end):
@@ -152,6 +144,7 @@ class TaxLedger:
         cash = Decimal(0)
         for item in items:
             if start <= item.date < end:
+                source_withholding.validate_foreign_book(item, self.foreign)
                 self.case = recognition.event(self.case, item, self.plan.state_deduction_mode)
                 if item.withholding is not None:
                     self.source_receipts.append(source_withholding.receipt(item))
