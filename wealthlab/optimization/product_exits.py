@@ -10,6 +10,7 @@ from decimal import Decimal
 from wealthlab.optimization.account_exits import lots_closed
 from wealthlab.optimization.contract_exits import employer_closed, options_closed
 from wealthlab.optimization.drilling_exits import completed as drilling_closed
+from wealthlab.optimization.qoz_exits import completed as qoz_closed
 
 
 def complete(household, row):
@@ -20,6 +21,7 @@ def complete(household, row):
         and options_closed(household, row)
         and employer_closed(household, row)
         and drilling_closed(household, row)
+        and qoz_closed(household, row)
     )
 
 
