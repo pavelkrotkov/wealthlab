@@ -11,7 +11,7 @@ from wealthlab.tax.facts import TaxModel
 class LifeComparison(TaxModel):
     alternatives: dict[str, Scenario] = Field(min_length=2, max_length=6)
     liquid_reference: str
-    term_account_ids: list[str] = Field(min_length=1)
+    term_account_ids: list[str]
     independently_priced_protection_confirmed: bool
     market: MarketCase | None = None
     binding: HouseholdBinding | None = None

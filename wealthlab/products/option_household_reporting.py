@@ -6,7 +6,10 @@ def completed(ledger):
 
 
 def finish(ledger, rows):
+    from wealthlab.products.option_exit_state import evidence
+
     if ledger:
+        ledger.state.rows[-1]["exit_state"] = evidence(ledger.state, ledger.plan.case.holdings.end)
         rows[-1]["option_audit"] = ledger.log
         rows[-1]["option_mark_audit"] = ledger.state.rows
         rows[-1]["option_tax_audit"] = recognition_audit(ledger)

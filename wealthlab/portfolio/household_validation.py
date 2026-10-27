@@ -13,6 +13,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.household.calendar import months
+from wealthlab.portfolio.household_budget_validation import validation_case
 from wealthlab.portfolio.household_policies import validate as validate_policies
 from wealthlab.portfolio.household_values import account_value
 from wealthlab.portfolio.rebalance_validation import validate as validate_rebalances
@@ -30,7 +31,7 @@ def validate(scenario):
         raise ValueError("Confirm complete lot ownership/purchases and monthly cash sweep timing.")
     case = plan.case
     validate_scope(case)
-    validate_lots(case)
+    validate_lots(validation_case(plan, scenario))
     validate_january(plan, scenario)
     if (case.as_of, case.end) != (scenario.start, scenario.end - timedelta(days=1)):
         raise ValueError("Linked lot dates must match the household's inclusive/exclusive horizon.")
