@@ -37,6 +37,8 @@ def report(scenario, binding, lots, row):
         | {w.account_id for w in [*binding.wrappers, *binding.employers]}
         | set(binding.sleeves)
     )
+    if binding.qoz is not None:
+        mapped.add(binding.qoz.account_id)
     return dict(
         market_security_values=values,
         market_gross_assets=assets,
@@ -82,6 +84,9 @@ def factor_values(binding, values, row):
         factors[position["short_factor"]] = (
             factors.get(position["short_factor"], ZERO) - position["short_liability"]
         )
+    if binding.qoz is not None:
+        factor = binding.qoz.factor
+        factors[factor] = factors.get(factor, ZERO) + row.get("qoz_entity_asset_value", ZERO)
     return factors
 
 
@@ -116,7 +121,12 @@ def positive_value(account, scenario, row):
         (t["unvested"] for t in row.get("employer_tranches", []) if t["account"] == account.id),
         ZERO,
     )
-    return max(row["account_balances"][account.id], opening, sleeve, contingent) > 0
+    qoz = (
+        row.get("qoz_entity_asset_value", ZERO)
+        if scenario.qoz_plan and scenario.qoz_plan.account_id == account.id
+        else ZERO
+    )
+    return max(row["account_balances"][account.id], opening, sleeve, contingent, qoz) > 0
 
 
 def gross_assets(lots, row):

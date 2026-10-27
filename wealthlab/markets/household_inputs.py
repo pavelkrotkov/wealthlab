@@ -11,6 +11,7 @@ from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.hsa_inputs import HSAInvestmentBinding
 from wealthlab.markets.medical_inflation import MedicalBillIndexing
 from wealthlab.markets.option_inputs import OptionBinding
+from wealthlab.markets.qoz_inputs import QOZBinding
 from wealthlab.markets.wrapper_inputs import WrapperBinding
 from wealthlab.tax.facts import TaxModel
 
@@ -26,6 +27,7 @@ class HouseholdBinding(TaxModel):
     spending_guardrail: SpendingGuardrail | None = None
     options: OptionBinding | None = None
     drilling: DrillingBinding | None = None
+    qoz: QOZBinding | None = None
     securities: list[SecurityBinding] = Field(default_factory=list)
     hsa_securities: list[HSAInvestmentBinding] = Field(default_factory=list)
     replace_hsa_observations_confirmed: bool = False
