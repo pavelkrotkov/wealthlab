@@ -33,10 +33,7 @@ def aggregate(scenario, batch, results):
     successes = sum(r["funded"] for r in results)
     fraction = successes / len(results)
     stochastic = batch.metadata["input"]["mode"] == "monte_carlo"
-    youngest = max(m.birth_date for m in scenario.members)
-    year = youngest.year + scenario.target_age + 1
-    target = date(year, youngest.month, min(youngest.day, monthrange(year, youngest.month)[1]))
-    attained = scenario.end >= target
+    attained = scenario.end >= target_end(scenario)
     return dict(
         **product_totals(results),
         paths=len(results),
@@ -77,3 +74,10 @@ def known_weight(rows):
         r["market_max_security_weight"] for r in rows if r["market_max_security_weight"] is not None
     ]
     return max(known) if known else None
+
+
+def target_end(scenario):
+    """Cover the younger member's entire target-age year, through the next birthday."""
+    youngest = max(m.birth_date for m in scenario.members)
+    year = youngest.year + scenario.target_age + 1
+    return date(year, youngest.month, min(youngest.day, monthrange(year, youngest.month)[1]))

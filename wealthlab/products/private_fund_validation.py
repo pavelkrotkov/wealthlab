@@ -38,6 +38,11 @@ def validate_records(contract):
 
 
 def validate_dates(contract, scenario):
+    if (
+        contract.federal_holding_start is not None
+        and contract.federal_holding_start > scenario.start
+    ):
+        raise ValueError("An opening fund interest cannot have a future holding start.")
     if any(not scenario.start <= r.notice_date < scenario.end for r in contract.requests):
         raise ValueError("Fund notices must be inside the projection.")
     if any(not scenario.start <= r.date < scenario.end for r in contract.basis_adjustments):
