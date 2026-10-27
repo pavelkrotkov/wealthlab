@@ -11,6 +11,7 @@ from wealthlab.employment.compensation_termination_example import terminated
 from wealthlab.household.calendar import months
 from wealthlab.markets.example import asset
 from wealthlab.markets.option_example import synthetic as options
+from wealthlab.optimization.contract_scope import owner_for
 from wealthlab.optimization.inputs import PolicySearch
 from wealthlab.optimization.product_example import account, add_factor
 
@@ -24,9 +25,11 @@ def extend(case):
     household = data["household"]
     source = terminated().model_dump(mode="json")
     employer = next(a for a in source["accounts"] if a["id"] == "employer_fund")
-    household["accounts"] += [account("options", "taxable"), employer]
-    household["compensation_plan"] = source["compensation_plan"]
     plan, binding = option_terms(case.household)
+    option = account("options", "taxable")
+    option["owner"] = owner_for(case.household, plan["case"]["holdings"]["accounts"][0]["owner"])
+    household["accounts"] += [option, employer]
+    household["compensation_plan"] = source["compensation_plan"]
     household["option_plan"] = plan
     data["binding"].update(options=binding, employers=[employer_binding()])
     extend_markets(data)

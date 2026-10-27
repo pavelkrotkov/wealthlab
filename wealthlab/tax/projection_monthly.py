@@ -15,7 +15,7 @@ def report(
         tax_withheld=paid - estimates,
         tax_estimates_paid=estimates,
         tax_payment_gap=max(Decimal(0), sum(ledger.month_requested.values()) - paid),
-        prior_tax_paid=prior_paid,
+        prior_tax_paid=prior_paid + (ledger.foreign.domestic_prior_paid if ledger.foreign else 0),
         funding_sale_proceeds=required_funding.finish(ledger),
         tax_refund_received=received,
         taxable_state_refund=taxable_refund,

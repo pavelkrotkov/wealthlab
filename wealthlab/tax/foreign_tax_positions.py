@@ -8,6 +8,7 @@ remaining native positions without changing their tax-credit translation.
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
+from wealthlab.tax.foreign_tax_recognition import amount as recognized_amount
 
 ZERO = Decimal(0)
 
@@ -26,7 +27,7 @@ def assessed(book, assessment, when):
 def net_paid(book, assessment_id):
     return sum(
         (
-            r.value.amount * (-1 if r.kind == "refund" else 1)
+            recognized_amount(book, r) * (-1 if r.kind == "refund" else 1)
             for identity, r in book.payments
             if identity == assessment_id
         ),

@@ -37,7 +37,10 @@ def apply(scenario, batch, path):
                 )
         observations.append(
             observation.model_copy(
-                update={"prices": dict(prices), "locked": bool(batch.locked[i].any())}
+                update={
+                    "prices": dict(prices),
+                    "locked": observation.locked or bool(batch.locked[i].any()),
+                }
             )
         )
     return scenario.model_copy(

@@ -4,6 +4,8 @@ Remaining product/wrapper adapters must establish their own closure semantics;
 zero net equity does not establish the absence of gross assets or obligations.
 """
 
+from wealthlab.optimization.contract_scope import validate as validate_option_ownership
+
 ALLOWED_PLANS = {
     "tax_plan",
     "employment_plan",
@@ -19,6 +21,8 @@ ALLOWED_PLANS = {
     "life_plan",
     "option_plan",
     "compensation_plan",
+    "advisory_fee_plan",
+    "drilling_plan",
 }
 
 
@@ -31,6 +35,7 @@ def validate(household, binding):
     validate_accounts(household)
     validate_product_paths(household, binding)
     validate_contract_paths(household, binding)
+    validate_option_ownership(household)
 
 
 def validate_accounts(household):
@@ -77,6 +82,8 @@ def unsupported_plans(household):
 
 
 def validate_product_paths(household, binding):
+    if household.drilling_plan and binding.drilling is None:
+        raise ValueError("Optimizer drilling requires its native commodity/reference binding.")
     sleeves = (
         {s.account_id for s in household.sleeve_plan.sleeves} if household.sleeve_plan else set()
     )
