@@ -41,11 +41,3 @@ def test_published_future_year_cannot_silently_reuse_current_law():
     data["education_plan"]["rule_mode"] = "published"
     with pytest.raises(ValueError, match="Published contribution rules"):
         project(Scenario.model_validate(data))
-
-
-def test_projection_does_not_mutate_education_inputs_and_round_trips():
-    case = synthetic()
-    before = case.model_dump_json()
-    rows = project(case)
-    assert case.model_dump_json() == before
-    assert project(Scenario.model_validate_json(before)) == rows

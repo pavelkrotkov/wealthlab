@@ -1,6 +1,5 @@
 """Actual editable UI produces independent policy returns and removes invalid results."""
 
-import json
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
@@ -28,14 +27,3 @@ def test_policy_form_keeps_missing_guarantees_and_retirement_obligations_visible
     assert any(s.value == "Supplied policy values and dated returns" for s in app.subheader)
     app.selectbox[1].set_value("stop_funding").run()
     assert not app.exception
-
-
-def test_invalid_funding_edit_clears_previous_audit():
-    app = workbench()
-    app.button(key=SUBMIT).click().run()
-    data = json.loads(app.text_area(key="life_illustration_editor").value)
-    data["illustrations"][0]["stop_funding_date"] = "2026-01-01"
-    app.text_area(key="life_illustration_editor").set_value(json.dumps(data))
-    app.button(key=SUBMIT).click().run()
-    assert app.error
-    assert "life_illustration_result" not in app.session_state

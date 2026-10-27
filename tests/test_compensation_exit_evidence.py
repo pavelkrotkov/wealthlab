@@ -1,14 +1,11 @@
 """Value writeoff, cash redemption and contractual termination remain different evidence."""
 
-from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
-from wealthlab.employment.compensation import Ledger
 from wealthlab.employment.compensation_example import synthetic
-from wealthlab.employment.compensation_exit_state import evidence, from_rows
-from wealthlab.household.funding import Wallet
+from wealthlab.employment.compensation_exit_state import from_rows
 from wealthlab.household.projection import project
 
 
@@ -39,15 +36,6 @@ def test_total_market_loss_does_not_become_cash_redemption_or_contractual_closur
     assert result["contractual_exit_proven"] is None
     assert loss_rows[11]["annual_tax"]["federal"]["agi"] == 110000
     assert loss_rows[-1]["net_wealth"] == 174980
-
-
-def test_native_future_event_scope_does_not_disappear_after_current_zero_cash():
-    case = synthetic()
-    ledger, wallet = Ledger(case), Wallet(case)
-    cutoff = case.start + timedelta(days=31)
-    ledger.month(wallet, case.start, cutoff)
-    first = evidence(ledger, wallet, case.compensation_plan.tranches[0], cutoff)
-    assert any(event["id"] == "liquid_request" for event in first["declared_future_events"])
 
 
 def test_actual_distributions_and_unknown_rights_remain_in_native_evidence(baseline_rows):

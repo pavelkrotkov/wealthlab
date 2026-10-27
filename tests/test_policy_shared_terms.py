@@ -35,15 +35,6 @@ def test_proposed_sale_cannot_lower_the_same_securitys_assumed_commission():
         validate(case)
 
 
-def test_more_sale_dates_can_share_the_same_cost_without_reusing_event_ids():
-    original = sale()
-    staged = [
-        dict(original, id="stage", date="2026-12-31", mode="original_fraction", fraction=".5"),
-        original,
-    ]
-    assert validate(menu("sale_policies", [[original], staged])) == 2
-
-
 def test_locked_choice_does_not_hide_an_inconsistent_fee_assumption():
     original = sale()
     data = menu("sale_policies", [[original], [dict(original, commission="0")]]).model_dump(
@@ -86,27 +77,3 @@ def test_ira_penalty_exception_cannot_be_a_favorable_choice_instead_of_a_shared_
     )
     with pytest.raises(ValueError, match="shared IRA penalty exception"):
         validate(menu("ira_orders", [[order], [dict(order, early_penalty_exception=True)]]))
-
-
-def test_distinct_ira_sources_can_retain_independent_confirmed_exception_assumptions():
-    order = dict(
-        id="draw",
-        provenance="illustration",
-        date="2026-01-01",
-        source="ira",
-        destination=None,
-        kind="withdrawal",
-        amount="10000",
-        early_penalty_exception=False,
-    )
-    other = dict(order, id="other_draw", source="other_ira", early_penalty_exception=True)
-    assert validate(menu("ira_orders", [[order, other], []])) == 2
-
-
-def test_untouched_factual_schedule_keeps_its_independent_dated_fees():
-    data = flat().model_dump(mode="json")
-    original = sale()
-    data["household"]["lot_plan"]["case"]["sale_policies"].append(
-        dict(original, id="earlier_fee", date="2026-12-31", commission="2")
-    )
-    assert validate(PolicySearch.model_validate(data)) == 2

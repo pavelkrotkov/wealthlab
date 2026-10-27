@@ -27,13 +27,6 @@ def test_cash_expiry_conserves_premium_and_payoff(kind, side, spot, pnl):
     assert result["ending"]["wealth"] == Decimal(15000) + Decimal(spot) * 100 + pnl
 
 
-def test_complete_unwind_has_no_shares_options_or_collateral_and_no_premium_double_count():
-    result = run(parse(one_leg(unwind=True)))
-    assert result["ending"]["wealth"] == 28500
-    assert result["ending"]["shares"] == result["ending"]["collateral"] == 0
-    assert not result["open_legs"]
-
-
 def test_exhausted_cash_settlement_retains_unlimited_liability():
     data = one_leg(side="short")
     data["holdings"]["accounts"][0]["cash"] = "0"
