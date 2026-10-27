@@ -62,8 +62,16 @@ def selected(result):
     if held_out["results"] is None:
         return
     st.download_button(
-        "Export selected household",
-        json.dumps(held_out["results"]["household"], indent=2),
+        "Export selected country input snapshot"
+        if held_out["results"].get("country_context")
+        else "Export selected household",
+        json.dumps(selected_inputs(held_out["results"]), indent=2),
         "selected-household.json",
         "application/json",
     )
+
+
+def selected_inputs(results):
+    if results.get("country_context"):
+        return results["details"][0]["country_inputs"]
+    return results["household"]

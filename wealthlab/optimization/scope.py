@@ -8,6 +8,7 @@ from wealthlab.optimization.contract_scope import validate as validate_option_ow
 
 ALLOWED_PLANS = {
     "tax_plan",
+    "foreign_tax_plan",
     "employment_plan",
     "ira_plan",
     "medicare_plan",

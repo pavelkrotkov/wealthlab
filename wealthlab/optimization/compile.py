@@ -9,6 +9,7 @@ from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
 from wealthlab.optimization import (
     advisory_fees,
+    country_context,
     drilling_controls,
     employment_controls,
     exchange_paths,
@@ -27,6 +28,7 @@ from wealthlab.optimization.sleeve_allocations import selections
 
 
 def compile_candidate(case, selection):
+    country_context.validate(case)
     validate(case.household, case.binding)
     advisory_fees.validate(case)
     validate_allocations(case)
