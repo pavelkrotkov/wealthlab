@@ -62,7 +62,8 @@ def show():
     )
     try:
         files.import_scenario()
-        examples()
+        with st.expander("Synthetic examples"):
+            examples()
         scenario = st.session_state.setdefault("scenario", synthetic())
         updated = editor.editor(scenario)
         if updated is not None:
