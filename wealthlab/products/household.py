@@ -98,14 +98,6 @@ def make(scenario, tax_ledger=None, lots=None, debt_balances=None):
     )
 
 
-def append_saving(books, scenario, tax_ledger):
-    """Optional saving follows every native required product, including QOZ and drilling."""
-    from wealthlab.portfolio.saving_household import Ledger as SavingLedger
-
-    if scenario.lot_plan and scenario.lot_plan.savings:
-        books.append(SavingLedger(scenario, tax_ledger))
-
-
 def completed(ledger):
     return ledger.summary if ledger else {}
 
@@ -124,3 +116,11 @@ def finish_book(book, rows):
     rows[-1]["sleeve_tax_assumptions"] = [
         tax_audit(a) for s in book.plan.sleeves for a in s.allocations
     ]
+
+
+def append_saving(books, scenario, tax_ledger):
+    """Optional saving follows all required product capital and foreign tax retries."""
+    from wealthlab.portfolio.saving_household import Ledger as SavingLedger
+
+    if scenario.lot_plan and scenario.lot_plan.savings:
+        books.append(SavingLedger(scenario, tax_ledger))

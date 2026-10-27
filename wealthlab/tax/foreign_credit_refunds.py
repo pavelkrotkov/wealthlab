@@ -8,6 +8,8 @@ or unrelated receipts need their own income classification outside this profile.
 
 from decimal import Decimal
 
+from wealthlab.tax.foreign_tax_translation import tax_value
+
 ZERO = Decimal(0)
 
 
@@ -25,13 +27,16 @@ def validate_refund_identity(refund, original):
         raise ValueError(
             "A refund must retain the original taxpayer, jurisdiction, tax and basket."
         )
-    if refund.value.date < original.value.date or refund.value.currency != original.value.currency:
+    if (
+        refund.value.date < original.value.date
+        or tax_value(refund).currency != tax_value(original).currency
+    ):
         raise ValueError("Refund timing/currency must reconcile to its original payment.")
 
 
 def validate_refund_amounts(original, records):
     reversals = [r for r in records.values() if r.reverses_id == original.id]
-    if sum((r.value.amount for r in reversals), ZERO) > original.value.amount:
+    if sum((tax_value(r).amount for r in reversals), ZERO) > tax_value(original).amount:
         raise ValueError(
             "Refund cash exceeds its original native payment; separate other receipts."
         )

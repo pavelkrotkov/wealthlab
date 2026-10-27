@@ -75,9 +75,14 @@ def validate_known(identities, known):
 def denied_source_reasons(case):
     if case.eligibility != "denied":
         return []
-    if any(v for k, v in case.annual.federal_income.model_dump().items() if k not in SUPPORTED):
-        return ["Denied US credit does not establish foreign capital/retirement/business sourcing."]
+    from wealthlab.tax.pr_execution_credit_sources import extra_source_fields
+
     try:
+        fields = SUPPORTED | extra_source_fields(case)
+        if any(v for k, v in case.annual.federal_income.model_dump().items() if k not in fields):
+            return [
+                "Denied US credit does not establish foreign capital/retirement/business sourcing."
+            ]
         reconcile(case)
     except ValueError as error:
         return [str(error)]

@@ -1,9 +1,17 @@
-"""Foreign cash, marked claims and due-but-unpaid tax are separate measurements."""
+"""Foreign cash, marked claims and due-but-unpaid tax are separate measurements.
+
+Source-return revisions preserve their observation order and actual refund IDs.
+The native monthly prior-tax field owns domestic principal paid; foreign cash
+records cannot count it a second time. Unknown incidental costs remain explicit
+annotations even after the known original-return tax has been reconciled.
+"""
 
 from decimal import Decimal
 
 from wealthlab.tax.foreign_credit_cash import observe
 from wealthlab.tax.foreign_tax_positions import remaining
+from wealthlab.tax.foreign_tax_recognition import amount as recognized_amount
+from wealthlab.tax.foreign_tax_redeterminations import cost_reasons
 from wealthlab.tax.foreign_tax_sources import history
 
 ZERO = Decimal(0)
@@ -25,6 +33,9 @@ def report(book, when, positions, unresolved):
         foreign_tax_position=position,
         foreign_tax_positions=positions,
         foreign_tax_cash_records=cash,
+        foreign_return_revisions=list(book.month_redeterminations),
+        foreign_redetermination_unresolved=list(book.redetermination_unresolved)
+        + cost_reasons(book),
         foreign_tax_credit=book.credit_results[when.year],
         foreign_tax_source_identities=history(book.profiles.values(), when)[1],
         foreign_tax_unfunded=due_shortfall(book, when),
@@ -61,6 +72,7 @@ def enrich(book, rows):
             tax_type=assessments[row["id"]].tax_type,
             fx_fee_usd=records[row["id"]].fx_fee_usd,
             gross_cash_usd=records[row["id"]].value.dollars(),
+            local_recognized_tax_native=recognized_amount(book, records[row["id"]]),
         )
         for row in rows
     ]
