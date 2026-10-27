@@ -1,0 +1,11 @@
+# Compose QOZ, drilling and common advisory-fee scenarios
+
+Status: unpublished integration above the native QOZ, drilling, fee and local-report branches. Original parent ancestry is retained; current-source CI and completed J-Bot review remain required before merging.
+
+The combined calculation retains the native source-sale, tax revision, settlement and fee books. Required product ledgers run before advisory assessment, and optional saving remains last. The fee contract is common to all choices; observed values, actual cash payments and remaining fee debt are recomputed on every training and validation path.
+
+The Optimize synthetic menus first assemble complete product choices, then add common fees. A drilling validity envelope covers the entire normalized search input, so adding fees after its construction previously left a stale checksum. The original synthetic composer now finishes its illustrative envelope after all menu builders. This path starts exclusively from original synthetic factories. Selected files and edited JSON enter afterward and are never resealed or reconfirmed. A checksum detects changes; it establishes no legal eligibility or provider terms. Imported profiles still require independently sourced confirmations covering the complete inputs.
+
+An actual Streamlit check composes QOZ, drilling and fees and validates its 24 candidates. Changing a fee afterward without replacing the independently sourced envelope is rejected. An independent monthly cash recurrence starts at 105000, assesses marginal annual rates of 1% through 100000 and .5% above it using actual calendar days over365, and subtracts each rounded paid invoice. All four flat QOZ choices and the separate held-out run reconcile to that recurrence less1247 actual NJ tax, with no unpaid fee balance. The amounts and terms are original synthetic assumptions.
+
+The combined affected regression run passed52checks, including QOZ revisions/liquidity, drilling composition, advisory billing periods, actual UI/CLI agreement, imported-audit re-execution and guarded report output. Global Ruff, formatting, type and strict CC<=8/MI>=50/module/function-size checks pass. These focused results do not certify the full integrated release, property or cross-border support.
