@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 
 from wealthlab.portfolio.harvesting import execute as harvest
+from wealthlab.portfolio.household_budget import context, decorate
 from wealthlab.portfolio.policy_execution import execute as sell
 
 
@@ -17,8 +18,6 @@ def validate(case):
     policies = [*case.sale_policies, *case.harvest_policies]
     if any(p.date != month_end(p.date) for p in policies):
         raise ValueError("Household sale/harvest policies require month-end decision dates.")
-    if any(p.mode == "tax_budget" for p in case.sale_policies):
-        raise ValueError("Household tax-budget decisions require a dated annual-forecast adapter.")
 
 
 def month_end(when):
@@ -46,15 +45,20 @@ def execute(lots, wallet, start, end):
 
 
 def sale(lots, policy):
+    case, forecast = context(lots.plan, policy)
     if policy.security_id in lots.locked:
-        return dict(
-            policy=policy.id,
-            date=policy.date.isoformat(),
-            mode=policy.mode,
-            status="blocked by market liquidity lock",
-            sold_units=Decimal(0),
+        return decorate(
+            dict(
+                policy=policy.id,
+                date=policy.date.isoformat(),
+                mode=policy.mode,
+                status="blocked by market liquidity lock",
+                sold_units=Decimal(0),
+            ),
+            forecast,
         )
-    return sell(lots.case, lots.book, policy.model_copy(update=dict(prices=dict(lots.prices))))
+    decision = sell(case, lots.book, policy.model_copy(update=dict(prices=dict(lots.prices))))
+    return decorate(decision, forecast)
 
 
 def harvesting(lots, policy):

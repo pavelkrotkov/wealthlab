@@ -31,6 +31,7 @@ def show():
         "Options overlays": "option_products",
         "Whole-life contract cash and taxes": "life_contracts",
         "Whole life versus liquid saving": "life_comparisons",
+        "Drilling partnerships": "drilling",
         "Spain residency and taxes": "spain",
         "Spain annual tax schedules": "spain_assessments",
     }

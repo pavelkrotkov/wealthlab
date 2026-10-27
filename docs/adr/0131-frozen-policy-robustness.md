@@ -1,0 +1,15 @@
+# Frozen-policy deterministic, historical and stress validation
+
+The bounded search now supports named deterministic, historical and stress checks after training selection and held-out Monte Carlo validation. The selected choice remains frozen throughout. A failing check never selects a runner-up, adjusts a retirement date or chooses trades after seeing a future path.
+
+Each check declares its existing `MarketCase` and whether it is required. It must cover the same horizon, name the same factors and preserve the return/cash-yield convention. Assumed returns, inflation, correlations and supplied shocks may differ deliberately; the exported case records that difference. Required checks participate in `configured_validation_passed` alongside held-out validation. Optional failures remain fully reported. With no eligible training candidate, every configured check says it was not run.
+
+For each named check, the existing generator creates one realized batch. The original baseline and frozen selected household both run through the same household engine on identical path indices. Their cash, tax, spending, reserve, concentration and exit constraints remain auditable, and the existing paired comparison reports differences. Unexecuted exits remain marked values, never after-tax liquidation results. If either replay is unsupported, the comparison records the error and a required check cannot pass.
+
+A deterministic path, supplied historical window or deterministic stress does not yield a sampling probability or Wilson interval. Stochastic stresses may report intervals for the random sample conditional on the explicitly supplied overlay; they are not estimated frequencies of a crash or lock. The original Monte Carlo training and held-out intervals remain unchanged. Synthetic historical starter observations are explicitly invented, with their provenance retained.
+
+The starter can include the existing early-crash, prolonged-inflation, concentration-loss and illiquidity stresses, plus deterministic and historical cases. Its living expenses are explicitly bound to market inflation so the inflation stress affects actual bills. The same binding applies in training, validation and each matched check. The UI displays check status and constraints beside the training/held-out results and exports all inputs, paths and audits.
+
+Work bounds include both baseline and selected projections for every check. The existing finite candidate budget still governs training; robustness checks add validation cost, not another search. This layer does not expand product-exit eligibility, tax-law coverage or cross-border support. Those remain separate requirements for issue18.
+
+Executable checks retain the same selected policy when a last-month lock prevents liquidation, verify exact shared batch identities and paired outcomes, distinguish scenario paths from conditional stochastic samples, enforce factor/horizon/convention/budget boundaries, retain unsupported total-writeoff errors, and exercise the editable native workspace.
