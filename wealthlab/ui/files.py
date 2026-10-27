@@ -17,7 +17,7 @@ def import_scenario():
 
 def select_scenario(scenario):
     for key in list(st.session_state):
-        if key.startswith(("table_", "csv_")):
+        if key.startswith(("table_", "csv_", "advisory_")):
             del st.session_state[key]
     st.session_state["scenario"] = scenario
     st.session_state.pop("projection", None)

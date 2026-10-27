@@ -76,6 +76,7 @@ class Ledger:
         raw = equity(fund["book"]) if fund else ZERO
         return dict(
             entity_equity=raw,
+            entity_asset_value=fund["book"]["long"] if fund else ZERO,
             nonrecourse_deficit=max(ZERO, -raw),
             nav=economics.value(fund) if fund else ZERO,
             receivable=fund["receivable"] if fund else ZERO,
