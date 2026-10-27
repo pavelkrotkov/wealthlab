@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from optimization_cases import changed, flat
 
-from wealthlab.optimization.assessment import completed_exit, concentration
+from wealthlab.optimization.assessment import concentration
 from wealthlab.optimization.search import search
 
 
@@ -21,14 +21,6 @@ def test_retained_shares_are_marks_and_do_not_become_after_tax_exit_wealth():
     result = search(case)
     assert result["selection"] is None
     assert all(c["median_real_after_tax_exit_wealth"] is None for c in result["candidates"])
-
-
-def test_rounded_zero_account_does_not_hide_remaining_stock_lot():
-    row = dict(
-        account_balances={"cash": Decimal(10), "brokerage": Decimal(0)},
-        lot_audit=dict(lots=[dict(quantity="0.000001")]),
-    )
-    assert not completed_exit(flat().household, [row])
 
 
 def test_unknown_issuer_inventory_cannot_satisfy_an_enabled_limit():

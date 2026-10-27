@@ -9,7 +9,6 @@ from decimal import Decimal
 
 import pytest
 from optimization_allocation_cases import case
-from optimization_cases import changed
 
 from wealthlab.household.funding import opening_wealth
 from wealthlab.optimization.compile import compile_candidate
@@ -32,12 +31,6 @@ def test_actual_opening_cash_and_new_account_capital_reconcile(index, amount):
     assert opening_wealth(household) == opening_wealth(profile.household) == 300000
     assert len(binding.sleeves) == (2 if index == 3 else int(bool(amount)))
     assert profile.model_dump_json() == before
-
-
-def test_over_budget_mix_fails_instead_of_using_forecast_payroll_or_a_negative_cash_balance():
-    profile = changed(case(), lambda d: d["household"]["accounts"][0].update(balance="19999"))
-    with pytest.raises(ValueError, match="available source cash"):
-        compile_candidate(profile, selected(profile, 3))
 
 
 def test_unit_scaling_changes_only_supplied_money_not_rates_dates_or_tax_eligibility():

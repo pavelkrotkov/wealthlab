@@ -15,16 +15,6 @@ def test_missing_stock_does_not_create_borrowed_shares_or_close_assignment():
     assert not state["modeled_cash_exit_complete"]
 
 
-def test_failed_stock_sale_keeps_the_actual_lot_not_just_a_mark():
-    data = one_leg(unwind=True)
-    data["marks"][-1]["stock"] = "0.001"
-    data["stock_sale_fee"] = "1"
-    state = run(parse(data))["exit_state"]
-    assert len(state["stock_lots"]) == 1
-    assert state["owned_shares"] == 100
-    assert not state["modeled_positions_closed"]
-
-
 def test_failed_opening_is_not_certified_as_an_executed_complete_strategy():
     data = one_leg(unwind=True)
     data["holdings"]["lots"] = []

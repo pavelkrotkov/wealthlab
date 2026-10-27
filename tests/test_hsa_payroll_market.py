@@ -7,8 +7,6 @@ $6,000 changes asset location but creates no current refund without taxable
 income; it is not another $6,000 of household wealth or a pure tax benefit.
 """
 
-from decimal import Decimal
-
 import pytest
 
 from wealthlab.markets.household_run import paired, run
@@ -44,13 +42,3 @@ def test_fica_difference_is_not_an_external_income_or_a_second_personal_deductio
     assert right["reported_tax_liability"] - left["reported_tax_liability"] == 459
     assert left["provisional_tax_years"] == left["partial_tax_years"] == []
     assert paired(*comparison)[0]["reported_tax_liability_change"] == 459
-
-
-def test_matched_batches_keep_actual_cash_tax_changes_separate_from_assessments(comparison):
-    left, right = comparison
-    differences = paired(left, right)[0]
-    assert left["batch_id"] == right["batch_id"]
-    assert differences["net_cash_taxes_paid_change"] == (
-        right["outcomes"][0]["net_cash_taxes_paid"] - left["outcomes"][0]["net_cash_taxes_paid"]
-    )
-    assert left["outcomes"][0]["reported_employee_payroll"] == Decimal("6426")

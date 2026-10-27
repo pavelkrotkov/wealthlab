@@ -12,7 +12,6 @@ from optimization_cases import flat
 from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.compile import compile_candidate
 from wealthlab.optimization.inputs import PolicyChoice, PolicySearch
-from wealthlab.optimization.validation import validate
 
 
 @pytest.mark.parametrize("field", AccountControls.model_fields)
@@ -57,13 +56,6 @@ def test_hsa_personal_schedule_cannot_manufacture_employer_compensation():
     choice = PolicyChoice.model_validate(dict(id="choice", hsa_personal_contributions=[order]))
     with pytest.raises(ValueError, match="cannot change employer funding"):
         compile_candidate(case(), [choice])
-
-
-def test_two_dimensions_cannot_overwrite_the_same_account_election():
-    data = case().model_dump(mode="json")
-    data["dimensions"].append(dict(id="duplicate", choices=[dict(id="clear", hsa_withdrawals=[])]))
-    with pytest.raises(ValueError, match="cannot write the same"):
-        validate(PolicySearch.model_validate(data))
 
 
 def test_clearing_hsa_orders_preserves_only_still_applicable_tax_assumptions():

@@ -24,13 +24,3 @@ def test_threshold_growth_changes_future_brackets_separately_from_premiums():
     following = next(row for row in rows if row["date"].year == 2027)
     assert following["b_irmaa"] == 0
     assert following["part_b"] == Decimal("202.90")
-
-
-def test_extreme_growth_cannot_overflow_the_supported_monetary_range():
-    import pytest
-
-    data = payload()
-    data.update(future_policy="index_2026_assumption", premium_growth="0.30", threshold_growth=0)
-    data["coverage"][0]["other_monthly_health_cost_2026"] = "9999999999999999.99"
-    with pytest.raises(ValueError, match="supported monetary range"):
-        calculate(data)

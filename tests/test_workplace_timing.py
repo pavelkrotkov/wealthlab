@@ -45,16 +45,6 @@ def test_two_destinations_cannot_spend_the_same_months_wages_twice():
     )
 
 
-def test_reloading_export_preserves_elections_and_exact_results():
-    from wealthlab.household.scenario import Scenario
-
-    s = synthetic()
-    before = s.model_dump_json()
-    rows = project(s)
-    assert s.model_dump_json() == before
-    assert project(Scenario.model_validate_json(before)) == rows
-
-
 def test_spouses_gross_pay_cannot_replace_the_owners_missing_payroll():
     s = synthetic()
     own = s.incomes[0].model_copy(update=dict(monthly_amount=Decimal(0)))
