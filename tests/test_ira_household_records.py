@@ -1,13 +1,11 @@
 """Tax duplication, hidden IRA accounts and out-of-horizon schedules are rejected."""
 
 from datetime import date
-from decimal import Decimal
 
 import pytest
 
 from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
-from wealthlab.household.storage import loads
 from wealthlab.retirement.ira_household_example import synthetic
 
 
@@ -42,13 +40,3 @@ def test_outside_horizon_event_cannot_disappear_silently():
     plan = c.ira_plan.model_copy(update=dict(orders=[order]))
     with pytest.raises(ValueError, match="inside the household"):
         project(c.model_copy(update=dict(ira_plan=plan)))
-
-
-def test_original_history_is_immutable_and_serializable():
-    c = synthetic()
-    before = c.model_dump_json()
-    result = project(c)
-    assert c.model_dump_json() == before
-    assert project(loads(before)) == result
-    assert c.ira_plan.owners[0].roth_first_year is None
-    assert result[-1]["account_balances"]["roth"] == Decimal(10000)

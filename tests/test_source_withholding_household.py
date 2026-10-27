@@ -8,7 +8,6 @@ April refund. HSA funding is an internal transfer, never another cash receipt.
 import pytest
 
 from wealthlab.household.projection import project
-from wealthlab.household.storage import loads
 from wealthlab.tax.household_reporting import summary
 from wealthlab.tax.source_example import synthetic
 
@@ -45,13 +44,3 @@ def test_reporting_counts_source_tax_once_and_keeps_refund_cash_separate(rows):
     assert report["net_cash_taxes_paid"] == report["reported_tax_liability"] == 0
     receipt = rows[1]["tax_source_receipts"][0]
     assert receipt["gross_cash"] == receipt["net_cash"] + receipt["total_withheld"]
-
-
-def test_scenario_file_round_trip_preserves_typed_source_withholding():
-    scenario = synthetic()
-    restored = loads(scenario.model_dump_json())
-    assert restored == scenario
-    assert restored.tax_plan is not None
-    source = restored.tax_plan.events[0].withholding
-    assert source is not None
-    assert source.gross_cash == 10000

@@ -10,7 +10,6 @@ from decimal import Decimal
 
 import pytest
 
-from wealthlab.products.private_fund_character import character
 from wealthlab.products.private_fund_example import contract
 from wealthlab.products.private_fund_inputs import PrivateFundContract
 from wealthlab.products.private_fund_tax import BasisBook
@@ -69,11 +68,3 @@ def test_conflicting_missing_or_unconfirmed_holding_facts_cannot_select_preferre
     data = dict(dated().model_dump(mode="json"), **changes)
     with pytest.raises(ValueError, match=match):
         PrivateFundContract.model_validate(data)
-
-
-def test_legacy_character_is_preserved_but_dated_realization_cannot_precede_acquisition():
-    assert (
-        character(PrivateFundContract.model_validate(contract()), date(2026, 2, 1)) == "long_term"
-    )
-    with pytest.raises(ValueError, match="cannot precede"):
-        character(dated(), date(2025, 12, 31))

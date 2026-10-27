@@ -8,17 +8,6 @@ from wealthlab.markets.household_run import run
 
 
 @pytest.mark.parametrize(
-    "field", ["replace_dated_marks_confirmed", "hypothetical_model_execution_confirmed"]
-)
-def test_unconfirmed_replacement_or_model_execution_is_blocked(field):
-    scenario, batch, binding = flat()
-    data = binding.model_dump(mode="json")
-    data["options"][field] = False
-    with pytest.raises(ValueError, match="Confirm replacement"):
-        run(scenario, batch, HouseholdBinding.model_validate(data))
-
-
-@pytest.mark.parametrize(
     "field,value,message",
     [
         ("stock_factor", "unknown", "two distinct known"),

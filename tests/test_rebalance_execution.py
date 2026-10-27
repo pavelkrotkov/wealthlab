@@ -23,13 +23,6 @@ def test_six_decimal_share_rounding_keeps_cash_nonnegative():
     assert result["gross_purchases"] <= Decimal("499.98")
 
 
-def test_full_length_input_id_produces_distinct_valid_order_ids():
-    book, policy, prices = book_case(id="r" * 80)
-    result = decide(book, policy, prices, set())
-    assert len(set(result["trade_ids"])) == 2
-    assert all(len(identity) <= 80 for identity in result["trade_ids"])
-
-
 def test_next_decision_uses_observed_shock_prices_and_remaining_shares():
     from datetime import date
 

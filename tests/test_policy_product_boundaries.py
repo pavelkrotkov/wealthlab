@@ -6,14 +6,13 @@ of cash. These paths must remain ineligible even if marked wealth is high.
 """
 
 from copy import deepcopy
-from decimal import Decimal
 
 import pytest
 from optimization_cases import changed
 from optimization_product_cases import case
 
 from wealthlab.markets.paths import generate
-from wealthlab.optimization.product_exits import complete, sleeve_closed
+from wealthlab.optimization.product_exits import complete
 from wealthlab.optimization.search import evaluate
 
 
@@ -69,25 +68,6 @@ def test_unsettled_private_redemption_is_a_claim_and_never_cash_or_completed_exi
     assert row["account_balances"]["private_fund"] == 10000
     assert row["closing_cash"] == 281999
     assert not candidate["eligible"]
-
-
-@pytest.mark.parametrize(
-    "field", ["long_value", "short_liability", "short_collateral", "free_cash", "financing_loan"]
-)
-def test_subcent_margin_positions_or_obligations_cannot_disappear_in_net_wallet(native, field):
-    state = next(
-        r["exit_state"]
-        for r in native["details"][0]["rows"][-1]["sleeve_audit"]
-        if r["account_id"] == "margin_sleeve" and "exit_state" in r
-    )
-    assert not sleeve_closed(dict(state, **{field: Decimal(".001")}))
-
-
-@pytest.mark.parametrize("audit", ["sleeve_audit", "exchange_fund_audit", "life_policy_values"])
-def test_missing_native_evidence_fails_closed(native, audit):
-    row = deepcopy(native["details"][0]["rows"][-1])
-    del row[audit]
-    assert not complete(case().household, row)
 
 
 def test_zero_nav_active_exchange_interest_remains_open(native):

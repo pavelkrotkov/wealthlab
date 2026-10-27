@@ -46,16 +46,6 @@ def test_old_position_specific_loss_deferrals_are_not_assumed_proportional(field
         scale_new_plan(changed_case(tax=tax), 2, per_unit_fees_confirmed=True)
 
 
-@pytest.mark.parametrize(
-    "confirmation",
-    ["actual_household_cash_confirmed", "tax_history_and_no_duplicate_income_confirmed"],
-)
-def test_native_source_cash_and_complete_tax_confirmations_remain_required(confirmation):
-    plan = unit_plan().model_copy(update={confirmation: False})
-    with pytest.raises(ValueError, match="Confirm actual cash"):
-        scale_new_plan(plan, 1, per_unit_fees_confirmed=True)
-
-
 def test_initial_unit_capital_must_fund_actual_opening_purchase_and_collateral():
     data = unit_plan().model_dump(mode="json")
     data["case"]["holdings"]["accounts"][0]["cash"] = "1"

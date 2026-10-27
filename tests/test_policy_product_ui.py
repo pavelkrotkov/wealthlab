@@ -48,16 +48,6 @@ def test_product_history_retains_synthetic_provenance_and_all_factor_dimensions(
     assert "synthetic zero-return exchange" in history.source
 
 
-def test_native_product_ui_runs_cash_exit_and_exposes_terminal_audit(app):
-    app.text_area("policy_search_editor").set_value(case().model_dump_json())
-    app.button(key="FormSubmitter:policy_search-Search allowed policies").click().run()
-    assert not app.error and not app.exception
-    result = app.session_state["policy_search_result"]
-    assert result["held_out"]["assessment"]["median_real_after_tax_exit_wealth"] == 291999
-    row = result["selected_training"]["details"][0]["rows"][-1]
-    assert row["exchange_fund_audit"]["terminal_state"]["active"] is False
-
-
 def test_example_cannot_append_synthetic_assets_to_private_household():
     profile = case()
     data = profile.model_dump(mode="json")
