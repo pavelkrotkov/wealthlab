@@ -9,7 +9,14 @@ there is no implicit last-write-wins ordering across unrelated policies."""
 from math import prod
 
 from wealthlab.household.calendar import months
-from wealthlab.optimization import drilling_controls, exchange_paths, life_paths, new_life_controls
+from wealthlab.optimization import (
+    drilling_controls,
+    employment_controls,
+    exchange_paths,
+    life_paths,
+    new_life_controls,
+    qoz_controls,
+)
 from wealthlab.optimization.account_controls import AccountControls
 from wealthlab.optimization.allocation_validation import control_keys
 from wealthlab.optimization.allocation_validation import validate as validate_allocations
@@ -29,6 +36,8 @@ FIELDS = (
     "option_units",
     "new_life_purchases",
     "drilling_offer",
+    "qoz_offer",
+    "employment_offer",
     *AccountControls.model_fields,
 )
 
@@ -62,6 +71,8 @@ def validate(case):
     new_life_controls.validate(case)
     validate_options(case)
     drilling_controls.validate(case)
+    qoz_controls.validate(case)
+    employment_controls.validate(case)
     validate_terms(case)
     validate_robustness(case)
     identifiers, controlled = set(), set()

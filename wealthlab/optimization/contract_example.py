@@ -30,6 +30,7 @@ def extend(case):
     option["owner"] = owner_for(case.household, plan["case"]["holdings"]["accounts"][0]["owner"])
     household["accounts"] += [option, employer]
     household["compensation_plan"] = source["compensation_plan"]
+    data["employer_independence"] = independence(household)
     household["option_plan"] = plan
     data["binding"].update(options=binding, employers=[employer_binding()])
     extend_markets(data)
@@ -74,4 +75,18 @@ def employer_binding():
         return_convention="net_mark_return_no_separate_cash_yield",
         replace_entered_net_returns_confirmed=True,
         event_sequence_start=90000,
+    )
+
+
+def independence(household):
+    return dict(
+        id="former_employer_independence",
+        provenance="illustration",
+        source="Original hypothetical former-employer contract; independent of later work choices",
+        source_date=household["start"],
+        available_on=household["start"],
+        tranche_ids=[t["id"] for t in household["compensation_plan"]["tranches"]],
+        all_candidate_income_and_market_paths_confirmed=True,
+        complete_cash_tax_vesting_forfeiture_and_exit_facts_confirmed=True,
+        independent_of_all_candidate_employment_and_retirement_confirmed=True,
     )
