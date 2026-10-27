@@ -10,11 +10,14 @@ quote is replaced by a favorable stale annual rate.
 from datetime import timedelta
 
 from wealthlab.household.calendar import months
+from wealthlab.tax import foreign_tax_recognition
 
 
 def validate_records(plan, assessments, scenario):
     for item in [*plan.opening_payments, *plan.source_withholding, *plan.refunds]:
         validate_identity(item.record, assessments[item.assessment_id])
+        foreign_tax_recognition.validate(item, assessments[item.assessment_id])
+    foreign_tax_recognition.validate_opening(plan)
     validate_record_types(plan, scenario)
     validate_scheduled_dates(plan, scenario)
     validate_revisions(plan, assessments)
@@ -24,8 +27,6 @@ def validate_identity(record, assessment):
     fields = ("owner_id", "country", "liability_year", "tax_type")
     if any(getattr(record, key) != getattr(assessment, key) for key in fields):
         raise ValueError("Tax cash must retain its assessment's person/jurisdiction/type/year.")
-    if record.value.currency != assessment.currency:
-        raise ValueError("Tax cash and the owning assessment need the same native currency.")
 
 
 def validate_record_types(plan, scenario):

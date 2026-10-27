@@ -20,12 +20,14 @@ from wealthlab.tax.foreign_credit_validation import validate
 ZERO = Decimal(0)
 
 
-def evaluate(case):
+def evaluate(case, *, redetermined_refunds=()):
     validate(case)
     baseline, cash_rows = annual(case.annual), observe(case)
     result = payment_snapshot(case, baseline, cash_rows)
     if case.eligibility == "denied":
-        blocked = fx_reasons(case, cash_rows) + revision_reasons(case, cash_rows)
+        blocked = fx_reasons(case, cash_rows) + revision_reasons(
+            case, cash_rows, redetermined_refunds
+        )
         return dict(
             result,
             candidate=None if blocked else baseline,
@@ -33,7 +35,9 @@ def evaluate(case):
             credit_status="denied; no credit or refund cash assumed",
         )
     blocked = (
-        reasons(case, baseline) + fx_reasons(case, cash_rows) + revision_reasons(case, cash_rows)
+        reasons(case, baseline)
+        + fx_reasons(case, cash_rows)
+        + revision_reasons(case, cash_rows, redetermined_refunds)
     )
     if blocked:
         return dict(result, unresolved=blocked, credit_status="blocked")
@@ -60,12 +64,12 @@ def evaluate(case):
     )
 
 
-def revision_reasons(case, cash_rows):
+def revision_reasons(case, cash_rows, redetermined_refunds=()):
     year = case.annual.policy.year
     if any(
         r["kind"] == "refund" and r["credit_tax_usd"] and r["credit_year"] != year
         for r in cash_rows
-        if r["date"][:4] == str(year)
+        if r["date"][:4] == str(year) and r["id"] not in redetermined_refunds
     ):
         return ["Original-year credit redetermination requires the closed-return consumer."]
     return []

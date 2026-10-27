@@ -1,0 +1,25 @@
+# 0070 — PR ScheduleC rounded source allocation and separate limits
+
+Status: native rule correction; supported ordinary/A2 profiles only.
+
+## Problem and decision
+
+The original positive-income PR engines used continuous gross-source ratios to allocate deductions and exemptions, then applied an unrounded net-source fraction to the local tax. The printed2025 ScheduleC requires two distinct rounded percentages. PartI2(c)(vi) rounds gross-source percentage before allocating unassigned deductions/exemptions; PartIV3 rounds each jurisdiction's net-source percentage before computing its country limitation. This can change an actual paid-tax credit, not merely its display.
+
+Share one small Decimal allocation helper between ordinary and preferential engines. Two decimal percentage points are four decimal places in a unit fraction; use nearest rounding with halves upward. Retain the household engine's existing cent precision for monetary products. Expose gross/source amounts, attributed percentage, allocated deductions/exemptions and net source income in the native audit.
+
+Keep the actual eligible US paid tax, rounded jurisdiction limitation and separate PartIV6 total limitation distinct. The supported sole-US-source profile uses the same total foreign net numerator for that aggregate comparison, without prematurely rounding its ratio. The allowed credit is the minimum of all three amounts. A jurisdiction percentage that rounds up cannot bypass the total cap. PartIII's paid-tax reduction remains a separately calculated exact net-income ratio; the form does not give that line the explicit rounding direction used by PartI2(c)(vi) and PartIV3.
+
+Regular and ABT credits are still computed independently. A2's signed ordinary line11 amount remains visible before the local ordinary tax calculation floors negative income to zero. ScheduleC's A2 denominator sums the signed category values as instructed; an unused ordinary personal exemption must not silently disappear from that sum. The supported no-additional-deductions profile can have the same aggregate as ABT while retaining separate computations and audit fields. The earlier suspicion that this sum must instead use a zero-floored ordinary column was not supported by the printed form and is not implemented.
+
+This correction changes no wallet, receipt, source identity, basis, eligibility, fee or legal assumption. Actual dated country assessment reconciliation automatically uses the corrected native amounts. Missing direct expense/loss allocations, additional preferential deductions, unsupported special-law credits, NIIT and different-basis paid-tax reduction remain governed by their existing guards. No new credit eligibility is inferred.
+
+## Primary authority and evidence
+
+Checked October25,2026 after local tax-reference discovery and the official-source follow-up recorded in [ADR0069](0069-native-pr-stock-gains-and-paid-credit.md). The [official2025 informational return, revision July18,2025](https://hacienda.pr.gov/sites/default/files/individuals_2025_rev._jul_18_25_informative.pdf), ScheduleC printed pages15–16, PartI2(c)(vi), PartIV3 and PartIV6, supplies the separate percentage/aggregate calculation fields. ScheduleA2 printed pages8–9, line11, retains the signed ordinary subtraction. The [2025 individual instructions, revision February27,2026](https://hacienda.pr.gov/sites/default/files/inst_individuos_2025_27_feb_26.pdf), printed page44, PartIV2, directs the sum of A2 columnsA–H; its ordinary and ABT instructions retain separate credit calculations. These are calculation references, not filing actions or residence determinations.
+
+Independent binding cases reproduce country fraction1/3 as33.33%, giving3333.00 instead of3333.33. Fraction2/3 produces country limit6667.00 but retains the smaller6666.67 aggregate limit. A complete native annual/household ordinary-interest case has US10000 and PR20000:3500 personal exemption times33.33% allocates1166.55, leaving8833.45 foreign net. The second rounded fraction limits actual475 US tax paid to407.83 credit; the household pays815.77 PR tax. The original continuous-ratio credit was407.87.
+
+A mixed ordinary100000/15%-gain50000 example yields48833.45 source net,26481 regular tax and8826.12 binding credit. Another case retains signed ordinary1000−3500=−2500 plus100000 preferential income as97500 denominator. Rounded source exemption3465.35 leaves96534.65 net; the separate aggregate cap permits14851.48, below the rounded-up14851.50 country limit. Existing positive W2/stock paid-credit examples remain below these limits and retain their actual cash/tax outcomes.
+
+A second actual-household mixed boundary recognizes supplied prior-service US W2 income and sells the same original700000 stock holding. Native US income tax1062164 is actually paid. PR ordinary/A2 tax1027678.50 has a rounded country credit limit856364.49, below aggregate856398.78 and the actual US payment. The shared book pays171314.01 PR tax; continuous source ratios would understate that bill by34.26. Historical W2 and payroll do not create another cash receipt.

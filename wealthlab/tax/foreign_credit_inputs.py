@@ -39,7 +39,7 @@ class CreditIncome(TaxModel):
     id: Identifier
     owner_id: Identifier
     country: str = Field(pattern=r"^[A-Z]{2}$")
-    kind: Literal["wages", "interest", "dividends", "ordinary"]
+    kind: Literal["wages", "interest", "dividends", "ordinary", "long_term"]
     basket: Basket
     value: CreditAmount
     source_classification: str = Field(min_length=1, max_length=500)
@@ -60,6 +60,7 @@ class CreditTaxCash(TaxModel):
     kind: Literal["payment", "withholding", "refund"]
     basket: Basket
     value: CreditAmount
+    tax_value: CreditAmount | None = None
     fx_fee_usd: Money = Decimal(0)
     creditable_native: Money
     eligibility: Claim
