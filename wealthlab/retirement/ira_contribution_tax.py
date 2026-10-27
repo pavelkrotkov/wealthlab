@@ -29,6 +29,8 @@ def check(case, rows, additions, annual):
 
 
 def check_completed(plan, rows, additions, income, federal, allow_underclaim=False):
+    if any((income.partnership_se_earnings_primary, income.partnership_se_earnings_spouse)):
+        raise ValueError("Partnership SE compensation requires another IRA eligibility adapter.")
     if income.social_security:
         raise ValueError(
             "Combined IRA contribution/benefit deduction worksheets are not yet supported."
