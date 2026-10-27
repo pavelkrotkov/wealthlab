@@ -2,6 +2,7 @@
 
 from wealthlab.tax.facts import Deductions, FederalIncome
 from wealthlab.tax.filing import Filing
+from wealthlab.tax.partnership import apply as partnership_inputs
 
 INCOME_FIELDS = dict(
     wages_primary="e00200p",
@@ -45,6 +46,7 @@ def record(
             for source, target in DEDUCTION_FIELDS.items()
         }
     )
+    partnership_inputs(data, income, scale)
     data.update(demographics(filing))
     if credits is not None:
         data.update(credits.native(scale))

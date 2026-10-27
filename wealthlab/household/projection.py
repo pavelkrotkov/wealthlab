@@ -84,7 +84,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-        row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)
+        row["net_wealth"] -= product_liabilities(row)
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
@@ -117,3 +117,9 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
 def observe_market(market, lots, row):
     if market:
         market.observe(lots, row)
+
+
+def product_liabilities(row):
+    """Subtract uncovered negative book equity once, not creditors already netted inside NAV."""
+    keys = ("sleeve_liability", "option_liability", "drilling_recourse_liability")
+    return sum((row.get(key, Decimal(0)) for key in keys), Decimal(0))
