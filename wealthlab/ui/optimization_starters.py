@@ -10,6 +10,7 @@ import streamlit as st
 from wealthlab.optimization.account_example import extend as with_accounts
 from wealthlab.optimization.advisory_example import extend as with_advisory
 from wealthlab.optimization.allocation_example import extend as with_allocations
+from wealthlab.optimization.collectible_example import synthetic as collectible_starter
 from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.drilling_example import confirm_synthetic
@@ -32,18 +33,13 @@ def show():
         [
             "Short composable examples",
             "Full age-100 cash and stock example",
+            "Gold treated as collectible sale timing",
             "Source-matched retirement and employer vesting",
         ],
     )
-    if example == "Full age-100 cash and stock example":
-        return horizon_starter()
-    if example == "Source-matched retirement and employer vesting":
-        st.caption(
-            "Complete hypothetical work and employer-award profiles are paired with exact "
-            "retirement dates. Early forfeiture and later vesting are supplied assumptions, "
-            "not consequences inferred from account ownership. Edit or lock the choices below."
-        )
-        return employment_starter()
+    starter = preset(example)
+    if starter is not None:
+        return starter
     checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
     starter = robust() if checks else synthetic()
     for label, extend in (
@@ -57,6 +53,26 @@ def show():
         if st.checkbox(label, key=label):
             starter = extend(starter)
     return advisory(purchases(starter))
+
+
+def preset(example):
+    if example == "Full age-100 cash and stock example":
+        return horizon_starter()
+    if example == "Gold treated as collectible sale timing":
+        st.caption(
+            "Original synthetic physical-gold classification, not a gold-fund tax ruling. "
+            "Both sale dates share existing lots, separate federal/NJ bases and zero cash yield. "
+            "Entered W-2 wages continue unchanged; this short example "
+            "does not prove age-100 safety."
+        )
+        return collectible_starter()
+    if example == "Source-matched retirement and employer vesting":
+        st.caption(
+            "Complete hypothetical work and employer-award profiles are paired with exact "
+            "retirement dates. Early forfeiture and later vesting are supplied assumptions, "
+            "not consequences inferred from account ownership. Edit or lock the choices below."
+        )
+        return employment_starter()
 
 
 def purchases(starter):
