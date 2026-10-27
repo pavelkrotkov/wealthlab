@@ -49,6 +49,22 @@ Without `--output-directory`, project/compare deliberately write their full JSON
 
 To reproduce, import a saved raw scenario or projection report and project again, or pass either to the CLI. Check the recorded input fingerprint, clean source revision and dependency versions; a dirty checkout or missing revision cannot establish exact reproducibility. Re-execution uses the current engine and does not certify that a different version's archived result is identical. The dependency record includes the installed Owl version, or explicit `null` when its retirement tables are absent; it does not substitute the version expected by the lock file. The UI and CLI share the actual household engine and report format; CLI comparison requires aligned dates and does not run the still-in-progress personal optimizer.
 
+## Country comparisons
+
+In **Cross-border / Country cash**, edit or import complete PR/Spain inputs and calculate. **Keep this scenario as comparison baseline** retains the original country facts, including Spain's separate assessment context. Edit a clone or select another country and calculate again to see the actual ending-wealth difference. Both cases must cover the same dates. The same baseline button also works between ordinary Household and country cases with aligned horizons; each side runs its own financial engine.
+
+**Export country execution inputs** saves the original editable model. **Download country execution audit**, and the shared full projection export on that page, retain those complete inputs, their fingerprint, source revision, dependencies, country reconciliation and actual monthly ledger. Load either country inputs or the versioned country projection report in the Country cash form to recompute; archived results are ignored. Use Country cash rather than Household's ordinary-scenario importer when loading a country report, so Spain's context is retained. For changing assumptions, edit the raw country-input model; a saved audit retains its fingerprint until reproduced. See the [country report contract](adr/0216-country-comparison-and-reproduction.md).
+
+The existing CLI commands also accept these complete country inputs/reports:
+
+```sh
+uv run --no-sync python -m wealthlab project "/your/selected/private/folder/country-execution.json"
+uv run --no-sync python -m wealthlab compare "/your/selected/private/folder/mainland.json" "/your/selected/private/folder/country-execution.json"
+```
+
+Ordinary household inputs/reports retain their existing format and behavior. Mixed ordinary/country comparisons run the original country assessment again; a resolved assessment snapshot is not substituted for its source facts. Country conclusions remain conditional on the declared residence, legal classifications, future-law assumptions and supported tax profiles.
+
+
 ## Before private entry
 
 Use the [private input checklist](private-input-checklist.md). Confirm ownership, units, basis, cash versus taxable allocations, dates, legal assumptions and completeness independently. Leave unknown critical facts unresolved. Do not supply credentials: there is no account-connection workflow. A successful synthetic run is not evidence that your own eligibility, product terms or retirement safety are established.

@@ -11,6 +11,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from wealthlab import country_report
 from wealthlab.household import report
 from wealthlab.local_files import write_new
 from wealthlab.local_launch import serve
@@ -42,9 +43,9 @@ def main(argv=None):
         if options.filename is not None and options.output_directory is None:
             raise ValueError("Select an output directory for a named report.")
         result = (
-            report.run(options.scenario)
+            country_report.run(options.scenario)
             if options.command == "project"
-            else report.compare(options.baseline, options.candidate)
+            else country_report.compare(options.baseline, options.candidate)
         )
         emit(report.encode(result), options)
         return 0
