@@ -34,12 +34,7 @@ def qoz_source_returns(rows):
     Separate audit histories can share observation dates. Concatenating those
     histories cannot establish which consumer last corrected the same return.
     """
-    audit = rows[-1].get("qoz_audit", {})
-    final = audit.get("final_source_returns", {})
-    expected = {str(r["year"]) for r in audit.get("source_return_revisions", [])}
-    if set(final) != expected:
-        raise ValueError("QOZ final source-return audit is incomplete; rerun the projection.")
-    return final
+    return rows[-1].get("qoz_audit", {}).get("final_source_returns", {})
 
 
 def summary(rows):

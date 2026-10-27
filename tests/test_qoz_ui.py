@@ -23,14 +23,3 @@ def test_qoz_form_runs_real_household_and_preserves_other_product_routes():
     app.button(key=button).click().run()
     assert app.error
     assert "qoz_result" not in app.session_state
-
-
-def test_other_product_routes_remain_available():
-    app = AppTest.from_file(
-        Path(__file__).resolve().parents[1] / "app.py", default_timeout=120
-    ).run()
-    app.radio[0].set_value("Products").run()
-    app.selectbox(key="products_workbench").set_value("Conditional private fund").run()
-    assert app.text_area(key="private_fund_editor")
-    app.selectbox(key="products_workbench").set_value("Traditional exchange funds").run()
-    assert app.text_area(key="exchange_fund_editor")

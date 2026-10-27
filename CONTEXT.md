@@ -29,6 +29,7 @@ Strategies: retain, immediate sale, staged sale, tax-budget sale, concentration-
 - **Lot**: acquisition date, quantity and jurisdiction-specific basis. Units and total/per-unit basis must be explicit.
 - **Policy**: a decision rule using only information available at the decision date. A policy cannot see future simulated returns.
 - **Economic P&L** differs from recognized taxable income; a loss can be deferred, disallowed, or unusable this year.
+- **Foreign tax credit**: jurisdictional liability relief, separate from an actual payment or refund. Cash FX, credit FX, original taxpayer/year/basket and carry vintages retain independent identities.
 - **Tax benefit**: the difference between matched household tax/cash-flow outcomes, not gross losses times a headline rate.
 - **Distribution**: cash movement, which may differ from allocated taxable income, return or vesting.
 - **Liquid wealth** excludes locked investments and unvested assets. Borrowing creates a liability and is not income.

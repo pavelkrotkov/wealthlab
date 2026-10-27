@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from wealthlab.employment.compensation_inputs import CompensationPlan
 from wealthlab.employment.inputs import EmploymentPlan
+from wealthlab.household.advisory_inputs import AdvisoryPlan
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
 from wealthlab.household.validation import validate_dates, validate_references
@@ -30,6 +31,7 @@ from wealthlab.retirement.medicare_household_inputs import MedicarePlan
 from wealthlab.retirement.social_inputs import SocialCase
 from wealthlab.retirement.social_work_inputs import WorkPolicy
 from wealthlab.retirement.workplace_inputs import WorkplacePlan
+from wealthlab.tax.foreign_tax_inputs import ForeignTaxPlan
 from wealthlab.tax.projection_inputs import TaxPlan
 
 
@@ -60,6 +62,7 @@ class Scenario(BaseModel):
     debts: list[Debt]
     contributions: list[Contribution]
     tax_plan: TaxPlan | None = None
+    foreign_tax_plan: ForeignTaxPlan | None = None
     social_security: SocialCase | None = None
     social_work_plan: WorkPolicy | None = None
     employment_plan: EmploymentPlan | None = None
@@ -75,12 +78,15 @@ class Scenario(BaseModel):
     option_plan: OptionPlan | None = None
     life_plan: LifeHouseholdPlan | None = None
     qoz_plan: QOZPlan | None = None
+    advisory_fee_plan: AdvisoryPlan | None = None
     drilling_plan: DrillingPlan | None = None
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
         if self.social_work_plan is not None and self.social_security is None:
             raise ValueError("A work-test policy requires generated Social Security claims.")
+        if self.foreign_tax_plan is not None and self.tax_plan is None:
+            raise ValueError("Foreign tax cash execution requires the household annual tax plan.")
         validate_dates(self)
         validate_references(self)
         validate_life_ownership(self)

@@ -5,12 +5,14 @@ funding. Their actual cash and recognized tax events enter the shared tax
 ledger once; optional requests never create negative account balances.
 """
 
+from datetime import timedelta
 from decimal import Decimal
 
 from wealthlab.employment.compensation import Ledger as CompensationLedger
 from wealthlab.employment.compensation_projection import prepare as prepare_compensation
 from wealthlab.employment.compensation_reporting import snapshot as compensation_snapshot
 from wealthlab.employment.wages import prepare as prepare_employment
+from wealthlab.household import advisory_household as advisory
 from wealthlab.household import debts
 from wealthlab.household.calendar import money, months
 from wealthlab.household.funding import Wallet
@@ -51,7 +53,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
     products = sleeves.make(scenario, tax_ledger=tax_ledger, lots=lots)
     household_wash.bind(lots, tax_ledger, ira, medicare, education)
     for start, end in months(scenario.start, scenario.end):
-        live, market_events = market.start(scenario, lots, start) if market else (scenario, ())
+        live, market_events = start_market(scenario, market, lots, products, wallet, hsa, start)
         medical_events = medicare_household.start(medicare, start)
         events = compensation.month(wallet, start, end) if compensation else ()
         workplace_rollovers.before_ira(employee, wallet, ira, start, end)
@@ -80,7 +82,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
             row.update(compensation_snapshot(compensation, wallet, end))
         fees_owed = row["fees_owed"]
         row["net_wealth"] = sum(wallet.balances.values()) - sum(debt_balances.values()) - fees_owed
-        row["net_wealth"] -= row.get("tax_position", Decimal(0))
+        row["net_wealth"] -= row.get("tax_position", 0) + row.get("foreign_tax_position", 0)
         row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
         row["net_wealth"] -= row.get("medical_owed", Decimal(0))
         row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
@@ -88,7 +90,7 @@ def project(scenario: Scenario, market=None) -> list[dict]:
         social_work_household.observe(social, row, start)
         deflator = Decimal(str((1 + scenario.inflation) ** ((end - scenario.start).days / 365.25)))
         row["real_net_wealth"] = money(row["net_wealth"] / deflator)
-        observe_market(market, lots, row)
+        observe_market(market, lots, row, products, wallet, end, hsa)
         rows.append(row)
     finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
     option_household.finish(options, rows)
@@ -114,9 +116,15 @@ def finish(rows, compensation, employee, lots, medicare, hsa, education, market,
         market.finish(rows)
 
 
-def observe_market(market, lots, row):
+def observe_market(market, lots, row, products, wallet, end, hsa):
     if market:
         market.observe(lots, row)
+    advisory.observe(products, wallet, end - timedelta(days=1), hsa, "completed_month_end")
+
+
+def start_market(scenario, market, lots, products, wallet, hsa, start):
+    advisory.observe(products, wallet, start, hsa, "opening")
+    return market.start(scenario, lots, start) if market else (scenario, ())
 
 
 def product_liabilities(row):

@@ -9,9 +9,12 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.household.projection import project
+from wealthlab.household.report import encode, payload
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.foreign_tax_results import display as foreign_tax_summary
+from wealthlab.ui.household_advisory import display as advisory_summary
 from wealthlab.ui.household_education import display as education_summary
 from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
@@ -28,6 +31,8 @@ from wealthlab.ui.private_fund_household_results import route_household as sleev
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [
+    "advisory_fee_assessments",
+    "advisory_fee_audit",
     "account_balances",
     "debt_balances",
     "annual_tax",
@@ -67,6 +72,11 @@ HIDDEN = [
     "life_policy_values",
     "life_policy_audit",
     "saving_audit",
+    "foreign_tax_positions",
+    "foreign_tax_cash_records",
+    "foreign_tax_credit",
+    "foreign_tax_source_identities",
+    "foreign_tax_unresolved",
 ]
 
 
@@ -93,6 +103,13 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     )
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
+    advisory_summary(rows)
+    st.download_button(
+        "Export projection inputs, full ledger and reproduction details",
+        encode(payload(scenario, rows)),
+        "wealthlab-projection.json",
+        "application/json",
+    )
     tax_summary(rows)
     social_work_summary(rows)
     compensation_summary(rows)
@@ -114,6 +131,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 exchange_fund=rows[-1].get("exchange_fund_audit"),
                 life_policies=rows[-1].get("life_policy_audit"),
                 qoz=rows[-1].get("qoz_audit"),
+                advisory_fees=rows[-1].get("advisory_fee_audit"),
                 drilling=rows[-1].get("drilling_audit"),
             )
         )
@@ -147,3 +165,4 @@ def account_summaries(rows):
     sleeve_summary(rows)
     option_summary(rows)
     life_summary(rows)
+    foreign_tax_summary(rows)

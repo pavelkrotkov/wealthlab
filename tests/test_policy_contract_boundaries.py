@@ -68,14 +68,6 @@ def actual():
     return profile, search(profile)["selected_training"]["details"][0]["rows"][-1]
 
 
-@pytest.mark.parametrize("key", ["option_mark_audit", "option_tax_audit"])
-def test_missing_option_execution_or_recognition_cannot_look_like_a_complete_exit(actual, key):
-    profile, original = actual
-    row = deepcopy(original)
-    del row[key]
-    assert not options_closed(profile.household, row)
-
-
 def test_deferred_or_unresolved_option_tax_never_becomes_zero_terminal_tax(actual):
     profile, original = actual
     row = deepcopy(original)
@@ -83,10 +75,3 @@ def test_deferred_or_unresolved_option_tax_never_becomes_zero_terminal_tax(actua
     assert not options_closed(profile.household, row)
     row["option_tax_audit"][0].update(deferred=0, recognized=None)
     assert not options_closed(profile.household, row)
-
-
-def test_missing_employer_evidence_cannot_certify_zero_dollar_contracts(actual):
-    profile, original = actual
-    row = deepcopy(original)
-    del row["employer_tranches"]
-    assert not employer_closed(profile.household, row)

@@ -7,6 +7,7 @@ old bill does not falsely increase the current recurring spending target.
 
 from decimal import Decimal
 
+from wealthlab.household import advisory_household as advisory
 from wealthlab.household import debts, flows, needs
 from wealthlab.household.calendar import fraction, money
 from wealthlab.household.funding import Wallet
@@ -24,6 +25,7 @@ from wealthlab.retirement import (
 from wealthlab.retirement.household_receipts import receipt_hook
 from wealthlab.retirement.household_receipts import required as wrapper_required
 from wealthlab.retirement.hsa_payroll import month as hsa_payroll
+from wealthlab.tax.foreign_tax_household import receipt_priority
 from wealthlab.tax.payments import missed_schedule
 
 
@@ -53,7 +55,9 @@ def month(
     row.update(contributions)
     taxable, payroll = hsa_payroll(hsa, employee, wallet, incomes, taxable, start, end)
     row.update(payroll)
+    advisory.prepare(products, wallet, start, end, fees_owed, tax_ledger)
     if tax_ledger is not None:
+        priority = receipt_priority(tax_ledger)
         required_cash = needs.required(scenario, debt_balances, start, end, fees_owed)
         required_cash += medicare_household.required(medicare)
         row.update(
@@ -62,9 +66,9 @@ def month(
                 wallet,
                 start,
                 end,
-                lambda: required_cash + wrapper_required(education, hsa),
+                required_quote(required_cash, education, hsa, products),
                 [*extra_events, *employee_events],
-                receipt_hook=receipt_hook(ira, hsa, education, products, options),
+                receipt_hook=receipt_hook(ira, hsa, education, products, options, priority),
                 pre_receipt_hook=lots.after_receipts if lots is not None else None,
                 additional_nj_wages=payroll.get("hsa_payroll_contributions", Decimal(0)),
             )
@@ -76,7 +80,7 @@ def month(
         row.update(sleeves.completed(products))
         row.update(option_household.completed(options))
     row.update(debts.service(scenario, wallet, debt_balances, start, end))
-    row.update(flows.fees(scenario, wallet, start, end, fees_owed))
+    row.update(advisory.pay(scenario, wallet, start, end, fees_owed, products))
     row.update(flows.spending(scenario, wallet, start, end, medicare, education, hsa))
     row.update(hsa_household.completed(hsa, end))
     row.update(flows.contributions(scenario, wallet, start, end))
@@ -96,6 +100,7 @@ def metrics(scenario, row, start, end):
             missed_schedule(row),
             row.get("medical_owed", 0) > 0,
             row.get("option_failed", False),
+            bool(row.get("foreign_tax_unresolved")),
             row.get("workplace_rmd_shortfall", 0) > 0,
             row.get("workplace_rmd_unresolved_prior", 0) > 0,
         )
@@ -106,6 +111,7 @@ def metrics(scenario, row, start, end):
         + row["funding_shortfall"]
         - row["fees_unfunded"]
         - row.get("tax_unfunded", Decimal(0))
+        - row.get("foreign_tax_unfunded", Decimal(0))
         - row.get("life_payment_unfunded", Decimal(0))
         - row.get("medicare_arrears_paid", Decimal(0))
         - row.get("medical_arrears_paid", Decimal(0))
@@ -121,3 +127,8 @@ def metrics(scenario, row, start, end):
     )
     row["reserve_target"] += row.get("life_reserve_target", Decimal(0))
     return row
+
+
+def required_quote(required_cash, education, hsa, products):
+    """Optional product bills and newly observed advisory fees stay live until funding."""
+    return lambda: required_cash + wrapper_required(education, hsa) + advisory.current_due(products)

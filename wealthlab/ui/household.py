@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from wealthlab.employment.compensation_example import synthetic as compensation_example
 from wealthlab.employment.compensation_stress import linked_shock
 from wealthlab.employment.example import synthetic as employment_example
+from wealthlab.household.advisory_advance_example import synthetic as advisory_example
 from wealthlab.household.example import synthetic
 from wealthlab.household.projection import project
 from wealthlab.portfolio.household_example import synthetic as lot_example
@@ -31,12 +32,15 @@ from wealthlab.retirement.workplace_rmd_example import synthetic as workplace_rm
 from wealthlab.retirement.workplace_rollover_example import synthetic as rollover_example
 from wealthlab.retirement.workplace_roth_example import synthetic as roth_plan_example
 from wealthlab.retirement.workplace_withdrawal_example import synthetic as workplace_cash_example
+from wealthlab.tax.foreign_tax_example import synthetic as foreign_tax_example
 from wealthlab.tax.source_example import synthetic as source_example
 from wealthlab.ui import editor, files, results
+from wealthlab.ui.optional_dependencies import retirement_notice
 
 
 def show():
     st.header("Household cash flow")
+    retirement_notice()
     st.warning(
         "Enable household tax assumptions to include federal/NJ taxes. "
         "Without a tax plan, income is gross and taxes are omitted. "
@@ -77,6 +81,8 @@ def show():
 
 def examples():
     choices = (
+        ("Load synthetic observed advance advisory fees", advisory_example),
+        ("Load synthetic foreign-tax household", foreign_tax_example),
         ("Load synthetic long-short household", sleeve_example),
         ("Load synthetic actual option household", option_example),
         ("Load synthetic whole-life household", life_example),
