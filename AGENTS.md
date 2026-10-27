@@ -6,7 +6,7 @@ Only public code, original documentation, public-source references and synthetic
 
 Follow ponytail: reuse tested libraries and existing functions; keep concrete modules small. Never simplify away financial accounting, uncertainty, validation or requested features. Establish a runnable check for nontrivial calculations.
 
-Use gh-stack for dependent work. Create each layer before its code; keep ownership in the correct layer. Each feature ticket delivers inputs, computation, UI output and meaningful checks. Validate the exact current head, request J-Bot review, address all findings and rerun affected checks. Do not merge with unresolved findings or failing/unverified required checks. Private data must never be sent to review bots.
+Use gh-stack for dependent work. Create each layer before its code; keep ownership in the correct layer. Each feature ticket delivers inputs, computation, UI output and meaningful checks. Validate the exact current head, obtain an independent ChatGPT-Sol 6.1 (`gpt-6.1-sol`) review, address all findings and rerun affected checks. Publish and re-read a submitted native GitHub PR review tied to that full commit SHA; a local report or review of an earlier head is insufficient. See docs/development.md for the review protocol. Do not merge with unresolved findings or failing/unverified required checks. Private data must never be sent to review bots.
 
 First-party Python gates: CC <= 8, MI >= 50, module SLOC <= 300, function span <= 60 physical lines. Tests and tooling are included. Do not weaken thresholds to pass a change.
 
