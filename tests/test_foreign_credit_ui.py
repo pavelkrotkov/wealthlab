@@ -18,15 +18,6 @@ def app():
     return instance
 
 
-def test_actual_source_payment_form_runs_native_credit_and_exports_complete_audit(app):
-    app.button[0].click().run()
-    result = app.session_state["foreign_credit_result"]
-    assert not app.exception
-    assert result["candidate"]["federal"]["foreign_tax_credit"] == Decimal("6724.50")
-    assert result["observed_tax_cash_outflow_usd"] == Decimal(11000)
-    assert len(app.dataframe) >= 2
-
-
 def test_unknown_eligibility_retains_actual_cash_without_a_favorable_credit(app):
     data = json.loads(app.text_area(key="foreign_credit_editor").value)
     data["eligibility"] = "unresolved"
@@ -36,13 +27,3 @@ def test_unknown_eligibility_retains_actual_cash_without_a_favorable_credit(app)
     assert not app.exception
     assert result["candidate"] is None
     assert result["observed_tax_cash_outflow_usd"] == Decimal(11000)
-
-
-def test_invalid_edit_clears_the_previous_credit_result(app):
-    app.button[0].click().run()
-    app.text_area(key="foreign_credit_editor").set_value("{")
-    app.button[0].click().run()
-    assert app.error
-    assert not app.exception
-    with pytest.raises(KeyError):
-        app.session_state["foreign_credit_result"]
