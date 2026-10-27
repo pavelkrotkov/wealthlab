@@ -79,17 +79,16 @@ def test_retirement_cutoffs_also_support_source_profiles_without_explicit_wage_p
 
 def test_blocked_later_employer_redemption_cannot_outrank_completed_early_cash():
     data = flat().model_dump(mode="json")
-    data["training"].update(
-        mode="stress",
-        stress_base="deterministic",
-        shocks=[
-            dict(
-                name="Actual retirement-date employer liquidity lock",
-                month=12,
-                lock_months=dict(employer=1),
-            )
-        ],
+    lock = dict(
+        id="retirement_lock",
+        provenance="illustration",
+        account_id="employer_fund",
+        start="2027-01-01",
+        end="2027-02-01",
     )
+    data["household"]["compensation_plan"]["liquidity_locks"] = [lock]
+    for offer in data["employment_offers"]:
+        offer["compensation_plan"]["liquidity_locks"] = [dict(lock)]
     result = search(PolicySearch.model_validate(data))
     later = result["candidates"][1]
     assert later["median_real_after_tax_exit_wealth"] is None

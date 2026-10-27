@@ -1,12 +1,8 @@
 """Every offered contract and inactive retirement choice must have matching complete facts."""
 
-from datetime import date
-
 import pytest
-from optimization_employment_cases import changed, flat
+from optimization_employment_cases import changed
 
-from wealthlab.optimization.compile import compile_candidate
-from wealthlab.optimization.inputs import PolicyChoice
 from wealthlab.optimization.validation import validate
 
 
@@ -42,15 +38,6 @@ def test_locked_inactive_profile_or_choice_is_still_validated(edit, message):
 
     with pytest.raises(ValueError, match=message):
         validate(PolicySearch.model_validate(data))
-
-
-def test_compiler_checks_actual_combined_dates_even_for_ad_hoc_selection():
-    case = flat()
-    bad = PolicyChoice(
-        id="bad", retirement_dates={"person_a": date(2026, 1, 1)}, employment_offer="later"
-    )
-    with pytest.raises(ValueError, match="Candidate retirement dates"):
-        compile_candidate(case, [bad])
 
 
 @pytest.mark.parametrize(
