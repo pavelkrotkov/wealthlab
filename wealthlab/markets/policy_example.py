@@ -2,13 +2,16 @@
 
 from wealthlab.household.scenario import Scenario
 from wealthlab.markets.household_inputs import HouseholdBinding
+from wealthlab.portfolio.budget_household_example import enable as budget_example
 
-CHOICES = ("Funding only", "Staged sales", "Concentration target", "Harvesting")
+CHOICES = ("Funding only", "Staged sales", "Concentration target", "Harvesting", "Tax-budget sales")
 
 
 def enable(scenario, binding, choice):
     if choice == "Funding only":
         return scenario, binding
+    if choice == "Tax-budget sales":
+        return budget_example(scenario), binding
     data = scenario.model_dump(mode="json")
     linked = data["lot_plan"]
     case = linked["case"]

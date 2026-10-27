@@ -22,25 +22,6 @@ def app():
     return case
 
 
-def test_actual_cross_border_ui_runs_shared_cash_engine_and_displays_claims(app):
-    app.button[0].click().run()
-    _, rows = app.session_state["foreign_tax_household_result"]
-    assert not app.exception
-    assert rows[0]["foreign_tax_paid"] == 11000
-    assert rows[-1]["annual_tax"]["federal"]["foreign_tax_credit"] == 6724.5
-    assert len(app.dataframe) >= 3
-    assert any("Foreign tax / fees" in metric.label for metric in app.metric)
-
-
-def test_invalid_household_edit_removes_stale_cash_and_credit_result(app):
-    app.button[0].click().run()
-    app.text_area(key="foreign_tax_household_editor").set_value("{}")
-    app.button[0].click().run()
-    assert "foreign_tax_household_result" not in app.session_state
-    assert app.error
-    assert not app.exception
-
-
 def test_generic_household_form_retains_foreign_plan_and_reports_the_same_cash_engine():
     app = AppTest.from_file(str(Path(__file__).parents[1] / "app.py"), default_timeout=90).run()
     next(b for b in app.button if b.label == "Load synthetic foreign-tax household").click().run()

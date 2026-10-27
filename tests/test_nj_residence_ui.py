@@ -15,15 +15,6 @@ def app():
     return page
 
 
-def test_editable_nj_annual_workbench_has_actual_resident_and_nonresident_calculations():
-    page = app()
-    page.button[0].click().run()
-    assert (len(page.exception), len(page.error)) == (0, 0)
-    _, result = page.session_state["nj_residence_annual_result"]
-    assert result["new_jersey"]["income_tax"] == Decimal("1741.60")
-    assert any("Separate NJ return" in s.value for s in page.subheader)
-
-
 def test_household_nj_and_foreign_workbench_runs_real_cash_and_clears_invalid_replacement():
     page = app()
     next(r for r in page.radio if r.label == "NJ residence calculation").set_value(

@@ -3,9 +3,10 @@
 from decimal import Decimal
 
 from wealthlab.products.option_book import OptionBook
-from wealthlab.products.option_events import finish, open_leg
+from wealthlab.products.option_events import finish
 from wealthlab.products.option_financing import accrue
 from wealthlab.products.option_leg_marks import leg_mark
+from wealthlab.products.option_opening import open_at_mark
 from wealthlab.products.option_reporting import snapshot
 from wealthlab.products.option_result import report
 from wealthlab.products.option_stock import unwind_stock
@@ -24,9 +25,7 @@ def run(case):
         previous = mark.date
         dividends(state, mark)
         terminations(state, mark, same_day=False)
-        for leg in case.legs:
-            if leg.opened == mark.date:
-                open_leg(state, leg, mark)
+        open_at_mark(state, mark)
         terminations(state, mark, same_day=True)
         leg_rows.extend(leg_mark(leg, mark) for leg in state.active.values())
         yearend(state, mark)
