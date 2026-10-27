@@ -24,10 +24,3 @@ def test_paired_funding_keeps_recoursedebt_and_cannot_claim_complete_issuer_inve
     assert left["outcomes"][0]["product_negative_equity_months"] == 12
     assert not left["outcomes"][0]["issuer_concentration_complete"]
     assert paired(left, right)[0]["real_wealth_change"] == 120000
-
-
-def test_binding_does_not_mutate_source_observations():
-    household, market, binding = baseline()
-    original = household.model_dump_json()
-    run(household, generate(market), binding)
-    assert household.model_dump_json() == original

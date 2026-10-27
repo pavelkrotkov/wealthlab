@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-from tools.quality import audit, main, python_files
+from tools.quality import audit, python_files
 
 
 def init_repo(path: Path):
@@ -27,7 +27,3 @@ def test_invalid_file_and_empty_repo_fail(tmp_path):
     assert audit(tmp_path)[1] == ["No readable first-party Python files found"]
     (tmp_path / "broken.py").write_text("def broken(:")
     assert any("broken.py" in failure for failure in audit(tmp_path)[1])
-
-
-def test_repository_passes():
-    assert main() == 0

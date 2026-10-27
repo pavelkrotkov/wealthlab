@@ -1,6 +1,6 @@
 # Model coverage and release limits
 
-October 27, 2026. This country-report layer is based on reviewed main `cc28c676e66ad247f2970108ff21bc244b52666d`. [Issue #19](https://github.com/pavelkrotkov/wealthlab/issues/19) remains open until integrated checks and current-head independent review pass. Each workbench retains its explicit assumptions; this table does not replace its owning ADR.
+October 27, 2026. This country-report layer is based on reviewed main `a72f08a44b3b82b5f616bfe85f562a970b83823d`. [Issue #19](https://github.com/pavelkrotkov/wealthlab/issues/19) remains open until integrated checks and current-head independent review pass. Each workbench retains its explicit assumptions; this table does not replace its owning ADR.
 
 | Area | Current UI / verification path | Material boundary |
 |---|---|---|

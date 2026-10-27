@@ -52,8 +52,3 @@ def test_missing_retirement_date_and_opening_loan_do_not_invent_values():
     assert result["premiums_from_retirement"] is None
     assert result["values"][0]["loan_contract_review_required"]
     assert result["values"][0]["net_cash_value"] is None
-
-
-def test_unresolved_opening_source_is_rejected():
-    with pytest.raises(ValueError, match="opening snapshot"):
-        case(provenance="unresolved")

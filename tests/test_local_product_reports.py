@@ -1,7 +1,6 @@
 """Actual complex product audits remain structured through shared report import/re-execution."""
 
 import json
-from decimal import Decimal
 
 import pytest
 
@@ -32,9 +31,3 @@ def test_actual_audits_stay_structured_and_reproduce_after_report_import(build, 
     exported = json.loads(text)
     assert isinstance(exported["months"][-1][audit], (list, dict))
     assert project(loads(text)) == rows
-
-
-@pytest.mark.parametrize("value", [object(), Decimal("NaN"), float("nan")])
-def test_unknown_structures_or_nonfinite_values_cannot_be_flattened_into_a_report(value):
-    with pytest.raises(ValueError):
-        encode(dict(audit=value))

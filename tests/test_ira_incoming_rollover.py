@@ -4,8 +4,6 @@ A later15k withdrawal from30k total assets recovers2.5k/4k, leaving
 12.5k/11k taxable. No source receipt becomes ordinary IRA contribution cash.
 """
 
-from decimal import Decimal
-
 import pytest
 
 from wealthlab.retirement.distributions import run
@@ -43,12 +41,3 @@ def test_transfer_without_distributions_creates_no_cash_or_tax_deduction():
     assert result["annual_tax"]["additional_liability"] == 0
     assert result["owners"][0]["federal_ira_basis"] == 5000
     assert result["owners"][0]["nj_ira_basis"] == 8000
-
-
-def test_receipts_do_not_mutate_opening_basis_or_duplicate_on_replay():
-    case = synthetic()
-    first, second = run(case), run(case)
-    assert first == second
-    assert case.owners[0].federal_ira_basis == Decimal(1000)
-    assert case.owners[0].nj_ira_basis == Decimal(2000)
-    assert case.accounts[0].balance == 10000

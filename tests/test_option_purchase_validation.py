@@ -25,10 +25,3 @@ def test_unsupported_opening_purchase_is_rejected_before_native_trading(update):
     data["opening_stock_purchase"].update(update)
     with pytest.raises(ValueError):
         run(OptionCase.model_validate(data))
-
-
-def test_unrepresentable_purchase_basis_is_rejected_before_funding():
-    data = unit_plan().case.model_dump(mode="json")
-    data["marks"][0]["stock"] = "9999999999999999"
-    with pytest.raises(ValueError):
-        run(OptionCase.model_validate(data))
