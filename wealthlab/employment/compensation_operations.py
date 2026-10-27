@@ -51,6 +51,16 @@ def available(balance, requested):
     return balance if requested is None else min(balance, requested)
 
 
+def termination(state, event, tranche):
+    # Legal/source facts cannot manufacture economic settlement or cash.
+    return Decimal(0)
+
+
 OPERATIONS = dict(
-    grant=grant, net_return=net_return, vest=vest, forfeit=forfeit, distribution=distribution
+    grant=grant,
+    net_return=net_return,
+    vest=vest,
+    forfeit=forfeit,
+    distribution=distribution,
+    termination=termination,
 )
