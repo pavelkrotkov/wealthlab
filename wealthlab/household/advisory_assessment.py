@@ -1,8 +1,8 @@
-"""All simultaneous advisory bills share observed values; progressive tiers apply marginally."""
+"""Simultaneous bills share observations; supplied rate and period methods remain explicit."""
 
 from decimal import Decimal
 
-from wealthlab.household.calendar import money
+from wealthlab.household.advisory_billing import breakpoint_charge, period_terms, variable_charge
 
 ZERO = Decimal(0)
 
@@ -47,10 +47,10 @@ def marginal_charge(base, tiers):
 def assess(schedule, period, balances, life_values):
     components = [component(c, balances, life_values) for c in schedule.covered]
     base = sum((c["value"] for c in components), ZERO)
-    annual, tiers = marginal_charge(base, schedule.tiers)
+    annual, rate_audit = annual_charge(base, schedule)
     days = (period.accrual_end - period.accrual_start).days
     # Round the complete variable bill once, then add the sourced fixed charge.
-    charge = money(annual * days / schedule.day_count) + schedule.fixed_per_period
+    charge = variable_charge(annual, schedule, period) + schedule.fixed_per_period
     return dict(
         schedule=schedule.id,
         source_ref=schedule.source_ref,
@@ -66,7 +66,24 @@ def assess(schedule, period, balances, life_values):
         day_count=schedule.day_count,
         valuation_base=base,
         components=components,
-        marginal_tiers=tiers,
+        **rate_audit,
+        **period_terms(schedule, period),
         fixed_charge=schedule.fixed_per_period,
         assessed=charge,
+    )
+
+
+def annual_charge(base, schedule):
+    if schedule.rate_application == "whole_relationship_breakpoint":
+        annual, band = breakpoint_charge(base, schedule.tiers)
+        return annual, dict(
+            rate_application=schedule.rate_application,
+            marginal_tiers=[],
+            whole_relationship_tier=band,
+        )
+    annual, tiers = marginal_charge(base, schedule.tiers)
+    return annual, dict(
+        rate_application=schedule.rate_application,
+        marginal_tiers=tiers,
+        whole_relationship_tier=None,
     )

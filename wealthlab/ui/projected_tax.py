@@ -43,7 +43,7 @@ def display(rows: list[dict]) -> None:
     )
     if revisions:
         st.caption(
-            "Annual figures include dated January or explicitly assumed terminal wash revisions. "
+            "Annual figures include dated source-return and supported wash revisions. "
             "Monthly cash history retains the original payments. Return balances are calculated "
             "before subsequent refund receipts or arrears payments."
         )
