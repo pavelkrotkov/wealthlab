@@ -27,10 +27,15 @@ def validate(scenario, lots, tax):
         plan.entity_tax_already_in_returns_assumed_confirmed,
         plan.source_and_product_tax_excluded_elsewhere_assumed_confirmed,
     )
-    if not all(confirmations) or "unconfirmed" in (plan.federal, plan.new_jersey):
+    if (
+        not all(confirmations)
+        or "unconfirmed" in (plan.federal, plan.new_jersey)
+        or not plan.terms_source_description.strip()
+    ):
         raise ValueError(
             "Confirm independent QOZ tax profiles, entity tax and contract assumptions."
         )
+    validate_reference(plan)
     validate_account(scenario, plan)
     validate_economics(plan.economics)
     expected = [end - timedelta(days=1) for _, end in months(scenario.start, scenario.end)]
@@ -57,3 +62,8 @@ def validate_economics(case):
         or case.exit_at_horizon
     ):
         raise ValueError("QOZ uses no rebalancing/top-ups or automatic horizon exit.")
+
+
+def validate_reference(plan):
+    if plan.mode == "liquid_reference" and (plan.federal, plan.new_jersey) != ("denied", "denied"):
+        raise ValueError("A liquid reference cannot elect QOZ tax benefits.")
