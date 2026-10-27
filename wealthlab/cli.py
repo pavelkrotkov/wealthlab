@@ -15,6 +15,7 @@ from wealthlab import country_report
 from wealthlab.household import report
 from wealthlab.local_files import write_new
 from wealthlab.local_launch import serve
+from wealthlab.optimization import report as policy_report
 
 
 def parser():
@@ -29,7 +30,11 @@ def parser():
     )
     compare.add_argument("baseline", type=Path)
     compare.add_argument("candidate", type=Path)
-    for command in (project, compare):
+    optimize = commands.add_parser(
+        "optimize", help="Evaluate an explicitly bounded policy-search JSON"
+    )
+    optimize.add_argument("scenario", type=Path)
+    for command in (project, compare, optimize):
         command.add_argument("--output-directory", type=Path)
         command.add_argument("--filename")
     return cli
@@ -42,11 +47,7 @@ def main(argv=None):
             return serve(options.port)
         if options.filename is not None and options.output_directory is None:
             raise ValueError("Select an output directory for a named report.")
-        result = (
-            country_report.run(options.scenario)
-            if options.command == "project"
-            else country_report.compare(options.baseline, options.candidate)
-        )
+        result = calculate(options)
         emit(report.encode(result), options)
         return 0
     except KeyboardInterrupt:
@@ -71,7 +72,19 @@ def emit(text, options):
         return
     filename = (
         options.filename
-        or {"project": "projection.json", "compare": "comparison.json"}[options.command]
+        or {
+            "project": "projection.json",
+            "compare": "comparison.json",
+            "optimize": "policy-search.json",
+        }[options.command]
     )
     write_new(text, options.output_directory, filename)
     print("Saved a new report in the explicitly selected private directory.")
+
+
+def calculate(options):
+    if options.command == "project":
+        return country_report.run(options.scenario)
+    if options.command == "compare":
+        return country_report.compare(options.baseline, options.candidate)
+    return policy_report.run(options.scenario)

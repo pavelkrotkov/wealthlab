@@ -3,6 +3,8 @@
 import pandas as pd
 import streamlit as st
 
+from wealthlab.household.report import encode
+
 
 def display(result):
     checks = result["robustness"]
@@ -21,7 +23,7 @@ def display(result):
     if result["configured_validation_passed"] is False:
         st.warning("The training-selected policy did not pass all configured required validation.")
     with st.expander("Matched robustness cash, taxes, constraints and realized paths"):
-        st.json(checks)
+        st.json(encode(checks))
 
 
 def summary(name, item):
