@@ -32,5 +32,5 @@ class LifeHolding(TaxModel):
 
 
 class LifeHouseholdPlan(TaxModel):
-    holdings: list[LifeHolding] = Field(min_length=1)
+    holdings: list[LifeHolding]
     insurance_need_by_owner: dict[Identifier, Money]

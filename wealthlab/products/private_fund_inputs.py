@@ -1,13 +1,14 @@
 """Conditional cash-only private-fund terms; sponsor and tax conclusions are supplied inputs."""
 
 from datetime import date
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from wealthlab.household.records import Money, Record
 from wealthlab.products.long_short_inputs import Rate
 from wealthlab.products.loss_timing import LossTiming
+from wealthlab.products.private_fund_character import validate_profile
 from wealthlab.tax.facts import SignedMoney
 
 
@@ -37,8 +38,15 @@ class PrivateFundContract(Record):
     settlement_days: int = Field(ge=0, le=3650)
     federal_opening_basis: Money
     new_jersey_opening_basis: Money
-    federal_capital_character: Literal["short_term", "long_term"]
+    federal_capital_character: Literal["short_term", "long_term"] | None = None
+    federal_holding_start: date | None = None
+    ordinary_holding_period_assumed_confirmed: bool = False
     federal_exit_loss: LossTiming = Field(default_factory=LossTiming)
     new_jersey_exit_loss: LossTiming = Field(default_factory=LossTiming)
     basis_adjustments: list[BasisAdjustment] = Field(default_factory=list)
     requests: list[FundRequest] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def holding_profile(self) -> Self:
+        validate_profile(self)
+        return self
