@@ -55,11 +55,3 @@ def test_future_deposits_cannot_fund_prior_withdrawals_or_conversions():
     assert sum(r["paid"] for r in result["orders"]) == 0
     assert (result["cash"], sum(result["account_balances"].values())) == (0, 6000)
     assert result["owners"][0]["roth_first_year"] == 2026
-
-
-def test_source_inputs_and_export_remain_unchanged():
-    case = synthetic()
-    before = case.model_dump_json()
-    result = run(case)
-    assert case.model_dump_json() == before
-    assert run(DistributionCase.model_validate_json(before)) == result

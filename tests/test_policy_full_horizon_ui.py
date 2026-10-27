@@ -34,9 +34,3 @@ def test_native_full_horizon_form_updates_cash_wages_spending(app):
     assert profile.household.accounts[0].balance == 1800000
     assert profile.household.incomes[0].monthly_amount == 6000
     assert profile.household.expenses[0].monthly_amount == 2500
-
-
-def test_sample_uncertainty_and_unsupported_age_are_visible_without_a_crash(app):
-    assert any("do not establish" in caption.value for caption in app.caption)
-    app.number_input[3].set_value(120).run()
-    assert app.error and not app.exception

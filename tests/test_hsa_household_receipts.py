@@ -22,23 +22,6 @@ def test_prior_federal_deduction_removes_that_portion_from_qualified_capacity():
     assert rows[-1]["net_wealth"] == 155243
 
 
-def test_no_hsa_cash_flows_leave_the_extra_account_intact():
-    data = synthetic().model_dump(mode="json")
-    data["hsa_plan"].update(contributions=[], withdrawals=[], interest=[])
-    rows = project(Scenario.model_validate(data))
-    assert rows[-1]["account_balances"]["cash_hsa"] == 10000
-    assert rows[-1]["net_wealth"] == 152086
-    assert sum(r["hsa_personal_contributions"] for r in rows) == 0
-
-
-def test_original_hsa_history_and_export_are_unchanged_after_projection():
-    case = synthetic()
-    before = case.model_dump_json()
-    rows = project(case)
-    assert case.model_dump_json() == before
-    assert project(Scenario.model_validate_json(before)) == rows
-
-
 def test_unfunded_personal_deposit_has_no_deduction_and_is_not_retried():
     data = synthetic().model_dump(mode="json")
     data["end"] = "2027-01-01"

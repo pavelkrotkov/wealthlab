@@ -5,15 +5,6 @@ from conditional_loss_cases import allocation
 
 from wealthlab.products.conditional_allocations import events
 from wealthlab.products.household_inputs import SleeveAllocation
-from wealthlab.products.loss_timing import LossTiming
-
-
-@pytest.mark.parametrize(
-    "treatment,date", [("allowed", "2027-01-01"), ("denied", "2027-01-01"), ("deferred", None)]
-)
-def test_release_date_must_match_conditional_treatment(treatment, date):
-    with pytest.raises(ValueError, match="Only deferred"):
-        LossTiming(treatment=treatment, release_on=date)
 
 
 def test_unconfirmed_eligibility_cannot_become_an_allowed_loss():

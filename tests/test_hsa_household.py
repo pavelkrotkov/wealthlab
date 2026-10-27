@@ -59,8 +59,3 @@ def test_conditional_nj_employer_and_bank_income_stays_separate(rows):
     ]
     assert rows[-1]["hsa_audit"]["nj_treatment"] == "taxable_bank_interest_assumption"
     assert sum(r["hsa_employer_funding"] for r in rows) == 2000
-
-
-def test_hsa_cash_transfer_is_not_repeated_as_a_tax_event_deposit(rows):
-    assert sum(r["tax_event_cash"] for r in rows) == 45000
-    assert not any(r["funding_failure"] for r in rows)

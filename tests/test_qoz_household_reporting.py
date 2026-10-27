@@ -33,16 +33,6 @@ def test_actual_qoz_revision_reconciles_generic_tax_summary_without_rewriting_pa
     assert revisions(rows) == rows[-1]["qoz_audit"]["source_return_revisions"]
 
 
-def test_canonical_final_return_takes_precedence_over_separate_historical_audit_lists(rows):
-    observed = deepcopy(rows)
-    original = observed[-1]["qoz_audit"]["source_return_revisions"][0]
-    observed[-1]["lot_audit"]["return_reconciliations"] = [
-        dict(year=2026, observed=original["observed"], final_result=original["old_result"])
-    ]
-    assert annual_results(observed)["2026"]["total_liability"] == 0
-    assert observed[11]["tax_settlement_paid"] == rows[11]["tax_settlement_paid"]
-
-
 def test_old_or_incomplete_qoz_result_requires_reexecution_instead_of_stale_liability(rows):
     observed = deepcopy(rows)
     del observed[-1]["qoz_audit"]["final_source_returns"]

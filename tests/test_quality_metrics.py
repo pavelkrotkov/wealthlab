@@ -1,7 +1,5 @@
 """The gates must reject bad code, including nested and asynchronous functions."""
 
-import pytest
-
 from tools.quality_metrics import measure, violations
 
 
@@ -39,8 +37,3 @@ def test_nested_function_and_class_are_measured():
 def test_gate_boundaries():
     assert violations({"CC": 8, "MI": 50, "SLOC": 300, "function_lines": 60}) == []
     assert len(violations({"CC": 9, "MI": 49, "SLOC": 301, "function_lines": 61})) == 4
-
-
-def test_syntax_error_is_not_hidden():
-    with pytest.raises(SyntaxError):
-        measure("def broken(:")

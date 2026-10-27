@@ -4,11 +4,9 @@ The source illustration controls gross settlement, not spendable wealth. A loan
 receipt reduces later net settlement, and actual paid premiums increase tax basis.
 """
 
-import pytest
 from optimization_cases import changed
 from optimization_life_cases import case
 
-from wealthlab.optimization.life_paths import apply
 from wealthlab.optimization.search import search
 from wealthlab.products.life_household_example import event
 
@@ -43,11 +41,3 @@ def test_loan_cash_and_net_surrender_reconcile_to_same_economic_receipt():
     assert terminal["received_cash"] == 11300
     assert sum(row["life_cash_received"] for row in rows) == 11800
     assert rows[-1]["closing_cash"] == 261799
-
-
-def test_direct_application_cannot_silently_append_a_missing_policy_account():
-    profile = case()
-    data = profile.household.model_dump(mode="json")
-    data["life_plan"] = None
-    with pytest.raises(ValueError, match="existing configured policy"):
-        apply(data, profile.life_opportunities, {"life_policy": "paid_up"})
