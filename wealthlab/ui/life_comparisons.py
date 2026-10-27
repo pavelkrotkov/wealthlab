@@ -15,23 +15,31 @@ def show():
     st.caption(
         "Match household capital, spending and taxes. Price term cover independently; edit "
         "limited-pay and longer premium schedules, required payment failures and monthly "
-        "policy values. Saving budgets buy actual shares after reserving current bills, tax "
+        "policy values. The uninsured reference keeps the same independent protection need; "
+        "a new-issue preset starts with zero policy value, basis, loan and coverage. "
+        "Saving budgets buy actual shares after reserving current bills, tax "
         "and your cash buffer. Policy values remain supplied assumptions on every market path."
     )
     opening = select(
         "Opening policy example",
-        ["New policies", "Existing policy with MEC assumption"],
+        ["New policies", "Existing policy with MEC assumption", "No policy versus new issue"],
         key="life_comparison_opening",
     )
-    existing = opening != "New policies"
+    existing = opening == "Existing policy with MEC assumption"
+    uninsured = opening == "No policy versus new issue"
     mode = select(
         "Comparison market method",
         ["entered", "deterministic", "historical", "monte_carlo", "stress"],
         key="life_comparison_method",
     )
-    namespace = "life_comparison_" + mode + ("_existing" if existing else "")
+    namespace = (
+        "life_comparison_" + mode + ("_uninsured" if uninsured else "_existing" if existing else "")
+    )
     uploaded = st.file_uploader("Load insurance alternatives JSON", type="json")
-    if source(uploaded, synthetic(mode, existing).model_dump_json(indent=2), namespace) is None:
+    if (
+        source(uploaded, synthetic(mode, existing, uninsured).model_dump_json(indent=2), namespace)
+        is None
+    ):
         return
     with st.form(namespace):
         edited = st.text_area(

@@ -13,12 +13,14 @@ from wealthlab.products.household_reporting import summarize
 from wealthlab.products.household_validation import validate
 from wealthlab.products.long_short_book import opening
 from wealthlab.products.private_fund_household import FundLedger
+from wealthlab.products.sleeve_exit_state import record as record_exits
 
 
 class Ledger:
     def __init__(self, scenario):
         validate(scenario)
         self.plan = scenario.sleeve_plan
+        self.end = scenario.end
         self.books = {s.account_id: opening(s.case) for s in self.plan.sleeves}
         self.allocations = {
             s.account_id: [e for a in s.allocations for e in tax_events(a)]
@@ -65,7 +67,7 @@ class CombinedLedger:
 
 
 def make(scenario, tax_ledger=None, lots=None):
-    from wealthlab.portfolio.saving_household import Ledger as SavingLedger
+    from wealthlab.products.drilling_household import Ledger as DrillingLedger
     from wealthlab.products.exchange_fund_household import Ledger as ExchangeLedger
     from wealthlab.products.life_household import Ledger as LifeLedger
 
@@ -78,10 +80,19 @@ def make(scenario, tax_ledger=None, lots=None):
         from wealthlab.products.qoz_household import Ledger as QOZLedger
 
         books.append(QOZLedger(scenario, lots, tax_ledger))
+    if scenario.drilling_plan:
+        books.append(DrillingLedger(scenario))
     advisory = advisory_household.attach(books, scenario)
+    append_saving(books, scenario, tax_ledger)
+    return CombinedLedger(books, advisory) if books else None
+
+
+def append_saving(books, scenario, tax_ledger):
+    """Optional saving follows every native required product, including QOZ and drilling."""
+    from wealthlab.portfolio.saving_household import Ledger as SavingLedger
+
     if scenario.lot_plan and scenario.lot_plan.savings:
         books.append(SavingLedger(scenario, tax_ledger))
-    return CombinedLedger(books, advisory) if books else None
 
 
 def completed(ledger):
@@ -98,7 +109,7 @@ def finish_book(book, rows):
     if hasattr(book, "finish"):
         book.finish(rows)
         return
-    rows[-1]["sleeve_audit"] = book.log
+    record_exits(book, rows)
     rows[-1]["sleeve_tax_assumptions"] = [
         tax_audit(a) for s in book.plan.sleeves for a in s.allocations
     ]

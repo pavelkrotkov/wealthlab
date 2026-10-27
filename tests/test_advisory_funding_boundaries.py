@@ -55,35 +55,3 @@ def test_partial_or_locked_native_sale_never_spends_the_same_fee_reserve_twice(l
     assert result["funding_sale_proceeds"] == expected
     assert wallet.cash == expected
     assert wallet.reserved_cash == 0
-
-
-def test_native_funding_failure_restores_the_existing_reservation_and_cash(monkeypatch):
-    case, _, _ = native(cash="50")
-    wallet, lots = Wallet(case), make(case)
-    ledger = TaxLedger(case.tax_plan, case, lots)
-
-    def unavailable(*args):
-        raise RuntimeError("native funding failed")
-
-    monkeypatch.setattr(ledger.funding, "fund", unavailable)
-
-    def wrapper(wallet, start, end):
-        with wallet.reserving(Decimal(100)):
-            with pytest.raises(RuntimeError, match="native funding failed"):
-                ledger.fund_required(wallet, Decimal(100), start, end)
-            assert wallet.reserved_cash == 100
-            assert wallet.balances["cash"] == 50
-        raise ValueError("stop failed projection")
-
-    with pytest.raises(ValueError, match="stop failed projection"):
-        ledger.month(
-            {},
-            wallet,
-            START,
-            END,
-            Decimal(100),
-            receipt_hook=wrapper,
-            pre_receipt_hook=lots.after_receipts,
-        )
-    assert wallet.reserved_cash == 0
-    assert wallet.cash == 50

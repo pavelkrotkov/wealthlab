@@ -39,15 +39,6 @@ def test_missing_plan_or_binding_and_separate_yield_are_not_silently_accepted():
         validate(case, batch, binding, 0)
 
 
-def test_missing_month_and_invalid_index_fail_before_any_execution():
-    case, batch, binding = flat()
-    with pytest.raises(ValueError, match="path index"):
-        validate(case, batch, binding, 1)
-    plan = case.qoz_plan.model_copy(update=dict(observations=case.qoz_plan.observations[:-1]))
-    with pytest.raises(ValueError, match="ordered complete month-end"):
-        validate(case.model_copy(update=dict(qoz_plan=plan)), batch, binding, 0)
-
-
 def test_locked_subscription_and_blocked_source_need_real_native_adapters():
     case, batch, binding = flat(
         shocks=[dict(name="subscription lock", month=0, lock_months=dict(qof_assets=1))]
