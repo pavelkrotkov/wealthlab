@@ -53,7 +53,7 @@ def form(case: AnnualCase) -> AnnualCase | None:
     return parse(data, case) if submitted else None
 
 
-def show():
+def mainland_show():
     st.header("Annual tax workbench")
     st.warning(
         "Synthetic starting case. NJ currently supports full-year resident income-tax core; "
@@ -68,6 +68,8 @@ def show():
         "wages, investments, retirement and business income; no eligibility is inferred. "
         "Insurance ordinary income is supplied recognized policy income subject to NIIT; "
         "insurance additional tax is an entered liability, without inferred MEC eligibility. "
+        "Partnership nonpassive income, SE earnings, eligible QBI and AMT additions are "
+        "independently supplied after applicable limits; no classification is inferred. "
         "Positive balances are due, negative balances are overpayments. No payment is sent."
     )
     try:
@@ -98,3 +100,21 @@ def parse(data: dict, case: AnnualCase) -> AnnualCase:
                 if isinstance(value, (dict, list)):
                     data[section][name] = json.loads(data[section][name])
     return AnnualCase.model_validate(data)
+
+
+def show():
+    selected = st.selectbox(
+        "Annual tax workbench",
+        ["US federal and NJ", "Puerto Rico annual", "Puerto Rico incentives"],
+        key="annual_workbench",
+    )
+    if selected == "Puerto Rico annual":
+        from wealthlab.ui.puerto_rico import show as pr_show
+
+        pr_show()
+    elif selected == "Puerto Rico incentives":
+        from wealthlab.ui.pr_incentives import show as incentives_show
+
+        incentives_show()
+    else:
+        mainland_show()

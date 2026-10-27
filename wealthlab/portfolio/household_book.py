@@ -13,6 +13,7 @@ from wealthlab.household.calendar import money
 from wealthlab.portfolio import household_policies, household_wash, rebalance
 from wealthlab.portfolio import household_recognition as recognition
 from wealthlab.portfolio.book import Book
+from wealthlab.portfolio.household_budget_audit import audit as budget_audit
 from wealthlab.portfolio.household_validation import validate
 from wealthlab.portfolio.household_values import account_value
 
@@ -76,6 +77,7 @@ class Ledger:
             trades=[t.model_dump(mode="json") for t in self.book.history],
             funding_orders=self.funding_orders,
             sale_decisions=self.sale_decisions,
+            budget_audit=budget_audit(self),
             rebalance_decisions=self.rebalance_decisions,
             harvest_decisions=self.book.harvest_decisions,
             closing_prices=dict(self.prices),
