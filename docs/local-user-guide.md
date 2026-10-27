@@ -1,6 +1,6 @@
 # Local workbench guide
 
-Release integration is still open in [issue #19](https://github.com/pavelkrotkov/wealthlab/issues/19). This guide covers the current integration branch and its local launch, projection and bounded-search reports. Read the [coverage matrix](model-coverage.md) before entering a case; pending product, jurisdiction and optimizer branches are not a completed integrated release.
+This guide covers the local workbench, private file workflow and bounded policy search. Read the [coverage matrix](model-coverage.md) before entering a case; [release verification](release-validation.md) records the executed workflow checks and links to acceptance evidence.
 
 ## Install and launch on the selected Mac
 
@@ -55,6 +55,8 @@ Open **Optimize**, start with a clearly synthetic example, and edit or import it
 
 Run the allowed grid, then inspect the frozen training selection and independent validation result. Validation failure does not substitute a runner-up. The interface also exposes configured deterministic, historical and stress checks, without treating their frequencies as probabilities. A best evaluated candidate is not a certified global optimum.
 
+In **Short composable examples**, select **Add fixed synthetic home and native mortgage close** to compare retirement choices while retaining the same sourced home marks, lien and closing terms. Native sale costs, mortgage payoff and taxes execute for every candidate. Retained or blocked property remains visible as equity and debt, but cannot rank as completed after-tax cash. The example explicitly disables issuer concentration measurement because home issuer coverage is unmeasured; imported constraints are not changed. See the [fixed-property profile](adr/0217-fixed-native-property-policy-context.md).
+
 The **Fixed PR country tax and retirement wages** preset keeps the country, legal/source assumptions and original cash fixed while retirement dates change actual future pay and computed country bills. Its explicit monthly USD wage links also let you edit projected pay without editing duplicate future tax-source amounts. Future-wage replacement requires confirmation; historical income, ownership, source dates, classifications and independent FX remain fixed. The short example retains the ordinary age100/reserve defaults, so it does not establish retirement safety.
 
 A fixed native Spain context can be imported alongside the household in `country_context.spain`. Country income, paid-tax credits and cash payments are recomputed on every candidate/path. Explicit USD bank-cash links update the existing fiscal cash assets from actual December balances while retaining supplied ownership and year-end EUR quotes. Other fiscal values remain independently supplied conditional facts; the optimizer does not infer statutory values for changing investments or relocation/treaty eligibility. Unmapped foreign income, gain/basis changes and unsupported wage-deferral adjustments block the affected candidate. Existing payment caps remain binding when a calculated bill rises. Same-year IP payments above a cash-dependent revised bill remain unsupported; the tool does not infer a refund or alter the supplied payment dates. See the [fixed-country scope](adr/0220-fixed-country-context-in-policy-search.md).
@@ -69,7 +71,7 @@ To execute the exported inputs through the same optimizer without a browser:
 uv run --no-sync python -m wealthlab optimize "/your/selected/private/folder/policy-search-inputs.json" --output-directory "/your/selected/private/folder" --filename policy-search-audit.json
 ```
 
-Raw search inputs and this version's search audit can be loaded by the UI or CLI. Audit import validates the embedded input fingerprint, ignores archived selection/outcomes and performs a fresh search under current code. Use the separate input export when editing assumptions or when a full audit exceeds the 200 MB import bound. The fingerprint detects input changes; it authenticates neither a source document nor legal eligibility. Bounded-search results remain conditional; advisory-fee, QOZ and cross-border integration must be checked against the current coverage matrix and unresolved issue list.
+Raw search inputs and this version's search audit can be loaded by the UI or CLI. Audit import validates the embedded input fingerprint, ignores archived selection/outcomes and performs a fresh search under current code. Use the separate input export when editing assumptions or when a full audit exceeds the 200 MB import bound. The fingerprint detects input changes; it authenticates neither a source document nor legal eligibility. Bounded-search results remain conditional on the enabled native profiles and explicit source assumptions in the coverage matrix.
 
 ## Country comparisons
 
@@ -85,7 +87,6 @@ uv run --no-sync python -m wealthlab compare "/your/selected/private/folder/main
 ```
 
 Ordinary household inputs/reports retain their existing format and behavior. Mixed ordinary/country comparisons run the original country assessment again; a resolved assessment snapshot is not substituted for its source facts. Country conclusions remain conditional on the declared residence, legal classifications, future-law assumptions and supported tax profiles.
-
 
 ## Before private entry
 

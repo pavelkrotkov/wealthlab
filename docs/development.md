@@ -1,6 +1,6 @@
 # Development and review
 
-The household, tax, retirement, market and product workbenches have implemented conditional slices; see the [current coverage matrix](model-coverage.md). Optimizer, jurisdiction and complete release integration remain active work. The [local user guide](local-user-guide.md) recommends the complete installation, including the pinned Owl tables used by SSA/RMD calculations. The environment below also includes development checks; core-only installation is explicitly limited.
+The workbench includes household, tax, retirement, market, product and bounded policy-search workflows; see the [current coverage matrix](model-coverage.md). Fixed native home/debt and bounded PR/Spain contexts share the policy-search workflow. [Release verification](release-validation.md) records the executed checks and acceptance status. The [local user guide](local-user-guide.md) recommends the complete installation, including the pinned Owl tables used by SSA/RMD calculations. The environment below also includes development checks; core-only installation is explicitly limited.
 
 Use Python 3.12 and uv. Keep local build/cache/temp artifacts inside the selected repository:
 
@@ -31,7 +31,7 @@ Before publishing, re-read the PR head and abort if it changed. Check existing n
 
 The existing J-Bot workflow remains available for a future explicitly authorized return: write-authorized `/jbot --model=provider/model` comments freeze the same-repository PR head. Do not trigger it during the quota hold. Provider credentials remain in GitHub Actions secrets; this reviewer change requires no new secret, model-provider subscription or paid quota override.
 
-The public examples and CI must never load local household records. Streamlit is configured to listen only on loopback with usage statistics disabled. The future app must preserve these settings and test imports/exports and input trust boundaries.
+The public examples and CI must never load local household records. Streamlit is configured to listen only on loopback with usage statistics disabled. Keep these settings and the retained import/export and input-boundary checks when changing the app.
 
 ## Numerical package setup on Intel macOS
 

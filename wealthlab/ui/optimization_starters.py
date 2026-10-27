@@ -58,7 +58,7 @@ def show():
     if st.checkbox("Add fixed synthetic home and native mortgage close", key="property_context"):
         starter = with_property(starter)
         st.caption(
-            "The common household includes an original $300,000 home and $60,000 lien. "
+            "The common household includes an original USD 300,000 home and USD 60,000 lien. "
             "Every policy retains the same June close, costs, tax assumptions and home marks. "
             "This example explicitly disables the issuer limit: home issuer/factor coverage "
             "remains unmeasured. Retained homes remain illiquid and block completed-exit ranking."
