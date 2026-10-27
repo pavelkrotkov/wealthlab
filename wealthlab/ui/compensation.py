@@ -23,7 +23,11 @@ def controls(payload, scenario):
             "all income/eligibility assumptions and exclude these new events from other tax "
             "inputs. Distributions have no extra inferred tax; any applicable income must "
             "be included in the supplied allocations. Basis and hypothetical exit tax are "
-            "unmodeled. This conditional profile does not classify an actual employer plan."
+            "unmodeled. A termination event may supply a dated source, remaining units, "
+            "deferred value, cash due and confirmations of no future rights/obligations and "
+            "complete supplied exit-tax recognition. Missing facts withhold closure; the event "
+            "does not pay cash, erase value or infer tax relief. This conditional profile "
+            "does not classify an actual employer plan."
         )
         if not enabled:
             return None

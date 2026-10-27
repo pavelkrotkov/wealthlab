@@ -72,8 +72,19 @@ class OptionTax(TaxModel):
     nj_premium_basis: Literal["unresolved", "assume_same_mechanics"] = "unresolved"
 
 
+class OpeningStockPurchase(Record):
+    """Buy actual integer shares at the first supplied stock mark, before opening legs."""
+
+    date: date
+    shares: int = Field(strict=True, gt=0, le=1000000000)
+    fee: Money
+
+
 class OptionCase(TaxModel):
     holdings: LotCase
+    # Cash-only new allocation: actual execution creates its lot and dated bases.
+    # Existing held lots continue to use their original holdings input instead.
+    opening_stock_purchase: OpeningStockPurchase | None = None
     legs: list[OptionLeg] = Field(min_length=1)
     marks: list[OptionMark] = Field(min_length=2)
     events: list[OptionEvent] = Field(default_factory=list)
