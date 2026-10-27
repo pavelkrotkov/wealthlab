@@ -1,5 +1,7 @@
 # Software reuse assessment
 
+Current implementation uses the pinned packages and numerical comparisons documented in [executed reuse results](reuse-results.md) and [dependency notices](dependency-notices.md). The October 23 assessment below records the pre-spike research and is preserved as that dated decision history.
+
 Research checked October 23, 2026. Repository documentation is evidence of intended capabilities, not proof of numerical correctness. No candidate has yet passed an executable integration spike.
 
 | Candidate | Reuse decision | Relevant limits / next check |

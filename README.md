@@ -36,7 +36,7 @@ Start in **Household** with the labelled synthetic example, select **Validate an
 
 The optimizer defaults to a configurable 95% simulated funding-success target, younger-member age 100 horizon and two-year liquid reserve. It separates training from validation and reports unmet constraints, paid taxes, downside and completed exits. A best evaluated policy is not a global optimum or a validated probability of future success.
 
-Read the [model coverage matrix](docs/model-coverage.md) and [private input checklist](docs/private-input-checklist.md) before entering personal data. Unsupported tax profiles, absent terms and incomplete exits are explicit; a deduction or assessed credit does not become spendable cash. Current search excludes fixed property and foreign-tax contexts; they have separate projection/comparison workflows while integration continues. [Final release acceptance](https://github.com/pavelkrotkov/wealthlab/issues/19) remains open.
+Read the [model coverage matrix](docs/model-coverage.md) and [private input checklist](docs/private-input-checklist.md) before entering personal data. Unsupported tax profiles, absent terms and incomplete exits are explicit; a deduction or assessed credit does not become spendable cash. Search also accepts fixed native home/debt and bounded PR/Spain contexts. Relocation, unsupported foreign source mappings and property decisions are not automatic search choices. See [executed workflow checks](docs/release-validation.md) and [release acceptance](https://github.com/pavelkrotkov/wealthlab/issues/19).
 
 ## Development and sources
 

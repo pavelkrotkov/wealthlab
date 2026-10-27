@@ -1,6 +1,6 @@
 # Development and review
 
-The workbench includes household, tax, retirement, market, product and bounded policy-search workflows; see the [current coverage matrix](model-coverage.md). Fixed household-context optimization and final release acceptance remain active work. The [local user guide](local-user-guide.md) recommends the complete installation, including the pinned Owl tables used by SSA/RMD calculations. The environment below also includes development checks; core-only installation is explicitly limited.
+The workbench includes household, tax, retirement, market, product and bounded policy-search workflows; see the [current coverage matrix](model-coverage.md). Fixed native home/debt and bounded PR/Spain contexts share the policy-search workflow. [Release verification](release-validation.md) records the executed checks and acceptance status. The [local user guide](local-user-guide.md) recommends the complete installation, including the pinned Owl tables used by SSA/RMD calculations. The environment below also includes development checks; core-only installation is explicitly limited.
 
 Use Python 3.12 and uv. Keep local build/cache/temp artifacts inside the selected repository:
 
