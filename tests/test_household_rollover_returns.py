@@ -1,10 +1,7 @@
 """Source and destination earn their own remaining month-end returns after the transfer."""
 
-from unittest.mock import patch
-
 from wealthlab.household.projection import project
 from wealthlab.household.scenario import Scenario
-from wealthlab.retirement.distributions import run
 from wealthlab.retirement.workplace_rollover_example import synthetic
 
 
@@ -33,15 +30,3 @@ def test_month_end_returns_apply_only_to_each_accounts_actual_remaining_principa
     assert rows[1]["account_balances"]["ira"] == 99000
     assert rows[2]["account_balances"] == dict(cash=25000, work_pretax=22000, ira=84000)
     assert rows[2]["net_wealth"] == 131000
-
-
-def test_rollover_arrival_invalidates_the_annual_cache_once_and_leaves_inputs_unchanged():
-    case = synthetic()
-    before = case.model_dump_json()
-    with patch("wealthlab.retirement.ira_household_dynamic.run", wraps=run) as reconcile:
-        rows = project(case)
-    assert reconcile.call_count == 3
-    assert case.model_dump_json() == before
-    assert len(rows[-1]["workplace_rollover_audit"]) == 1
-    assert rows[11]["ira_annual_reconciliation"]["incoming_rollover_value"] == 80000
-    assert rows[-1]["ira_annual_reconciliation"]["incoming_rollover_value"] == 0

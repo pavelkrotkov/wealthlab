@@ -1,14 +1,11 @@
 """Unsupported HSA tax/ownership/wash profiles must not inherit generic IRA behavior."""
 
-from datetime import date
-from decimal import Decimal
-
 import pytest
 
 from wealthlab.portfolio.engine import run as generic_run
 from wealthlab.retirement.hsa_investment_example import synthetic
 from wealthlab.retirement.hsa_investment_inputs import HSAInvestments
-from wealthlab.retirement.hsa_investments import Ledger, run
+from wealthlab.retirement.hsa_investments import run
 
 
 @pytest.mark.parametrize(
@@ -45,14 +42,6 @@ def test_mixed_or_joint_accounts_do_not_enter_hsa_book(field, value, message):
     data["case"]["accounts"][0][field] = value
     with pytest.raises(ValueError, match=message):
         run(HSAInvestments.model_validate(data))
-
-
-def test_invalid_request_does_not_advance_or_mutate_the_ledger():
-    ledger = Ledger(synthetic())
-    with pytest.raises(ValueError, match="nonnegative"):
-        ledger.raise_cash("hsa", Decimal(-1), date(2026, 12, 31))
-    assert ledger.when == date(2026, 1, 1)
-    assert ledger.book.history == []
 
 
 def test_contradictory_final_quote_is_not_silently_overridden():

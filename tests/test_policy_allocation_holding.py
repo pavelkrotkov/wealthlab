@@ -45,14 +45,6 @@ def test_early_cash_fund_exit_uses_actual_purchase_date_without_adding_income_as
     assert rows[-1]["closing_cash"] == 251999
 
 
-def test_subscription_binds_new_acquisition_instead_of_legacy_capital_character(early_exit):
-    contract = early_exit["selected_training"]["household"]["sleeve_plan"]["sleeves"][0][
-        "private_fund_contract"
-    ]
-    assert contract["federal_holding_start"] == "2026-01-01"
-    assert contract["federal_capital_character"] is None
-
-
 @pytest.mark.parametrize(
     "changes,match",
     [

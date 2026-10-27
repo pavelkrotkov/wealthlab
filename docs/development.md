@@ -21,7 +21,15 @@ uv run --no-sync zizmor .github/workflows
 
 The metrics command inspects all tracked and unignored Python files, including root UI modules, tests and tools. Only git-ignored environments/generated/private material is outside discovery. It reports each file and fails on CC > 8, MI < 50, source lines > 300 or function span > 60. Deliberately bad synthetic cases verify rejection. Coverage starts at 85% and its source list must expand with production packages.
 
-J-Bot follows utils: write-authorized `/jbot --model=provider/model` comments freeze the same-repository PR head. Provider credentials belong in GitHub Actions secrets. Use the repo's configured provider and observe the review on the current SHA; errors or missing credentials never count as a review. The workflow must first exist on the default branch for issue-comment events; seed that trusted workflow as documented bootstrap before enforcing review requirements on feature work.
+## Independent PR review
+
+As authorized on October 26, 2026, the active reviewer is ChatGPT-Sol 6.1 (`gpt-6.1-sol`), replacing J-Bot while its weekly quota is exhausted. Run the reviewer as an independent Codex subagent with that explicit model; this uses the existing agent runtime, not the CommandCode-backed GitHub Action. The reviewer must not implement its own fixes or merge its target.
+
+Freeze the full PR head SHA and inspect its merge-base diff, requirements, relevant callers and tests. Reviewers may work in parallel on separate PRs. Publish worthwhile findings with evidence and requested handling. After the findings are visible, submit a native GitHub PR review with `event=COMMENT` and `commit_id` set to the reviewed SHA. Include model identity, verdict, finding count and marker `<!-- wealthlab-review:sol-6.1:PR_NUMBER:FULL_HEAD_SHA -->`. A COMMENT review records evidence; it does not confer an APPROVED state or bypass GitHub branch protection.
+
+Before publishing, re-read the PR head and abort if it changed. Check existing native reviews for the exact marker to avoid duplicates. After publication, re-read the native review and require the matching commit, submitted COMMENTED state, submission timestamp and consistent finding count; recheck that the PR head is unchanged. Errors, incomplete reviews, local reports and reviews of previous heads do not satisfy the review gate. Address findings, rerun affected checks and obtain review of the new head after fixes. Merge only after required CI passes and all findings have been resolved.
+
+The existing J-Bot workflow remains available for a future explicitly authorized return: write-authorized `/jbot --model=provider/model` comments freeze the same-repository PR head. Do not trigger it during the quota hold. Provider credentials remain in GitHub Actions secrets; this reviewer change requires no new secret, model-provider subscription or paid quota override.
 
 The public examples and CI must never load local household records. Streamlit is configured to listen only on loopback with usage statistics disabled. The future app must preserve these settings and test imports/exports and input trust boundaries.
 

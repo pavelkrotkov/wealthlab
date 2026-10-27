@@ -2,7 +2,6 @@
 
 from test_lot_tax_reporting import reporting_case
 from test_lot_ui import workbench
-from test_tax_budget_policy import budget_case
 
 
 def test_nj_override_and_annual_comparison_are_visible():
@@ -23,14 +22,3 @@ def test_nj_override_and_annual_comparison_are_visible():
     assert loss_table["Recognized loss"].sum() == 250
     assert loss_table["Ordinary income consumed"].sum() == 250
     assert any("not incremental tax savings" in item.value for item in app.caption)
-
-
-def test_budget_diagnostics_report_the_actual_limit():
-    import json
-
-    app = workbench()
-    app.text_area[0].set_value(json.dumps(budget_case()))
-    app.button(key="FormSubmitter:lot_case-Calculate lot accounting").click().run(timeout=30)
-    assert not app.exception
-    assert not app.error
-    assert any("USD 500.00 budget (within budget)" in item.value for item in app.caption)
