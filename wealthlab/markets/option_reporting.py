@@ -61,6 +61,8 @@ def outcome(rows, funded):
     products["constraints_failed"].update(life_failures)
     drilling = condition_dates(rows, "drilling_product_failure")
     products["constraints_failed"].update(drilling)
+    property_failures = condition_dates(rows, "property_product_failure")
+    products["constraints_failed"].update(property_failures)
     failures = products["constraints_failed"]
     return dict(
         **{f"product_{key}_months": months(dates) for key, dates in products.items()},
@@ -68,6 +70,9 @@ def outcome(rows, funded):
         product_feasible=not failures,
         joint_feasible=funded and not failures,
         first_product_failure=min(failures, default=None),
+        property_feasible=not property_failures,
+        first_property_failure=min(property_failures, default=None),
+        property_failure_months=months(property_failures),
         drilling_feasible=not drilling,
         first_drilling_failure=min(drilling, default=None),
         drilling_failure_months=months(drilling),

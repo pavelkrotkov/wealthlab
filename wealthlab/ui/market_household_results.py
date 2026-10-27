@@ -11,6 +11,7 @@ import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
 from wealthlab.ui.household_advisory import display as advisory_results
+from wealthlab.ui.household_property import display as property_results
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.hsa_invested_results import display as hsa_results
 from wealthlab.ui.lot_policy_results import display as policy_results
@@ -51,6 +52,7 @@ def display(bundle):
     option_results(result, index, rows)
     qoz_results(result, rows)
     advisory_results(rows)
+    property_results(rows)
     employment_results(result, index)
     medical_results(result, index, rows)
     hsa_scope(result, rows)

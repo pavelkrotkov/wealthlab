@@ -23,13 +23,14 @@ def refresh(book, ledger, when):
         carry_reasons(book, when.year)
         + assessment_reasons(book, when)
         + denied_source_reasons(case)
+        + book.redetermination_unresolved
     )
     if unresolved:
         result = dict(candidate=None, unresolved=unresolved, credit_status="blocked")
         book.credit_results[when.year] = result
         return result
     try:
-        result = evaluate(case)
+        result = evaluate(case, redetermined_refunds=book.redetermined_refunds)
     except ValueError as error:
         result = dict(candidate=None, unresolved=[str(error)], credit_status="blocked")
     apply_permitted(ledger, case, result)
