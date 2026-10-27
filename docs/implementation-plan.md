@@ -222,7 +222,7 @@ Acceptance:
 - End-to-end local save/import/export, compare, optimize, audit and reproduce tests; browser accessibility and keyboard smoke checks.
 - No private data or credentials in git/history/logs; no implicit outbound scenario transmission; loopback binding and safe import/path handling.
 - Dependency/license notices, source provenance and known limitations are current. Unsupported combinations are discoverable before running.
-- Green required checks and observed J-Bot reviews on current PR heads; findings resolved with evidence.
+- Green required checks and observed independent ChatGPT-Sol 6.1 reviews on current PR heads; findings resolved with evidence.
 - Deliver a short user guide, model coverage matrix and a private input checklist. Completion does not require inventing missing personal data.
 
 ## Review and stack strategy
@@ -230,3 +230,7 @@ Acceptance:
 Start with foundation/research, then foundation/quality. After foundation lands, each feature is a small vertical stack or PR, with dependent sublayers only when review size requires it. Tests for each behavior travel with that behavior. Independent feature stacks branch from the same verified base; do not put unrelated work in a linear dependency chain.
 
 Two review rounds: request review, address findings and CI, then review the updated head. Merge only the exact reviewed/check-passing head. Bot unavailability is an explicit setup issue, not a successful review. The provider credential is human setup if it cannot be supplied through an already authorized local secret mechanism.
+
+## October 26 review-policy update
+
+The user authorized independent ChatGPT-Sol 6.1 reviews while J-Bot is quota-capped. This supersedes earlier J-Bot references in this plan and the original tickets; exact-commit native review, resolved findings and required CI remain mandatory. See [development and review](development.md).

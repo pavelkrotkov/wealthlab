@@ -1,4 +1,4 @@
-"""Local verification screen; household projection features are tracked separately."""
+"""Local financial workspaces and independent numerical verification."""
 
 from wealthlab.runtime import configure
 
@@ -11,7 +11,9 @@ import streamlit as st  # noqa: E402
 
 def checks():
     st.caption("Local financial scenario workbench · engine verification")
-    st.info("The projection workbench is under construction. These are synthetic engine checks.")
+    st.info(
+        "These synthetic checks verify numerical foundations. They do not validate personal inputs."
+    )
     st.write("Verify the numerical foundations before entering household scenarios.")
     owl_available = find_spec("owlplanner") is not None
     retirement = st.checkbox(
