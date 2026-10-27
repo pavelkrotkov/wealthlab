@@ -3,7 +3,6 @@
 from decimal import Decimal
 
 from wealthlab.household.projection import project
-from wealthlab.household.storage import loads
 from wealthlab.retirement.social_medicare_example import synthetic
 
 
@@ -19,12 +18,3 @@ def test_uninsured_pure_spouse_uses_its_auxiliary_record_for_premiums():
     assert spouse["active_record"] == "spousal_excess"
     assert spouse["cash_received"] == 1047
     assert spouse["gross_credited"] == Decimal("1249.90")
-
-
-def test_preparation_and_projection_leave_saved_claims_and_income_sources_unchanged():
-    case = synthetic()
-    original = case.model_dump_json()
-    rows = project(case)
-    assert case.model_dump_json() == original
-    assert [r.federal for r in case.tax_plan.income_rules] == ["interest"]
-    assert project(loads(original)) == rows

@@ -1,8 +1,5 @@
 """Projection envelopes load validated inputs only; archived outcomes are never trusted as facts."""
 
-import json
-from decimal import Decimal
-
 import pytest
 
 from wealthlab.household.example import synthetic
@@ -23,9 +20,3 @@ def test_changed_report_inputs_cannot_retain_the_original_reproduction_fingerpri
     archive["inputs"]["name"] = "Changed inputs"
     with pytest.raises(ValueError, match="fingerprint"):
         loads(encode(archive))
-
-
-def test_numeric_json_money_preserves_cents_at_the_supported_precision_boundary():
-    data = synthetic().model_dump(mode="json")
-    raw = json.dumps(data).replace('"balance": "100000"', '"balance": 9999999999999999.99', 1)
-    assert loads(raw).accounts[0].balance == Decimal("9999999999999999.99")

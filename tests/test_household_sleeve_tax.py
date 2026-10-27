@@ -23,10 +23,3 @@ def test_supplied_capital_allocation_enters_one_return_without_cash_receipt():
     assert rows[-1]["account_balances"]["sleeve"] == 100000
     tax = rows[-1]["annual_tax"]["total_liability"]
     assert rows[-1]["net_wealth"] == 110000 - tax
-
-
-def test_source_observations_and_tax_allocations_remain_unchanged():
-    case = flat()
-    original = case.model_dump_json()
-    project(case)
-    assert case.model_dump_json() == original

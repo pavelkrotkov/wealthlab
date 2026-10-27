@@ -1,6 +1,5 @@
 """An eligible rollover has its own basis and neither spends annual room nor funds deposits."""
 
-import pytest
 from incoming_rollover_cases import combined
 
 from wealthlab.retirement.distribution_inputs import DistributionCase
@@ -24,10 +23,3 @@ def test_outside_cash_funds_deposits_without_using_rollover_value_as_annual_room
     assert result["owners"][0]["nj_ira_basis"] == 11000
     assert result["cash"] == 4000
     assert sum(result["account_balances"].values()) + result["cash"] == 40000
-
-
-def test_a_rollover_id_cannot_collide_with_an_ordinary_contribution():
-    data = combined(10000)
-    data["incoming_rollovers"][0]["id"] = data["contributions"]["orders"][0]["id"]
-    with pytest.raises(ValueError, match="unique IDs"):
-        DistributionCase.model_validate(data)

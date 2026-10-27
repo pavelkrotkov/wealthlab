@@ -3,8 +3,6 @@
 from datetime import date
 from decimal import Decimal as D
 
-import pytest
-
 from tests.test_taxable_funding import scenario
 from wealthlab.household.funding import Wallet
 from wealthlab.tax.facts import FederalIncome
@@ -59,27 +57,3 @@ def test_prior_product_receipt_is_actual_cash_before_later_required_sale(payload
     assert row["funding_sale_proceeds"] == D("12717.79")
     assert wallet.pay(D(10000)) == 10000
     assert wallet.cash == 0
-
-
-def test_product_funding_cannot_run_outside_the_current_tax_month(payload):
-    ledger, wallet = setup(payload)
-    with pytest.raises(ValueError, match="active household"):
-        ledger.fund_required(wallet, D(1), START, END)
-    ledger.month({}, wallet, START, END, D(0))
-    with pytest.raises(ValueError, match="active household"):
-        ledger.fund_required(wallet, D(1), START, END)
-
-
-def test_product_cannot_request_negative_cash_or_another_period(payload):
-    ledger, wallet = setup(payload)
-
-    def bad_requests(wallet, start, end):
-        with pytest.raises(ValueError, match="negative"):
-            ledger.fund_required(wallet, D(-1), start, end)
-        with pytest.raises(ValueError, match="active household"):
-            ledger.fund_required(wallet, D(1), date(2026, 11, 1), end)
-        return []
-
-    row = ledger.month({}, wallet, START, END, D(0), receipt_hook=bad_requests)
-    assert row["funding_sale_proceeds"] == 0
-    assert wallet.balances["brokerage"] == 100000

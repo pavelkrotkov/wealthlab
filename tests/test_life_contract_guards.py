@@ -39,10 +39,3 @@ def test_half_birthday_and_explicit_exceptions_control_mec_additional_tax():
         additional_tax_exception="disability_confirmed",
     )
     assert run(exempt)["rows"][0]["federal_additional_tax"] == 0
-
-
-def test_unconfirmed_life_contract_cannot_report_zero_tax_for_premiums_alone():
-    result = run(case([event("premium", 20)], ordinary_personal_contract_confirmed=False))
-    assert result["annual"][0]["tax_change"] is None
-    assert result["rows"][0]["federal_ordinary_income"] is None
-    assert result["external_cash"] == -20

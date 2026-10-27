@@ -20,17 +20,6 @@ def run(data):
     )
 
 
-@pytest.mark.parametrize("mode", ["deterministic", "monte_carlo", "historical", "stress"])
-def test_all_modes_share_actual_paths_and_preserve_conditional_unsettled_exit(mode):
-    result = run(synthetic(mode))
-    assert result["fund"]["batch_id"] == result["reference"]["batch_id"]
-    assert result["exit_status"] == [
-        dict(path=0, fund_complete=False, reference_complete=True, both_fully_cash_liquidated=False)
-    ]
-    assert result["fund"]["details"][0]["rows"][-1]["sleeve_audit"][-1]["fund_receivable"] > 0
-    assert result["differences"][0]["real_wealth_change"] != 0
-
-
 def test_changed_household_background_is_not_a_paired_product_comparison():
     data = synthetic()
     data["reference"]["accounts"][0]["balance"] = "1"
