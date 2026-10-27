@@ -136,3 +136,13 @@ Optimize can add [matched deterministic, historical and named-stress checks](doc
 Optimize also supports [native workplace, HSA and 529 policies](docs/adr/0132-native-account-policy-search.md), including actual employee/IRA contributions and cash withdrawals. Eligibility, basis, employer benefits and required bills stay fixed. The optional account starter exposes actual source withholding and qualified-receipt use; remaining shares, receivables or fees prevent completed-exit ranking.
 
 Optimize includes [taxable saving allocations and observed rebalancing](docs/adr/0133-taxable-diversification-policy-search.md). The stock/bond starter compares completion purchases and reallocation using actual cash, sale proceeds, basis, commissions and locks; residual drift and incomplete exits stay visible. Annual tax status follows the latest observation for each year, so a resolved intrayear wash window does not falsely disqualify a policy.
+
+Optimize supports [fixed conditional products with actual native exits](docs/adr/0134-native-product-exit-policy-search.md). Long/short, private-fund, exchange-fund and life profiles retain common capital and supplied tax/contract assumptions across policy choices. Gross positions, debt, delayed settlement, deferred recognition and in-force policies can prevent an exit ranking even at zero net value. Exchange prices reuse shared market paths, and unmet stated life protection affects joint safety. Product allocation controls remain in progress.
+
+Optimize can compare [new long/short and private-fund sleeve mixes funded from existing cash](docs/adr/0135-opening-sleeve-allocation-search.md). Fixed unit profiles, explicit bounds and locks preserve original capital and existing tax lots. The audit shows each cash debit, native costs and complete exit; tax assumptions and product terms remain fixed across unit choices.
+
+Optimize offers [complete life-policy funding paths](docs/adr/0136-complete-life-policy-paths.md): select supplied premium/event/value illustrations for the same opening policy, with actual cash, basis, failure settlement and protection checks.
+
+Optimize also provides a [full age-100 cash/stock example](docs/adr/0137-full-horizon-search-example.md) with cash, W-2 and spending controls, complete future tax/lot schedules and explicitly small demonstration samples.
+
+Long optimizer runs display [per-path progress for training, independent validation and named checks](docs/adr/0139-native-optimizer-progress.md), with the active phase clearly identified.

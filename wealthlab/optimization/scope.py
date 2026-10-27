@@ -1,8 +1,7 @@
-"""Search scope includes native liquid lots, IRA/workplace plans, HSA and 529 books.
+"""Search native accounts with executed exits and fixed conditional product assumptions.
 
-Product-specific exit certificates, blended allocations and cross-border taxes
-belong to subsequent integration layers; zero net product equity is not proof
-that its gross positions or contingent obligations have closed.
+Remaining product/wrapper adapters must establish their own closure semantics;
+zero net equity does not establish the absence of gross assets or obligations.
 """
 
 ALLOWED_PLANS = {
@@ -15,28 +14,36 @@ ALLOWED_PLANS = {
     "workplace_plan",
     "hsa_plan",
     "education_plan",
+    "sleeve_plan",
+    "exchange_fund_plan",
+    "life_plan",
 }
 
 
-def validate(household):
+def validate(household, binding):
     if unsupported_plans(household):
         raise ValueError(
             "This search profile supports native taxable lots and retirement accounts; "
             "product/wrapper exit integration remains required."
         )
     validate_accounts(household)
+    validate_product_paths(household, binding)
 
 
 def validate_accounts(household):
     if any(
-        a.wrapper not in {"cash", "taxable", "traditional", "roth", "hsa", "education"}
+        a.wrapper not in {"cash", "taxable", "traditional", "roth", "hsa", "education", "insurance"}
         for a in household.accounts
     ):
         raise ValueError(
             "This search profile requires supported cash, taxable or retirement accounts."
         )
 
-    for wrapper, name in (("hsa", "hsa_plan"), ("education", "education_plan")):
+    for wrapper, name in (
+        ("hsa", "hsa_plan"),
+        ("education", "education_plan"),
+        ("insurance", "life_plan"),
+    ):
         if (
             any(a.wrapper == wrapper for a in household.accounts)
             and getattr(household, name) is None
@@ -53,3 +60,13 @@ def unsupported_plans(household):
         and key not in ALLOWED_PLANS
         and getattr(household, key) is not None
     ]
+
+
+def validate_product_paths(household, binding):
+    sleeves = (
+        {s.account_id for s in household.sleeve_plan.sleeves} if household.sleeve_plan else set()
+    )
+    if set(binding.sleeves) != sleeves:
+        raise ValueError("Optimizer paths must bind every household sleeve.")
+    if household.exchange_fund_plan and not binding.exchange_factors:
+        raise ValueError("Optimizer paths require an explicit exchange-fund market binding.")
