@@ -30,10 +30,13 @@ def order(lot, when, prices, identity):
 def sell(book, plan, prices, when, identity):
     first = len(book.disposals)
     for lot in list(book.lots.values()):
-        if lot.id != plan.source_lot.id:
+        if lot.security_id != plan.source_security.id:
             book.trade(order(lot, when, prices, identity))
-    # Full basket exits never repurchase these shares. Explicit external no-trade
-    # confirmation closes their forward window without using a future market price.
+    return recognized(book, plan, first, when, "Actual diversified basket sale; no duplicate cash")
+
+
+def recognized(book, plan, first, when, description):
+    # Supplied no-external-identical-trades scope closes only the known forward window.
     book.wash.finish(book, when + timedelta(days=30))
     finish_nj(plan, book, when + timedelta(days=30))
     rows = book.disposals[first:]
@@ -44,7 +47,7 @@ def sell(book, plan, prices, when, identity):
         nj += row["nj_recognized_gain"]
     return TaxEvent(
         date=when,
-        description="Actual diversified basket sale; no duplicate cash",
+        description=description,
         cash_received=0,
         federal=FederalIncome(**federal),
         new_jersey=NJIncome(dispositions=nj),
