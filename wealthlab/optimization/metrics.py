@@ -17,6 +17,8 @@ def financial_metrics(result):
         minimum_closing_cash=min(
             r["closing_cash"] for item in result["details"] for r in item["rows"]
         ),
+        median_ending_property_equity=property_value(result, "net_equity"),
+        median_ending_property_debt=property_value(result, "linked_debt_balance"),
         **issuer_metrics(outcomes),
         **advisory_metrics(result),
     )
@@ -47,4 +49,11 @@ def tax_cash(result):
         median_foreign_net_cash_tax=median(
             foreign_cash(item["rows"]) for item in result["details"]
         ),
+    )
+
+
+def property_value(result, key):
+    return median(
+        sum(p[key] for p in item["rows"][-1].get("property_positions", []))
+        for item in result["details"]
     )
