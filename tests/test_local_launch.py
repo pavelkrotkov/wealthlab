@@ -12,7 +12,7 @@ def test_launch_always_selects_explicit_loopback_privacy_and_upload_limits():
     args = command(8502)
     assert "--server.address=127.0.0.1" in args
     assert "--browser.gatherUsageStats=false" in args
-    assert "--server.maxUploadSize=2" in args
+    assert "--server.maxUploadSize=200" in args
     assert str(ROOT / "app.py") in args
     with patch(
         "wealthlab.local_launch.subprocess.run", return_value=SimpleNamespace(returncode=0)

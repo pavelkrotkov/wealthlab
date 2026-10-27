@@ -1,0 +1,11 @@
+# Complete country comparison and reproduction
+
+October27,2026. The country workbench previously calculated native PR/Spain cash but omitted its full context from the shared report/CLI comparison workflow. Spain facts live beside the household scenario, so replaying a resolved bill alone could not reproduce a changed country case.
+
+`country_report` explicitly dispatches ordinary households and complete `JurisdictionExecutionCase` inputs. It reuses existing native country evaluation, ordinary projection, report metadata/finite encoder and the same 200 MB UTF-8/Decimal decoder. Ordinary household reports remain backward compatible. The country envelope `wealthlab-country-projection-v1` preserves original inputs, their fingerprint, source revision, installed dependencies, native reconciliation and monthly ledger. Import validates inputs and fingerprint, ignores archived outcomes and recomputes country assessments.
+
+CLI `project` and `compare` accept ordinary or country inputs/reports. An aligned ordinary-versus-country comparison independently executes both cases. The UI baseline likewise retains the original typed country case across clone edits and country selection. Both full exports on Country cash contain complete country inputs rather than a misleading ordinary-only resolved snapshot. Country reports reload in the Country cash form; ordinary Household import remains specific to its own schema.
+
+This introduces no financial/tax rule, dependency or automatic relocation search. Legal/source assumptions remain explicit. Country projections are configurable and comparable; this layer adds no automatic relocation search.
+
+Two new end-to-end checks cover actual Spain CLI replay with invented archived wealth ignored, mixed ordinary/country comparison, and the real country form retaining its full Spain baseline while editing cash and selecting PR. Together with existing household/country report/UI checks,11 tests passed at88.10% statement/branch coverage across the dispatcher and shared storage. Changing only opening cash by1000 changes the edited-country result by1000. Existing household report behavior remains covered. The final CLI workflow check passed again after consolidating repeated command assertions. Ruff, formatting, ty and all1,817-file strict metrics pass. Current-head CI and independent release review remain required.

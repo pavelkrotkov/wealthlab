@@ -7,7 +7,7 @@ confirm that the supplied values match the edited flows/funding path before IRRs
 import csv
 from io import StringIO
 
-from wealthlab.household.storage import MAX_BYTES
+from wealthlab.household.storage import MAX_BYTES, MAX_MB
 from wealthlab.products.life_illustration_inputs import LifeStudy
 
 FLOW = ("flow_id", "provenance", "kind", "amount")
@@ -33,7 +33,7 @@ def export(study):
 
 def replace(text, study):
     if len(text.encode("utf-8")) > MAX_BYTES:
-        raise ValueError("Import exceeds the 2 MB limit.")
+        raise ValueError(f"Import exceeds the {MAX_MB} MB limit.")
     reader = csv.DictReader(StringIO(text.removeprefix("\ufeff")))
     if reader.fieldnames != list(COLUMNS):
         raise ValueError("Use the exported schedule CSV header without missing/extra columns.")
