@@ -14,6 +14,7 @@ from wealthlab.optimization.contract_example import extend as with_contracts
 from wealthlab.optimization.diversification_example import extend as with_diversification
 from wealthlab.optimization.drilling_example import confirm_synthetic
 from wealthlab.optimization.drilling_example import extend as with_drilling
+from wealthlab.optimization.employment_example import synthetic as employment_starter
 from wealthlab.optimization.example import synthetic
 from wealthlab.optimization.exchange_example import extend as with_exchange_choices
 from wealthlab.optimization.life_example import extend as with_life_paths
@@ -27,10 +28,22 @@ from wealthlab.ui.optimization_horizon import show as horizon_starter
 
 def show():
     example = st.selectbox(
-        "Synthetic starter", ["Short composable examples", "Full age-100 cash and stock example"]
+        "Synthetic starter",
+        [
+            "Short composable examples",
+            "Full age-100 cash and stock example",
+            "Source-matched retirement and employer vesting",
+        ],
     )
     if example == "Full age-100 cash and stock example":
         return horizon_starter()
+    if example == "Source-matched retirement and employer vesting":
+        st.caption(
+            "Complete hypothetical work and employer-award profiles are paired with exact "
+            "retirement dates. Early forfeiture and later vesting are supplied assumptions, "
+            "not consequences inferred from account ownership. Edit or lock the choices below."
+        )
+        return employment_starter()
     checks = st.checkbox("Add synthetic deterministic, historical and stress checks")
     starter = robust() if checks else synthetic()
     for label, extend in (

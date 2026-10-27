@@ -11,6 +11,7 @@ from math import prod
 from wealthlab.household.calendar import months
 from wealthlab.optimization import (
     drilling_controls,
+    employment_controls,
     exchange_paths,
     life_paths,
     new_life_controls,
@@ -36,6 +37,7 @@ FIELDS = (
     "new_life_purchases",
     "drilling_offer",
     "qoz_offer",
+    "employment_offer",
     *AccountControls.model_fields,
 )
 
@@ -70,6 +72,7 @@ def validate(case):
     validate_options(case)
     drilling_controls.validate(case)
     qoz_controls.validate(case)
+    employment_controls.validate(case)
     validate_terms(case)
     validate_robustness(case)
     identifiers, controlled = set(), set()

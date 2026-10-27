@@ -27,6 +27,8 @@ def show():
         "valid for all candidates; full-tax drilling optimization is unsupported. "
         "QOZ choices retain source stock and shared eligibility assumptions; actual source "
         "sales, subscriptions, tax revisions and stock settlement execute natively. "
+        "Dependent employment and compensation profiles must match retirement dates exactly; "
+        "fixed former-employer rights need explicit sourced independence. "
         "Cross-border controls remain in progress."
     )
     st.info(

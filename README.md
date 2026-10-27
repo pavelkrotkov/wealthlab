@@ -185,3 +185,5 @@ The unpublished [advisory release compatibility checks](docs/adr/0152-advisory-r
 The [combined QOZ/drilling/advisory starter](docs/adr/0211-composed-qoz-advisory-scenarios.md) finishes its original synthetic input scope after all menu builders. Imported or edited private scenarios still require independently sourced matching confirmations.
 
 Optimize also executes [native dated tax-budget sale choices](docs/adr/0213-native-tax-budget-policy-integration.md): forecast limits guide sales while actual gains, taxes, paid cash and complete exits remain independently audited.
+
+Optimize requires [source-backed employment applicability](docs/adr/0214-employment-retirement-applicability.md) for employer contracts: explicit independence or complete native profiles paired with exact retirement dates. Its visible original retirement/vesting starter distinguishes forfeiture, actual cash, tax allocations and completed exits.
