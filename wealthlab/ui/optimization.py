@@ -29,6 +29,9 @@ def show():
         "sales, subscriptions, tax revisions and stock settlement execute natively. "
         "Dependent employment and compensation profiles must match retirement dates exactly; "
         "fixed former-employer rights need explicit sourced independence. "
+        "Fixed personal-home observations, liens and declared closes execute natively; "
+        "property terms are shared across choices. Retained equity stays illiquid, and an "
+        "uncompleted close cannot rank as after-tax exit cash. "
         "Cross-border controls remain in progress."
     )
     st.info(

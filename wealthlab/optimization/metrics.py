@@ -17,6 +17,8 @@ def financial_metrics(result):
         minimum_closing_cash=min(
             r["closing_cash"] for item in result["details"] for r in item["rows"]
         ),
+        median_ending_property_equity=property_value(result, "net_equity"),
+        median_ending_property_debt=property_value(result, "linked_debt_balance"),
         **issuer_metrics(outcomes),
         **advisory_metrics(result),
     )
@@ -29,4 +31,11 @@ def issuer_metrics(outcomes):
             (r["max_security_weight"] for r in outcomes if r["max_security_weight"] is not None),
             default=None,
         ),
+    )
+
+
+def property_value(result, key):
+    return median(
+        sum(p[key] for p in item["rows"][-1].get("property_positions", []))
+        for item in result["details"]
     )

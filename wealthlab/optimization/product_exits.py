@@ -22,6 +22,7 @@ def complete(household, row):
         and employer_closed(household, row)
         and drilling_closed(household, row)
         and qoz_closed(household, row)
+        and property_closed(household, row)
     )
 
 
@@ -84,4 +85,17 @@ def policy_closed(value):
         value is not None
         and value["closed"]
         and zero(value, ("loan", "net_cash_value", "net_surrender_value", "net_death_benefit"))
+    )
+
+
+def property_closed(household, row):
+    if household.property_plan is None:
+        return True
+    states = {p["account_id"]: p for p in row.get("property_audit", {}).get("economic_state", [])}
+    return all(
+        h.account_id in states
+        and states[h.account_id]["closed"]
+        and not states[h.account_id]["blocked"]
+        and zero(states[h.account_id], ("gross_value", "linked_debt_balance"))
+        for h in household.property_plan.holdings
     )
