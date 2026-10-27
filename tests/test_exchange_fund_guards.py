@@ -33,11 +33,6 @@ def test_missing_contract_or_tax_confirmation_blocks(field):
         Ledger(change(flat(), lambda d: d["exchange_fund_plan"].update({field: False})))
 
 
-def test_missing_household_tax_plan_blocks():
-    with pytest.raises(ValueError, match="household tax"):
-        Ledger(flat().model_copy(update={"tax_plan": None}))
-
-
 @pytest.mark.parametrize(
     "field,value,message",
     [

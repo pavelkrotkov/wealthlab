@@ -9,9 +9,11 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.household.projection import project
+from wealthlab.household.report import encode, payload
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
+from wealthlab.ui.foreign_tax_results import display as foreign_tax_summary
 from wealthlab.ui.household_education import display as education_summary
 from wealthlab.ui.household_hsa import display as hsa_summary
 from wealthlab.ui.household_hsa import scope_note
@@ -67,6 +69,11 @@ HIDDEN = [
     "life_policy_values",
     "life_policy_audit",
     "saving_audit",
+    "foreign_tax_positions",
+    "foreign_tax_cash_records",
+    "foreign_tax_credit",
+    "foreign_tax_source_identities",
+    "foreign_tax_unresolved",
 ]
 
 
@@ -93,6 +100,12 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     )
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
+    st.download_button(
+        "Export projection inputs, full ledger and reproduction details",
+        encode(payload(scenario, rows)),
+        "wealthlab-projection.json",
+        "application/json",
+    )
     tax_summary(rows)
     social_work_summary(rows)
     compensation_summary(rows)
@@ -147,3 +160,4 @@ def account_summaries(rows):
     sleeve_summary(rows)
     option_summary(rows)
     life_summary(rows)
+    foreign_tax_summary(rows)

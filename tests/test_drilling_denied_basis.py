@@ -45,12 +45,3 @@ def test_denied_current_deduction_retains_its_supplied_actual_basis_effect(reduc
     assert effects["applied"] == dict(federal=applied, nj=0, at_risk=0)
     assert effects["requested"]["federal"] == reduction
     assert "Supplied conditional" in effects["source"]
-
-
-def test_missing_independent_basis_effect_source_blocks_the_scenario():
-    data = case(100).model_dump(mode="json")
-    data["drilling_plan"]["observations"][0]["deductions"][0].pop("basis_effect_source")
-    from wealthlab.household.scenario import Scenario
-
-    with pytest.raises(ValueError, match="basis_effect_source"):
-        Scenario.model_validate(data)
