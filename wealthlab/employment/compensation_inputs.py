@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from wealthlab.employment.compensation_events import CompensationEvent
+from wealthlab.employment.compensation_events import Allocation, CompensationEvent
 from wealthlab.household.records import Identifier, Money, Record
 from wealthlab.retirement.account_liquidity import AccountLock
 from wealthlab.tax.facts import TaxModel
@@ -27,6 +27,7 @@ class CompensationPlan(TaxModel):
 
     tranches: list[Tranche] = Field(min_length=1)
     events: list[CompensationEvent]
+    compiled_allocations: list[Allocation] = Field(default_factory=list)
     liquidity_locks: list[AccountLock] = Field(default_factory=list)
     tax_inputs_exclude_plan_events_confirmed: bool
     all_plan_tax_recognition_supplied_confirmed: bool

@@ -2,11 +2,13 @@
 
 import streamlit as st
 
+from wealthlab.ui.lot_budget_results import display as budgets
 from wealthlab.ui.lot_rebalance_results import display as rebalances
 
 
 def display(audit):
     rebalances(audit)
+    budgets(audit)
     sales = audit.get("sale_decisions", [])
     harvests = audit.get("harvest_decisions", [])
     if not (sales or harvests):
