@@ -9,6 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.household.projection import project
+from wealthlab.household.report import encode, payload
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
 from wealthlab.ui.compensation_results import display as compensation_summary
@@ -56,6 +57,9 @@ HIDDEN = [
     "sleeve_tax_assumptions",
     "exchange_fund_audit",
     "qoz_audit",
+    "drilling_audit",
+    "drilling_paid_costs",
+    "drilling_deduction_audit",
     "workplace_audit",
     "workplace_market_audit",
     "workplace_withdrawal_audit",
@@ -94,6 +98,12 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     st.line_chart(numeric.set_axis(table.date)[["closing_cash", "net_wealth", "real_net_wealth"]])
     st.dataframe(table, hide_index=True, width="stretch")
     advisory_summary(rows)
+    st.download_button(
+        "Export projection inputs, full ledger and reproduction details",
+        encode(payload(scenario, rows)),
+        "wealthlab-projection.json",
+        "application/json",
+    )
     tax_summary(rows)
     social_work_summary(rows)
     compensation_summary(rows)
@@ -116,6 +126,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
                 life_policies=rows[-1].get("life_policy_audit"),
                 qoz=rows[-1].get("qoz_audit"),
                 advisory_fees=rows[-1].get("advisory_fee_audit"),
+                drilling=rows[-1].get("drilling_audit"),
             )
         )
 

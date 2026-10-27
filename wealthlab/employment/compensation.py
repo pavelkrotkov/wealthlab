@@ -20,6 +20,7 @@ class Ledger:
     def __init__(self, scenario):
         validate(scenario)
         self.plan = scenario.compensation_plan
+        self.horizon_end = scenario.end
         self.accounts = {a.id: a for a in scenario.accounts}
         self.tranches = {t.id: t for t in self.plan.tranches}
         self.states = {
@@ -56,6 +57,9 @@ class Ledger:
                     cash=paid,
                     blocked_by_liquidity=locked,
                     requested_amount=getattr(event, "amount", None),
+                    bucket=getattr(event, "bucket", None),
+                    election=getattr(event, "election", None),
+                    purpose=getattr(event, "purpose", None),
                 )
             )
             if paid:
