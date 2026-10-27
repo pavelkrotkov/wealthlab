@@ -5,10 +5,10 @@ visible in the input. Failed replacements clear the earlier calculation and
 exports so a stale favorable cash result cannot survive invalid source facts.
 """
 
-import json
-
 import streamlit as st
 
+from wealthlab import country_report
+from wealthlab.household.report import encode
 from wealthlab.household.scenario import Scenario
 from wealthlab.tax.jurisdiction_execution import evaluate
 from wealthlab.tax.jurisdiction_execution_example import synthetic
@@ -55,7 +55,9 @@ def show():
 
 def calculate(edited, prefix):
     try:
-        case = JurisdictionExecutionCase.model_validate_json(edited)
+        case = country_report.loads(edited)
+        if not isinstance(case, JurisdictionExecutionCase):
+            raise ValueError("Load complete country inputs or a country projection report here.")
         result = evaluate(case.scenario, spain=case.spain)
         st.session_state.update({prefix + "_result": (case, result), prefix + "_input": edited})
     except (ValueError, KeyError, TypeError) as error:
@@ -63,9 +65,14 @@ def calculate(edited, prefix):
 
 
 def display(case, result):
+    from wealthlab.ui.results import comparison
     from wealthlab.ui.results import display as household_display
 
-    household_display(Scenario.model_validate(result["scenario"]), result["rows"])
+    full_report = country_report.payload(case, result)
+    household_display(
+        Scenario.model_validate(result["scenario"]), result["rows"], reproduction=full_report
+    )
+    comparison(case)
     st.subheader("Country assessments and actual tax payment reconciliation")
     st.json(result["country_assessments"])
     st.caption(
@@ -81,7 +88,7 @@ def display(case, result):
     )
     st.download_button(
         "Download country execution audit",
-        json.dumps(result, default=str, indent=2),
+        encode(full_report),
         file_name="country-execution-audit.json",
         mime="application/json",
     )

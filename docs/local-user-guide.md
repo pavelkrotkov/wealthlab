@@ -33,7 +33,7 @@ A report records conditional calculations, not a full-tax optimization certifica
 
 Choose an **existing private directory** outside every checkout of this public code repository. The app does not invent or create a private destination. Household / Save a private scenario writes a raw validated scenario atomically to a new `.json` name. Existing files and destination symlinks cannot be overwritten. Use a new name for another version. The selected filesystem must support the exclusive hard-link save operation; a failed save leaves existing files intact.
 
-Household / Load scenario JSON accepts a raw scenario or a projection report produced by this version. Report import validates its embedded inputs and fingerprint, discards archived outcomes, and requires a fresh projection. It never trusts an old balance as a current fact. UTF-8/BOM input is supported with a 2,000,000-byte bound; oversized or invalid files are rejected. Raw scenario saves remain available when a full audit report exceeds that import bound.
+Household / Load scenario JSON accepts a raw scenario or a projection report produced by this version. Report import validates its embedded inputs and fingerprint, discards archived outcomes, and requires a fresh projection. It never trusts an old balance as a current fact. UTF-8/BOM input is supported with a 200,000,000-byte (200 MB) bound, aligned with ordinary Streamlit upload capacity; oversized or invalid files are rejected. Raw scenario saves remain available when a full audit report exceeds that import bound.
 
 Browser downloads follow the browser's save controls; choose your private destination. Do not place real inputs, reports or screenshots in this public repository, GitHub issues/reviews or shared logs. The app's calculation path does not upload scenarios. Clicking an external documentation/source link is a separate user action.
 
@@ -69,7 +69,23 @@ To execute the exported inputs through the same optimizer without a browser:
 uv run --no-sync python -m wealthlab optimize "/your/selected/private/folder/policy-search-inputs.json" --output-directory "/your/selected/private/folder" --filename policy-search-audit.json
 ```
 
-Raw search inputs and this version's search audit can be loaded by the UI or CLI. Audit import validates the embedded input fingerprint, ignores archived selection/outcomes and performs a fresh search under current code. Use the separate input export when editing assumptions or when a full audit exceeds the2MB import bound. The fingerprint detects input changes; it authenticates neither a source document nor legal eligibility. Bounded-search results remain conditional; advisory-fee, QOZ and cross-border integration must be checked against the current coverage matrix and unresolved issue list.
+Raw search inputs and this version's search audit can be loaded by the UI or CLI. Audit import validates the embedded input fingerprint, ignores archived selection/outcomes and performs a fresh search under current code. Use the separate input export when editing assumptions or when a full audit exceeds the 200 MB import bound. The fingerprint detects input changes; it authenticates neither a source document nor legal eligibility. Bounded-search results remain conditional; advisory-fee, QOZ and cross-border integration must be checked against the current coverage matrix and unresolved issue list.
+
+## Country comparisons
+
+In **Cross-border / Country cash**, edit or import complete PR/Spain inputs and calculate. **Keep this scenario as comparison baseline** retains the original country facts, including Spain's separate assessment context. Edit a clone or select another country and calculate again to see the actual ending-wealth difference. Both cases must cover the same dates. The same baseline button also works between ordinary Household and country cases with aligned horizons; each side runs its own financial engine.
+
+**Export country execution inputs** saves the original editable model. **Download country execution audit**, and the shared full projection export on that page, retain those complete inputs, their fingerprint, source revision, dependencies, country reconciliation and actual monthly ledger. Load either country inputs or the versioned country projection report in the Country cash form to recompute; archived results are ignored. Use Country cash rather than Household's ordinary-scenario importer when loading a country report, so Spain's context is retained. For changing assumptions, edit the raw country-input model; a saved audit retains its fingerprint until reproduced. See the [country report contract](adr/0216-country-comparison-and-reproduction.md).
+
+The existing CLI commands also accept these complete country inputs/reports:
+
+```sh
+uv run --no-sync python -m wealthlab project "/your/selected/private/folder/country-execution.json"
+uv run --no-sync python -m wealthlab compare "/your/selected/private/folder/mainland.json" "/your/selected/private/folder/country-execution.json"
+```
+
+Ordinary household inputs/reports retain their existing format and behavior. Mixed ordinary/country comparisons run the original country assessment again; a resolved assessment snapshot is not substituted for its source facts. Country conclusions remain conditional on the declared residence, legal classifications, future-law assumptions and supported tax profiles.
+
 
 ## Before private entry
 

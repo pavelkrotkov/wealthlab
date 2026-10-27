@@ -8,7 +8,7 @@ ordinary ending wealth merely because they appear in the reproduction details.
 import pandas as pd
 import streamlit as st
 
-from wealthlab.household.projection import project
+from wealthlab import country_report
 from wealthlab.household.report import encode, payload
 from wealthlab.household.scenario import Scenario
 from wealthlab.household.storage import fingerprint
@@ -32,6 +32,7 @@ from wealthlab.ui.private_fund_household_results import route_household as sleev
 from wealthlab.ui.projected_tax import display as tax_summary
 
 HIDDEN = [
+    "jurisdiction_totals",
     "property_audit",
     "property_positions",
     "property_closing_events",
@@ -87,7 +88,7 @@ HIDDEN = [
 ]
 
 
-def display(scenario: Scenario, rows: list[dict]) -> None:
+def display(scenario: Scenario, rows: list[dict], *, reproduction=None) -> None:
     st.subheader(scenario.name)
     st.caption(
         ("Synthetic inputs" if scenario.synthetic else "User-entered inputs; verify provenance")
@@ -113,7 +114,7 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
     advisory_summary(rows)
     st.download_button(
         "Export projection inputs, full ledger and reproduction details",
-        encode(payload(scenario, rows)),
+        encode(reproduction if reproduction is not None else payload(scenario, rows)),
         "wealthlab-projection.json",
         "application/json",
     )
@@ -147,20 +148,24 @@ def display(scenario: Scenario, rows: list[dict]) -> None:
         )
 
 
-def comparison(scenario: Scenario) -> None:
+def comparison(scenario) -> None:
     if st.button("Keep this scenario as comparison baseline"):
         st.session_state["baseline"] = scenario
     baseline = st.session_state.get("baseline")
     if baseline is None:
         return
-    st.caption(f"Comparison baseline: {baseline.name}. Edit and project to compare a clone.")
-    if (baseline.start, baseline.end) != (scenario.start, scenario.end):
+    st.caption(
+        f"Comparison baseline: {country_report.household(baseline).name}. "
+        "Edit and project to compare a clone."
+    )
+    before_case, after_case = country_report.household(baseline), country_report.household(scenario)
+    if (before_case.start, before_case.end) != (after_case.start, after_case.end):
         st.warning("Align start and end dates before comparing outcomes.")
         return
-    before, after = project(baseline)[-1], project(scenario)[-1]
+    compared = country_report.compare_inputs(baseline, scenario)
     st.metric(
         "Ending wealth change versus baseline · nominal USD",
-        f"${after['net_wealth'] - before['net_wealth']:,.2f}",
+        f"${compared['ending_wealth_change_usd']:,.2f}",
     )
 
 

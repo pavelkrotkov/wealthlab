@@ -32,7 +32,7 @@ from wealthlab.retirement import (
     workplace_rollovers,
 )
 from wealthlab.retirement.social_household import prepare_with_work as prepare
-from wealthlab.tax.foreign_tax_redetermination_reporting import finish as foreign_finish
+from wealthlab.tax.jurisdiction_totals import finish as tax_finish
 from wealthlab.tax.projection_ledger import TaxLedger
 
 
@@ -91,7 +91,7 @@ def project(scenario: Scenario, market=None, *, tax_observer=None) -> list[dict]
         rows.append(row)
     finish(rows, compensation, employee, lots, medicare, hsa, education, market, products)
     option_household.finish(options, rows)
-    foreign_finish(tax_ledger, rows)
+    tax_finish(tax_ledger, rows)
     tax_observation.observe(tax_observer, tax_ledger, rows[-1], "terminal")
     return rows
 
