@@ -5,11 +5,13 @@ from typing import Literal
 from pydantic import Field
 
 from wealthlab.household.records import Identifier
+from wealthlab.markets.drilling_inputs import DrillingBinding
 from wealthlab.markets.employer_inputs import EmployerBinding
 from wealthlab.markets.guardrail_inputs import SpendingGuardrail
 from wealthlab.markets.hsa_inputs import HSAInvestmentBinding
 from wealthlab.markets.medical_inflation import MedicalBillIndexing
 from wealthlab.markets.option_inputs import OptionBinding
+from wealthlab.markets.qoz_inputs import QOZBinding
 from wealthlab.markets.wrapper_inputs import WrapperBinding
 from wealthlab.tax.facts import TaxModel
 
@@ -24,11 +26,15 @@ class SecurityBinding(TaxModel):
 class HouseholdBinding(TaxModel):
     spending_guardrail: SpendingGuardrail | None = None
     options: OptionBinding | None = None
+    drilling: DrillingBinding | None = None
+    qoz: QOZBinding | None = None
     securities: list[SecurityBinding] = Field(default_factory=list)
     hsa_securities: list[HSAInvestmentBinding] = Field(default_factory=list)
     replace_hsa_observations_confirmed: bool = False
     wrappers: list[WrapperBinding] = Field(default_factory=list)
     employers: list[EmployerBinding] = Field(default_factory=list)
+    exchange_factors: dict[Identifier, Identifier] = Field(default_factory=dict)
+    replace_exchange_observations_confirmed: bool = False
     sleeves: list[Identifier] = Field(default_factory=list)
     replace_sleeve_observations_confirmed: bool = False
     inflation_expenses: list[Identifier] = Field(default_factory=list)

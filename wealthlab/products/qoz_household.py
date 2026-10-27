@@ -76,6 +76,7 @@ class Ledger:
         raw = equity(fund["book"]) if fund else ZERO
         return dict(
             entity_equity=raw,
+            entity_asset_value=fund["book"]["long"] if fund else ZERO,
             nonrecourse_deficit=max(ZERO, -raw),
             nav=economics.value(fund) if fund else ZERO,
             receivable=fund["receivable"] if fund else ZERO,
@@ -87,6 +88,10 @@ class Ledger:
             terms=self.plan.model_dump(mode="json"),
             calls=self.calls,
             source_return_revisions=self.revisions,
+            final_source_returns={
+                str(year): self.tax_ledger.closed_returns[year].result
+                for year in sorted({r["year"] for r in self.revisions})
+            },
             months=self.log,
             economic_log=self.economic_log,
             stock_values=self.stock_values,
