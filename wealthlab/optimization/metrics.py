@@ -1,0 +1,29 @@
+"""Downside, paid taxes, spending cuts and observed concentration never disappear into a score."""
+
+from statistics import median
+
+
+def financial_metrics(result):
+    outcomes = result["outcomes"]
+    return dict(
+        median_net_cash_tax=median(r["net_cash_taxes_paid"] for r in outcomes),
+        maximum_drawdown=max(r["net_wealth_drawdown"] for r in outcomes),
+        maximum_funding_shortfall=max(r["funding_shortfall"] for r in outcomes),
+        median_discretionary_reduction=median(
+            r["discretionary_spending_reduction"] for r in outcomes
+        ),
+        minimum_closing_cash=min(
+            r["closing_cash"] for item in result["details"] for r in item["rows"]
+        ),
+        **issuer_metrics(outcomes),
+    )
+
+
+def issuer_metrics(outcomes):
+    return dict(
+        issuer_concentration_complete=all(r["issuer_concentration_complete"] for r in outcomes),
+        maximum_known_issuer_weight=max(
+            (r["max_security_weight"] for r in outcomes if r["max_security_weight"] is not None),
+            default=None,
+        ),
+    )

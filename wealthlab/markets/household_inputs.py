@@ -29,6 +29,8 @@ class HouseholdBinding(TaxModel):
     replace_hsa_observations_confirmed: bool = False
     wrappers: list[WrapperBinding] = Field(default_factory=list)
     employers: list[EmployerBinding] = Field(default_factory=list)
+    exchange_factors: dict[Identifier, Identifier] = Field(default_factory=dict)
+    replace_exchange_observations_confirmed: bool = False
     sleeves: list[Identifier] = Field(default_factory=list)
     replace_sleeve_observations_confirmed: bool = False
     inflation_expenses: list[Identifier] = Field(default_factory=list)

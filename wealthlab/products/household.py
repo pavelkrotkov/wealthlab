@@ -12,12 +12,14 @@ from wealthlab.products.household_reporting import summarize
 from wealthlab.products.household_validation import validate
 from wealthlab.products.long_short_book import opening
 from wealthlab.products.private_fund_household import FundLedger
+from wealthlab.products.sleeve_exit_state import record as record_exits
 
 
 class Ledger:
     def __init__(self, scenario):
         validate(scenario)
         self.plan = scenario.sleeve_plan
+        self.end = scenario.end
         self.books = {s.account_id: opening(s.case) for s in self.plan.sleeves}
         self.allocations = {
             s.account_id: [e for a in s.allocations for e in tax_events(a)]
@@ -92,7 +94,7 @@ def finish_book(book, rows):
     if hasattr(book, "finish"):
         book.finish(rows)
         return
-    rows[-1]["sleeve_audit"] = book.log
+    record_exits(book, rows)
     rows[-1]["sleeve_tax_assumptions"] = [
         tax_audit(a) for s in book.plan.sleeves for a in s.allocations
     ]
