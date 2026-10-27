@@ -12,12 +12,29 @@ ZERO = Decimal(0)
 
 def annual_results(rows):
     annual = {row["date"][:4]: row["annual_tax"] for row in rows}
-    annual.update({str(r["year"]): r["final_result"] for r in revisions(rows)})
+    annual.update({str(r["year"]): r["final_result"] for r in wash_revisions(rows)})
+    annual.update(qoz_source_returns(rows))
     return annual
 
 
 def revisions(rows):
+    return [
+        *wash_revisions(rows),
+        *rows[-1].get("qoz_audit", {}).get("source_return_revisions", []),
+    ]
+
+
+def wash_revisions(rows):
     return rows[-1].get("lot_audit", {}).get("return_reconciliations", [])
+
+
+def qoz_source_returns(rows):
+    """The native closed-return book retains exact cross-consumer execution order.
+
+    Separate audit histories can share observation dates. Concatenating those
+    histories cannot establish which consumer last corrected the same return.
+    """
+    return rows[-1].get("qoz_audit", {}).get("final_source_returns", {})
 
 
 def summary(rows):
@@ -62,5 +79,5 @@ def provisional_years(rows):
     # Intrayear wash windows can resolve before the return closes. Keep each
     # year's latest status; only an actual revision can clear a past-year flag.
     latest = {r["date"][:4]: r.get("tax_return_provisional", False) for r in rows}
-    revised = {str(r["year"]) for r in revisions(rows)}
+    revised = {str(r["year"]) for r in wash_revisions(rows)}
     return sorted(year for year, pending in latest.items() if pending and year not in revised)
