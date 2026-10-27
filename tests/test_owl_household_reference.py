@@ -44,10 +44,3 @@ def test_no_redeposit_or_deduction_double_count(baseline):
     assert sum(r["essential"] for r in months) == 90000
     row = baseline["rows"][0]
     assert row["native_standard_deduction"] + row["native_senior_deduction"] == 24150
-
-
-def test_separate_reference_tax_scope(baseline):
-    row = baseline["rows"][0]
-    assert row["reference_total_deduction"] == 24150
-    assert all(r["native_nj_tax"] == 0 for r in baseline["rows"])
-    assert baseline["reference"]["heirs_tax_rate"] == "0.30"

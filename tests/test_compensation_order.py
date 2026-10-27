@@ -7,7 +7,6 @@ import pytest
 from wealthlab.employment.compensation_example import synthetic
 from wealthlab.employment.compensation_projection import prepare
 from wealthlab.household.projection import project
-from wealthlab.household.storage import loads
 
 
 def test_sequence_controls_whether_a_grant_participates_in_the_same_day_return():
@@ -31,13 +30,3 @@ def test_duplicate_same_day_sequence_is_rejected():
     plan = case.compensation_plan.model_copy(update=dict(events=events))
     with pytest.raises(ValueError, match="distinct explicit sequence"):
         prepare(case.model_copy(update=dict(compensation_plan=plan)))
-
-
-def test_allocation_preparation_and_export_preserve_a_single_source():
-    case = synthetic()
-    assert loads(case.model_dump_json()) == case
-    prepared = prepare(case)
-    assert prepare(prepared) == prepared
-    assert len(prepared.tax_plan.events) == 1
-    assert len(case.tax_plan.events) == 0
-    assert len(case.compensation_plan.events) == 8

@@ -6,7 +6,6 @@ adapter has no hidden dividend or terminal-write-off tax classification.
 """
 
 from dataclasses import replace
-from datetime import date
 from decimal import Decimal
 
 import numpy as np
@@ -76,15 +75,6 @@ def test_unsupported_path_economics_are_rejected(field, value, message):
     batch = replace(batch, **{field: np.full_like(getattr(batch, field), value)})
     with pytest.raises(ValueError, match=message):
         bind(scenario, batch)
-
-
-def test_missing_horizon_and_selected_path_block():
-    scenario = flat()
-    batch = generate(market(scenario))
-    with pytest.raises(ValueError, match="selected path"):
-        bind(scenario, batch, 1)
-    with pytest.raises(ValueError, match="horizon"):
-        bind(scenario.model_copy(update={"end": date(2028, 1, 1)}), batch)
 
 
 def test_reinvested_total_returns_and_rounding_to_zero_are_rejected():

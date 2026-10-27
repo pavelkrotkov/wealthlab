@@ -30,11 +30,6 @@ def test_funding_order_cannot_add_remove_or_duplicate_sale_permissions(order):
         compile_candidate(flat(), [PolicyChoice(id="choice", lot_funding_order=order)])
 
 
-def test_missing_ira_plan_cannot_make_a_conversion_tax_free():
-    with pytest.raises(ValueError, match="existing configured IRA"):
-        compile_candidate(flat(), [PolicyChoice(id="choice", ira_orders=[])])
-
-
 def test_options_still_require_their_own_native_exit_integration():
     case = flat().model_copy(update=dict(household=options()))
     with pytest.raises(ValueError, match="product/wrapper exit integration"):

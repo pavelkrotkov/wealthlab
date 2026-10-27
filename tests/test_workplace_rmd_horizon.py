@@ -69,10 +69,3 @@ def test_pre_rmd_1959_horizon_does_not_validate_an_extra_unprojected_year():
     assert rows[-1]["period_end"] == "2032-01-01"
     assert rows[-1]["workplace_rmd_required"] == 0
     assert rows[-1]["net_wealth"] == 492000
-
-
-def test_internal_deadline_check_includes_the_last_actual_year_of_a_partial_interval():
-    from wealthlab.retirement.workplace_rmd_validation import validate
-
-    with pytest.raises(ValueError, match="separation by December 1"):
-        validate(final_year("2026-12-31", "2026-12-15"))

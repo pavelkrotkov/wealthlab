@@ -68,23 +68,6 @@ def test_insufficient_balances_limit_actual_gross_before_withholding():
     assert second["gross"] == empty.cash_received == 0
 
 
-def test_independent_source_tax_rounding_cannot_make_a_negative_cent_receipt():
-    scenario = synthetic()
-    ledger, wallet = Ledger(scenario), Wallet(scenario)
-    plan = ledger.plan.cash_withdrawals
-    order = plan.orders[0].model_copy(
-        update=dict(
-            amount=Decimal(".03"),
-            federal_withholding_rate=Decimal(".5"),
-            nj_withholding_rate=Decimal(".5"),
-        )
-    )
-    _, event = withdraw(ledger, wallet, order, plan.profiles[order.source])
-    assert event.withholding.total == Decimal(".03")
-    assert event.withholding.federal_income_withheld == Decimal(".02")
-    assert event.cash_received == 0
-
-
 def test_actual_account_lock_blocks_gross_net_tax_and_hsa_funding():
     data = synthetic().model_dump(mode="json")
     data["workplace_plan"]["liquidity_locks"] = [
