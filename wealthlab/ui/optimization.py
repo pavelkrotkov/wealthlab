@@ -29,7 +29,8 @@ def show():
         "sales, subscriptions, tax revisions and stock settlement execute natively. "
         "Dependent employment and compensation profiles must match retirement dates exactly; "
         "fixed former-employer rights need explicit sourced independence. "
-        "Cross-border controls remain in progress."
+        "A fixed native PR/Spain context can reconcile each candidate's actual country tax. "
+        "Relocation choices and unmapped foreign income/basis changes remain unsupported."
     )
     st.info(
         "Defaults: 95% modeled funding success, through age 100 of the younger member, and "

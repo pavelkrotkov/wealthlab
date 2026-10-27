@@ -8,10 +8,13 @@ between passes. Nonconvergence cannot produce a favorable ranked result.
 
 from wealthlab.household.projection import project
 from wealthlab.tax.jurisdiction_execution_pr import assessments as pr_assessments
+from wealthlab.tax.spain_cash_sources import rebind as fiscal_cash
 from wealthlab.tax.spain_execution import assessments as spain_assessments
 
+MAX_PASSES = 16
 
-def evaluate(scenario, *, spain=None, max_passes=16):
+
+def evaluate(scenario, *, spain=None, max_passes=MAX_PASSES, market_factory=None, cash_sources=()):
     if scenario.tax_plan is None or scenario.foreign_tax_plan is None:
         raise ValueError("Country execution requires the existing domestic and foreign tax books.")
     if spain is None and not any(c.pr_federal is not None for c in scenario.tax_plan.cases):
@@ -21,8 +24,9 @@ def evaluate(scenario, *, spain=None, max_passes=16):
     for _ in range(max_passes):
         candidate = with_assessments(scenario, amounts)
         observed = []
-        rows = project(candidate, tax_observer=observed.append)
-        revised, audit = country_assessments(candidate, spain, observed)
+        rows = project_pass(candidate, observed.append, market_factory)
+        active_spain = fiscal_cash(candidate, spain, cash_sources, rows)
+        revised, audit = country_assessments(candidate, active_spain, observed)
         history.append(dict(assessments=amounts, revised_assessments=revised))
         if revised == amounts:
             return dict(
@@ -56,3 +60,8 @@ def country_assessments(scenario, spain, observed=None):
     latest = observed[-1] if observed is not None else None
     es_amounts, es_audit = spain_assessments(scenario, spain, latest)
     return pr_amounts | es_amounts, pr_audit | es_audit
+
+
+def project_pass(scenario, observer, market_factory):
+    market = market_factory(scenario) if market_factory is not None else None
+    return project(scenario, tax_observer=observer, market=market)

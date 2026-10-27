@@ -22,6 +22,11 @@ def validate_sources(scenario, execution):
 
 
 def validate_source_row(row, us):
+    if row.kind != "income":
+        raise ValueError(
+            "Native Spain cash sources require ordinary receipts; "
+            "disposal FX/basis needs its own mapping."
+        )
     if row.amount.date != us.value.date:
         raise ValueError("Linked ordinary source income must retain its actual recognition date.")
     if row.treaty_treatment != "none" or row.source_country != us.country:
