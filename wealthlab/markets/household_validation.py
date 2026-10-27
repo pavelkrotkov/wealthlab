@@ -15,6 +15,7 @@ from wealthlab.markets.guardrails import validate as validate_guardrail
 from wealthlab.markets.hsa_validation import validate as validate_hsa
 from wealthlab.markets.medical_inflation import validate as validate_medical
 from wealthlab.markets.option_validation import validate as validate_options
+from wealthlab.markets.qoz_validation import validate as validate_qoz
 from wealthlab.markets.sleeve_compile import validate as validate_sleeves
 from wealthlab.markets.wrapper_compile import validate as validate_wrappers
 from wealthlab.portfolio.household_validation import validate as validate_lots
@@ -33,6 +34,7 @@ def validate(scenario, batch, binding, index):
     validate_options(scenario, batch, binding)
     validate_drilling(scenario, batch, binding)
     validate_path(scenario, batch, index)
+    validate_qoz(scenario, batch, binding, index)
     validate_bindings(scenario, batch, binding)
     validate_inflation(scenario, binding)
     validate_medical(scenario, binding)
@@ -71,6 +73,7 @@ def validate_bindings(scenario, batch, binding):
             binding.medical_bill_inflation,
             binding.options,
             binding.drilling,
+            binding.qoz,
         )
     ):
         raise ValueError(

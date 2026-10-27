@@ -26,6 +26,7 @@ def show():
         "Long/short economics": None,
         "Conditional private fund": "private_funds",
         "Traditional exchange funds": "exchange_fund",
+        "Opportunity-zone funds": "qoz",
         "Whole-life illustrations": "life_illustrations",
         "Options overlays": "option_products",
         "Whole-life contract cash and taxes": "life_contracts",

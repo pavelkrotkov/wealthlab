@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from wealthlab.employment.compensation_inputs import CompensationPlan
 from wealthlab.employment.inputs import EmploymentPlan
+from wealthlab.household.advisory_inputs import AdvisoryPlan
 from wealthlab.household.records import Account, Member, Money
 from wealthlab.household.schedules import Contribution, Debt, Expense, Income
 from wealthlab.household.validation import validate_dates, validate_references
@@ -22,6 +23,7 @@ from wealthlab.products.household_inputs import SleevePlan
 from wealthlab.products.life_household_inputs import LifeHouseholdPlan
 from wealthlab.products.life_household_records import validate_ownership as validate_life_ownership
 from wealthlab.products.option_household_inputs import OptionPlan
+from wealthlab.products.qoz_inputs import QOZPlan
 from wealthlab.retirement.education_household_inputs import EducationHouseholdPlan
 from wealthlab.retirement.hsa_household_inputs import HSAPlan
 from wealthlab.retirement.ira_household_inputs import IRAPlan
@@ -75,6 +77,8 @@ class Scenario(BaseModel):
     exchange_fund_plan: ExchangeFundPlan | None = None
     option_plan: OptionPlan | None = None
     life_plan: LifeHouseholdPlan | None = None
+    qoz_plan: QOZPlan | None = None
+    advisory_fee_plan: AdvisoryPlan | None = None
     drilling_plan: DrillingPlan | None = None
 
     @model_validator(mode="after")
