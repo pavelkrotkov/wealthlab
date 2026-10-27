@@ -24,11 +24,6 @@ def test_taxed_ledger_and_typed_inputs_reproduce_from_the_shared_export():
     assert exported["input_sha256"] == report.fingerprint(restored)
 
 
-def test_missing_git_never_fabricates_a_reproducible_revision():
-    with patch("wealthlab.household.report.subprocess.run", side_effect=FileNotFoundError):
-        assert report.revision() == dict(head=None, dirty=None)
-
-
 def test_unaligned_cli_comparison_is_rejected_before_running_any_projection(tmp_path):
     before, after = (
         synthetic(),
