@@ -64,6 +64,14 @@ class Ledger:
             disposals=self.book.disposals,
             opening_contribution_events=[e.model_dump(mode="json") for e in self.opening_events],
             unrecognized_future_events=[e.model_dump(mode="json") for e in self.pending],
+            terminal_state=dict(
+                active=self.active,
+                nav=self.nav,
+                cash=sum(self.book.cash.values(), lots.ZERO),
+                fees_due=sum(self.book.fee_owed.values(), lots.ZERO),
+                opening_cash_due=self.initial_cash,
+                interest_basis=dict(self.bases),
+            ),
             conditional=True,
         )
 
