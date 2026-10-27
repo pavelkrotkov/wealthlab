@@ -87,3 +87,5 @@ cannot erase these without independently supplied AMT FTC. Checks also cover
 NIIT/payroll separation, vintage expiry, independent basket capacity, denied
 versus unknown credit with identical cash, malformed ownership/FX/source data,
 nonincome tax/fees and real editable UI submission/export/stale-result removal.
+
+Positive creditable income-tax records now [retain their linked known source baskets](0215-foreign-tax-source-basket-consistency.md); mixed general/passive facts require separately supplied preallocated payment records before any credit or carry is computed.

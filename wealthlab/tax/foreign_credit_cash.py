@@ -47,6 +47,7 @@ def validate_record(record, records, income):
     if any(identity not in income for identity in record.income_ids):
         raise ValueError("Tax cash must link known included-income source identities.")
     validate_income_owner(record, income)
+    validate_income_basket(record, income)
     if record.kind == "refund":
         validate_refund(record, records)
     elif record.reverses_id is not None:
@@ -73,3 +74,16 @@ def translated(record, original):
         credit_fx=original.value.usd_per_unit,
         credit_tax_usd=sign * credit if qualified else ZERO,
     )
+
+
+def validate_income_basket(record, income):
+    if record.tax_type != "income" or not record.creditable_native:
+        return
+    # Unknown/special classifications remain visible but blocked by scope.
+    # Confirmed ordinary categories cannot contradict their source identities.
+    linked = {income[identity].basket for identity in record.income_ids}
+    known = linked & {"general", "passive"}
+    if record.basket in {"general", "passive"} and known - {record.basket}:
+        raise ValueError(
+            "Creditable income tax must match every linked source basket; split mixed payments."
+        )

@@ -14,7 +14,7 @@ EXCLUDED = {"name", "life_plan", "lot_plan", "accounts"}
 def validate(case):
     if case.liquid_reference not in case.alternatives:
         raise ValueError("Name an existing liquid-saving reference alternative.")
-    if not case.independently_priced_protection_confirmed:
+    if case.term_account_ids and not case.independently_priced_protection_confirmed:
         raise ValueError(
             "Confirm an independently supplied protection price and coverage schedule."
         )

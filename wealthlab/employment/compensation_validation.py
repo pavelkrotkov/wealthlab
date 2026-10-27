@@ -6,6 +6,7 @@ wages from silently entering the other spouse's payroll record.
 """
 
 from wealthlab.employment.compensation_accounts import validate as validate_accounts
+from wealthlab.employment.compensation_allocation_audit import validate as validate_audit
 from wealthlab.employment.compensation_events import Allocation
 from wealthlab.retirement.account_liquidity import validate as validate_locks
 from wealthlab.tax.projection_inputs import TaxEvent
@@ -26,6 +27,7 @@ def validate(scenario):
             "Confirm complete supplied plan taxes and no duplicated in-horizon tax inputs."
         )
     validate_records(plan, scenario)
+    validate_audit(scenario)
     accounts = {a.id: a for a in scenario.accounts}
     tranches = {t.id: t for t in plan.tranches}
     validate_accounts(scenario, accounts)
@@ -36,7 +38,7 @@ def validate(scenario):
 
 
 def validate_events(plan, scenario, accounts, tranches):
-    for event in plan.events:
+    for event in [*plan.events, *plan.compiled_allocations]:
         if event.tranche not in tranches:
             raise ValueError("Compensation events must name a known tranche.")
         if not scenario.start <= event.date < scenario.end:
@@ -46,13 +48,13 @@ def validate_events(plan, scenario, accounts, tranches):
 
 
 def validate_records(plan, scenario):
-    records = [*plan.tranches, *plan.events, *plan.liquidity_locks]
+    records = [*plan.tranches, *plan.events, *plan.compiled_allocations, *plan.liquidity_locks]
     identifiers = [r.id for r in records]
     if len(identifiers) != len(set(identifiers)):
         raise ValueError("Compensation tranche/event IDs must be unique.")
     if any(r.provenance == "unresolved" for r in records):
         raise ValueError("Resolve compensation assumptions before projecting.")
-    order = [(e.date, e.sequence) for e in plan.events]
+    order = [(e.date, e.sequence) for e in [*plan.events, *plan.compiled_allocations]]
     if len(order) != len(set(order)):
         raise ValueError("Same-day compensation events require distinct explicit sequence numbers.")
 

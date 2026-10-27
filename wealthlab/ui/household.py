@@ -34,10 +34,12 @@ from wealthlab.retirement.workplace_withdrawal_example import synthetic as workp
 from wealthlab.tax.foreign_tax_example import synthetic as foreign_tax_example
 from wealthlab.tax.source_example import synthetic as source_example
 from wealthlab.ui import editor, files, results
+from wealthlab.ui.optional_dependencies import retirement_notice
 
 
 def show():
     st.header("Household cash flow")
+    retirement_notice()
     st.warning(
         "Enable household tax assumptions to include federal/NJ taxes. "
         "Without a tax plan, income is gross and taxes are omitted. "

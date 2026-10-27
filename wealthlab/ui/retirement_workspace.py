@@ -13,9 +13,11 @@ from wealthlab.ui import (
     social_security,
     social_work,
 )
+from wealthlab.ui.optional_dependencies import retirement_notice
 
 
 def show():
+    retirement_notice()
     workbenches = {
         "Contributions": retirement,
         "IRA withdrawals": retirement_withdrawals,

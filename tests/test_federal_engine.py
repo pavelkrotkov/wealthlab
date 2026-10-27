@@ -6,7 +6,7 @@ import pytest
 from taxcalc import Calculator, Policy
 
 from wealthlab.tax.federal import OUTPUTS
-from wealthlab.tax.federal_engine import records, values
+from wealthlab.tax.federal_engine import cached_values, records, values
 
 
 def case(status, wages):
@@ -40,6 +40,7 @@ def test_reset_matches_fresh_package_calculator(year, status, wages):
 def test_concurrent_callers_do_not_share_household_arrays():
     cases = [case(2, 150000), case(1, 90000), case(2, 0), case(1, 600000)]
     expected = [values(data, 2025, OUTPUTS) for data in cases]
+    cached_values.cache_clear()
     with ThreadPoolExecutor(max_workers=4) as pool:
         actual = list(pool.map(lambda data: values(data, 2025, OUTPUTS), cases))
     assert actual == expected
