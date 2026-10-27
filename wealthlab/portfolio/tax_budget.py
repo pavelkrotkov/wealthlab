@@ -17,12 +17,16 @@ from wealthlab.portfolio.tax_reporting import report
 UNIT = Decimal("0.000001")
 
 
-def impact(case, book, when):
+def impact(case, book, when, through_year=None):
+    if through_year is not None and through_year > when.year:
+        raise ValueError("A tax-budget quote cannot observe a future tax year.")
+    if through_year is not None and through_year not in {c.policy.year for c in case.lot_tax_cases}:
+        raise ValueError("The tax-budget quote needs a forecast for its requested observed year.")
     trial = deepcopy(book)
     validate_fund_losses(case, trial)
     trial.wash.finish(trial, when)
     finish_nj(case, trial, when)
-    rows = report(case, trial, through_year=when.year, as_of=when)
+    rows = report(case, trial, through_year=through_year or when.year, as_of=when)
     return rows[-1]["incremental_liability"]
 
 

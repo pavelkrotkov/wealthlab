@@ -44,39 +44,31 @@ def main():
         [
             "Household",
             "Annual tax",
+            "Cross-border",
             "Tax lots",
             "Retirement",
             "Markets",
             "Products",
+            "Optimize",
             "Engine checks",
         ],
     )
-    if page == "Household":
-        from wealthlab.ui.household import show
-
-        show()
-    elif page == "Annual tax":
-        from wealthlab.ui.tax import show
-
-        show()
-    elif page == "Tax lots":
-        from wealthlab.ui.lots import show
-
-        show()
-    elif page == "Retirement":
-        from wealthlab.ui.retirement_workspace import show
-
-        show()
-    elif page == "Markets":
-        from wealthlab.ui.markets import show
-
-        show()
-    elif page == "Products":
-        from wealthlab.ui.products import show
-
-        show()
-    else:
+    if page == "Engine checks":
         checks()
+        return
+    from importlib import import_module
+
+    routes = {
+        "Household": "household",
+        "Annual tax": "tax",
+        "Cross-border": "foreign_credits",
+        "Tax lots": "lots",
+        "Retirement": "retirement_workspace",
+        "Markets": "markets",
+        "Products": "products",
+        "Optimize": "optimization",
+    }
+    import_module("wealthlab.ui." + routes[page]).show()
 
 
 if __name__ == "__main__":

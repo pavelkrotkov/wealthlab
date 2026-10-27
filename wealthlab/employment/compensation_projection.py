@@ -33,6 +33,14 @@ def prepare(scenario):
             tax_plan=scenario.tax_plan.model_copy(
                 update=dict(events=[*scenario.tax_plan.events, *taxes])
             ),
-            compensation_plan=scenario.compensation_plan.model_copy(update=dict(events=events)),
+            compensation_plan=scenario.compensation_plan.model_copy(
+                update=dict(
+                    events=events,
+                    compiled_allocations=[
+                        *scenario.compensation_plan.compiled_allocations,
+                        *allocations,
+                    ],
+                )
+            ),
         )
     )

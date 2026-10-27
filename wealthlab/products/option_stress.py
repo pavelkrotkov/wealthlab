@@ -4,14 +4,18 @@ from decimal import Decimal
 
 from wealthlab.household.calendar import money
 from wealthlab.products.option_math import direction, units
+from wealthlab.products.option_opening import opening_state
+from wealthlab.products.option_stock import shares
 from wealthlab.products.option_valuation import value
 
 
 def stress(case, *, stock_shocks=(-0.4, 0, 0.4), index_shocks=(-0.4, 0, 0.4)):
     mark = case.marks[0]
-    quantity = sum((lot.quantity for lot in case.holdings.lots), Decimal(0))
-    opening = [leg for leg in case.legs if leg.opened == mark.date]
-    cash, fees = opening_cash(case, opening)
+    state, _row = opening_state(case)
+    quantity = shares(state)
+    opening = list(state.active.values())
+    cash = state.book.cash[state.account] + state.reserve - state.loan
+    fees = sum(leg.closing_fee for leg in opening)
     rows = []
     for stock in stock_shocks:
         for index in index_shocks:
@@ -27,6 +31,8 @@ def stress(case, *, stock_shocks=(-0.4, 0, 0.4), index_shocks=(-0.4, 0, 0.4)):
             rows.append(
                 dict(
                     stock_shock=stock,
+                    execution_failed=bool(state.failures),
+                    opening_collateral_shortfall=_row["collateral_shortfall"],
                     index_shock=index,
                     stock_value=money(quantity * shocked.stock),
                     option_value=sum(leg_values.values(), Decimal(0)),
@@ -36,9 +42,3 @@ def stress(case, *, stock_shocks=(-0.4, 0, 0.4), index_shocks=(-0.4, 0, 0.4)):
                 )
             )
     return rows
-
-
-def opening_cash(case, legs):
-    cash = case.holdings.accounts[0].cash + case.outside_cash
-    cash -= sum(direction(leg) * units(leg) * leg.premium + leg.opening_fee for leg in legs)
-    return cash, sum(leg.closing_fee for leg in legs)

@@ -8,6 +8,7 @@ from pydantic import Field
 from wealthlab.household.records import Money
 from wealthlab.tax.facts import Deductions, FederalIncome, TaxModel
 from wealthlab.tax.filing import Filing
+from wealthlab.tax.foreign_credit_facts import ForeignCredits
 from wealthlab.tax.nj_facts import NJDeductions, NJIncome
 from wealthlab.tax.policy import TaxPolicy
 
@@ -30,13 +31,16 @@ class AnnualCase(TaxModel):
     nj_deductions: NJDeductions
     nj_regime: Literal["published_2025", "freeze_2025"]
     payments: Payments = Field(default_factory=Payments)
+    foreign_credits: ForeignCredits = Field(default_factory=ForeignCredits)
 
 
 def evaluate(case: AnnualCase) -> dict:
     """Payments describe cash already paid; they never reduce taxable income twice."""
     from wealthlab.tax import federal, new_jersey
 
-    fed = federal.calculate(case.filing, case.federal_income, case.federal_deductions, case.policy)
+    fed = federal.calculate(
+        case.filing, case.federal_income, case.federal_deductions, case.policy, case.foreign_credits
+    )
     nj = new_jersey.calculate(
         case.nj_filing or case.filing,
         case.nj_income,
