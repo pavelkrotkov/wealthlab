@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from wealthlab.ui.compensation_results import display as employer_results
+from wealthlab.ui.household_advisory import display as advisory_results
 from wealthlab.ui.household_workplace import display as workplace_results
 from wealthlab.ui.hsa_invested_results import display as hsa_results
 from wealthlab.ui.lot_policy_results import display as policy_results
@@ -18,6 +19,7 @@ from wealthlab.ui.market_funding_results import display as funding_results
 from wealthlab.ui.market_hsa_payroll import display as payroll_results
 from wealthlab.ui.market_medical_results import display as medical_results
 from wealthlab.ui.market_option_results import display as option_results
+from wealthlab.ui.market_qoz_results import display as qoz_results
 from wealthlab.ui.medical_bills import display as bill_results
 from wealthlab.ui.private_fund_household_results import route_household as sleeve_results
 from wealthlab.ui.results import HIDDEN
@@ -47,6 +49,8 @@ def display(bundle):
     workplace_results(rows)
     sleeve_results(rows)
     option_results(result, index, rows)
+    qoz_results(result, rows)
+    advisory_results(rows)
     employment_results(result, index)
     medical_results(result, index, rows)
     hsa_scope(result, rows)

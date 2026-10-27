@@ -53,13 +53,15 @@ def contributions(scenario: Scenario, wallet: Wallet, start, end) -> dict:
     return result
 
 
-def fees(scenario: Scenario, wallet: Wallet, start, end, owed: Decimal) -> dict:
+def fees(
+    scenario: Scenario, wallet: Wallet, start, end, owed: Decimal, additional_due=Decimal(0)
+) -> dict:
     """Pay arrears first, then new fees; retain only the unpaid balance as a liability.
 
     New shortfalls exclude previously reported arrears to avoid counting the same
     missed payment again in the cumulative funding-failure diagnostic.
     """
-    due = fee_due(scenario, start, end)
+    due = fee_due(scenario, start, end) + additional_due
     paid = wallet.pay(owed + due)
     newly_unfunded = due - max(Decimal(0), paid - owed)
     return dict(
