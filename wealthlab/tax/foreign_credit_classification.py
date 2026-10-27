@@ -6,6 +6,8 @@ basket or credit source blocks that tax scope, preserving actual cash in the
 output instead of treating missing eligibility as a benefit.
 """
 
+from wealthlab.tax.pr_execution_credit_sources import excluded_tax_reasons
+
 
 def classification_reasons(case):
     result = []
@@ -16,7 +18,7 @@ def classification_reasons(case):
         )
     result.extend(tax_reasons(case))
     result.extend(passive_reasons(case))
-    return result
+    return result + excluded_tax_reasons(case)
 
 
 def tax_reasons(case):

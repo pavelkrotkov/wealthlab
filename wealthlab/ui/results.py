@@ -77,6 +77,9 @@ HIDDEN = [
     "foreign_tax_credit",
     "foreign_tax_source_identities",
     "foreign_tax_unresolved",
+    "foreign_return_revisions",
+    "foreign_redetermination_unresolved",
+    "foreign_final_source_returns",
 ]
 
 

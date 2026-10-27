@@ -14,8 +14,10 @@ def validate(plan: TaxPlan, scenario) -> None:
     amounts come from dated events and carries from the preceding year.
     """
     from wealthlab.tax.nj_residence_household import validate as validate_residence
+    from wealthlab.tax.pr_execution_household import validate as validate_pr
 
     validate_residence(plan, scenario)
+    validate_pr(plan, scenario)
     validate_dates(plan, scenario)
     validate_owners(plan, scenario)
     if any(scenario.ytd.model_dump().values()):
