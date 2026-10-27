@@ -10,7 +10,8 @@ from pydantic import BaseModel
 from wealthlab.household.scenario import Scenario
 from wealthlab.local_files import write_new
 
-MAX_BYTES = 2_000_000
+MAX_MB = 200
+MAX_BYTES = MAX_MB * 1_000_000
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -21,7 +22,7 @@ def loads(raw: bytes | str) -> Scenario:
 def decode(raw: bytes | str):
     data = raw.encode("utf-8") if isinstance(raw, str) else raw
     if len(data) > MAX_BYTES:
-        raise ValueError("Scenario file exceeds the 2 MB input limit.")
+        raise ValueError(f"Scenario file exceeds the {MAX_MB} MB input limit.")
     try:
         text = data.decode("utf-8-sig")
     except UnicodeDecodeError as error:

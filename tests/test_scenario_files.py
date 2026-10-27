@@ -29,8 +29,9 @@ def test_public_repo_and_path_traversal_rejected(payload, tmp_path, monkeypatch)
         storage.save_new(scenario, tmp_path, "../scenario.json")
 
 
-def test_bad_imports():
+def test_bad_imports(monkeypatch):
     with pytest.raises(ValueError):
         storage.loads(b'{"schema_version": 1}')
-    with pytest.raises(ValueError, match="2 MB"):
-        storage.loads(b" " * (storage.MAX_BYTES + 1))
+    monkeypatch.setattr(storage, "MAX_BYTES", 10)
+    with pytest.raises(ValueError, match="200 MB"):
+        storage.loads(b" " * 11)

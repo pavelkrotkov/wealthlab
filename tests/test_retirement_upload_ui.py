@@ -11,7 +11,6 @@ from unittest.mock import patch
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from wealthlab.household.storage import MAX_BYTES
 from wealthlab.retirement.contribution_example import synthetic as contributions
 from wealthlab.retirement.distribution_example import synthetic as withdrawals
 from wealthlab.retirement.education_example import synthetic as education
@@ -54,8 +53,8 @@ def test_uploaded_case_is_editable_json_and_calculates_without_repr_corruption(m
     assert app.metric
 
 
-@pytest.mark.parametrize(("raw", "message"), [(b"\xff", "UTF-8"), (b"x" * (MAX_BYTES + 1), "2 MB")])
-def test_bad_upload_reports_an_error_without_opening_a_corrupt_editor(raw, message):
+def test_bad_upload_reports_an_error_without_opening_a_corrupt_editor():
+    raw, message = b"\xff", "UTF-8"
     app = AppTest.from_file(
         Path(__file__).resolve().parents[1] / "app.py", default_timeout=30
     ).run()
