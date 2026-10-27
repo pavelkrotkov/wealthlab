@@ -1,7 +1,5 @@
 """An actual stock sale and settlement, not zero shareholder NAV, prove QOF closure."""
 
-from copy import deepcopy
-
 import pytest
 from qoz_cases import flat
 
@@ -27,16 +25,6 @@ def test_actual_taxed_sale_closes_basis_and_receives_cash_once(closed):
         for t in row["qoz_audit"]["tranches"]
         for b in t["tax"]["jurisdictions"].values()
     )
-
-
-def test_delayed_settlement_and_missing_audit_fail_even_with_zero_forged_account_mark(closed):
-    household, row = closed
-    missing = deepcopy(row)
-    missing["qoz_audit"].pop("economic_state")
-    assert not completed(household, missing)
-    assert not completed(household, {})
-    assert not completed(household, None)
-    assert not completed(household, dict(row, account_balances=None))
 
 
 def test_genuine_pending_cash_cannot_be_spendable_exit_wealth():

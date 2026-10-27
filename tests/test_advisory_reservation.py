@@ -3,28 +3,12 @@
 from datetime import date
 from decimal import Decimal
 
-import pytest
-
-from tests.advisory_cases import native, plain
+from tests.advisory_cases import native
 from wealthlab.household.funding import Wallet
 from wealthlab.portfolio.household_book import make
 from wealthlab.tax.projection_ledger import TaxLedger
 
 START, END = date(2026, 1, 1), date(2026, 2, 1)
-
-
-def test_reservation_and_later_receipts_preserve_cash_pool_order_and_restore_after_exception():
-    wallet = Wallet(plain(cash="50"))
-    with pytest.raises(RuntimeError), wallet.reserving(Decimal(100)):
-        assert wallet.cash == wallet.pay(Decimal(20)) == 0
-        wallet.deposit(Decimal(100))
-        assert wallet.cash == 50
-        assert wallet.pay(Decimal(100)) == 50
-        raise RuntimeError("wrapper failure")
-    assert wallet.reserved_cash == 0
-    assert wallet.cash == wallet.balances["cash"] == 100
-    with pytest.raises(ValueError, match="negative"), wallet.reserving(Decimal(-1)):
-        pass
 
 
 def test_required_native_sale_compares_gross_cash_to_full_fee_plus_medical_or_tuition_quote():

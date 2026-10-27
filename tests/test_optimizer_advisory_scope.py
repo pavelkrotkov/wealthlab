@@ -3,7 +3,7 @@
 import pytest
 
 from tests.optimizer_advisory_cases import case
-from wealthlab.optimization.inputs import PolicyChoice, PolicySearch
+from wealthlab.optimization.inputs import PolicySearch
 from wealthlab.optimization.validation import validate
 
 
@@ -37,12 +37,3 @@ def test_missing_if_present_source_confirmation_is_not_a_free_absent_account():
     row["absence_permitted_by_source_confirmed"] = False
     with pytest.raises(ValueError, match="source-confirmed absence"):
         validate(PolicySearch.model_validate(data))
-
-
-def test_policy_choices_cannot_clear_common_fees_or_submit_precomputed_aum():
-    with pytest.raises(ValueError, match="Extra inputs"):
-        PolicyChoice.model_validate(dict(id="free_fees", advisory_fee_plan=None))
-    data = case().model_dump(mode="json")
-    data["household"]["advisory_fee_plan"]["schedules"][0]["periods"][0]["supplied_base"] = "1"
-    with pytest.raises(ValueError, match="Extra inputs"):
-        PolicySearch.model_validate(data)

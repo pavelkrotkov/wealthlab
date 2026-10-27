@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 
 from wealthlab.household.calendar import money
-from wealthlab.tax import state_deduction
+from wealthlab.tax import nj_residence_payments, state_deduction
 from wealthlab.tax.annual import AnnualCase, evaluate
 
 
@@ -17,7 +17,10 @@ def pay(case: AnnualCase, wallet, requested: dict[str, Decimal], mode="entered")
         values[field] += paid
         total += paid
     updated = type(case.payments).model_validate(values)
-    after = case.model_copy(update={"payments": updated})
+    allocated = nj_residence_payments.allocate(
+        case, updated.nj_withheld + updated.nj_estimates - state_deduction.nj_paid(case)
+    )
+    after = allocated.model_copy(update={"payments": updated})
     nj_delta = state_deduction.nj_paid(after) - state_deduction.nj_paid(case)
     return state_deduction.add(after, nj_delta, mode), total
 
