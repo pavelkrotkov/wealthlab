@@ -79,7 +79,7 @@ def validate_bindings(scenario, batch, binding):
         )
     ):
         raise ValueError(
-            "Bind supported securities, wrappers, employer, property or medical cash profiles."
+            "Bind securities or supported wrappers, employer, property or medical cash profiles."
         )
     if len(identities) != len(set(identities)) or set(identities) != actual:
         raise ValueError("Bind every linked security exactly once.")
