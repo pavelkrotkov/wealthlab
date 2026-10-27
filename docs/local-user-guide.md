@@ -35,6 +35,8 @@ Choose an **existing private directory** outside every checkout of this public c
 
 Household / Load scenario JSON accepts a raw scenario or a projection report produced by this version. Report import validates its embedded inputs and fingerprint, discards archived outcomes, and requires a fresh projection. It never trusts an old balance as a current fact. UTF-8/BOM input is supported with a 2,000,000-byte bound; oversized or invalid files are rejected. Raw scenario saves remain available when a full audit report exceeds that import bound.
 
+For a Git checkout, local saves use Git's registered worktree inventory. If Git is unavailable or the complete checkout list cannot be established (including an unlocatable main checkout with a separate Git metadata directory), the save is blocked. A packaged copy without Git metadata still protects its own code directory. Browser downloads retain their separate destination controls.
+
 Browser downloads follow the browser's save controls; choose your private destination. Do not place real inputs, reports or screenshots in this public repository, GitHub issues/reviews or shared logs. The app's calculation path does not upload scenarios. Clicking an external documentation/source link is a separate user action.
 
 For the same calculation without a browser:
