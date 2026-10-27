@@ -122,4 +122,10 @@ def mark_wealth(row, wallet, debt_balances, fees_owed):
     row["net_wealth"] -= row.get("medicare_owed", Decimal(0))
     row["net_wealth"] -= row.get("medical_owed", Decimal(0))
     row["net_wealth"] -= row.get("hsa_investment_fees_owed", Decimal(0))
-    row["net_wealth"] -= row.get("sleeve_liability", 0) + row.get("option_liability", 0)
+    row["net_wealth"] -= product_liabilities(row)
+
+
+def product_liabilities(row):
+    """Subtract uncovered negative book equity once, not creditors already netted inside NAV."""
+    keys = ("sleeve_liability", "option_liability", "drilling_recourse_liability")
+    return sum((row.get(key, Decimal(0)) for key in keys), Decimal(0))

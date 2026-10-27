@@ -62,7 +62,23 @@ class Allocation(Event):
     new_jersey: NJIncome
 
 
+class Termination(Event):
+    """Supplied closure facts never distribute or erase the recorded dollar value."""
+
+    kind: Literal["termination"]
+    source_reference: str = Field(default="", max_length=300)
+    source_date: date | None = None
+    contract_terminated: bool | None = None
+    remaining_units: Annotated[Decimal, Field(ge=0, max_digits=18, decimal_places=6)] | None = None
+    unit_label: str = Field(default="", max_length=100)
+    remaining_deferred_value: Money | None = None
+    remaining_cash_due: Money | None = None
+    no_future_rights: bool | None = None
+    no_future_contract_obligations: bool | None = None
+    exit_tax_recognition_supplied: bool | None = None
+
+
 CompensationEvent = Annotated[
-    Grant | NetReturn | Vest | Forfeit | Distribution | Allocation,
+    Grant | NetReturn | Vest | Forfeit | Distribution | Allocation | Termination,
     Field(discriminator="kind"),
 ]
