@@ -74,11 +74,13 @@ def add_sleeve(data, sleeve):
 
 def audit(before, after):
     original = {account.id: account for account in before.accounts}
+    new = new_capital(original, after)
     return dict(
         timing="hypothetical_opening_cash_purchases_before_monthly_projection",
         original_opening_wealth=opening_wealth(before),
         allocated_opening_wealth=opening_wealth(after),
-        new_sleeve_capital={a.id: a.balance for a in after.accounts if a.id not in original},
+        new_account_capital=new,
+        new_sleeve_capital=sleeve_capital(after, new),
         cash_debits={
             a.id: original[a.id].balance - a.balance
             for a in after.accounts
@@ -94,3 +96,12 @@ def acquired(sleeve, when):
             federal_holding_start=when, federal_capital_character=None
         )
     return data
+
+
+def new_capital(original, after):
+    return {a.id: a.balance for a in after.accounts if a.id not in original}
+
+
+def sleeve_capital(after, new):
+    sleeves = {s.account_id for s in after.sleeve_plan.sleeves} if after.sleeve_plan else set()
+    return {key: value for key, value in new.items() if key in sleeves}
