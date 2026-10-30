@@ -14,7 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 benchmarks = [
     "cryptography>=50.0.0",
-    "owlplanner==2026.10.10",
+    "owlplanner==2026.10.26",
 ]
 
 [dependency-groups]
