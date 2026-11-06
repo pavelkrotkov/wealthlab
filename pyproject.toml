@@ -5,7 +5,7 @@ description = "Local financial scenario workbench"
 requires-python = ">=3.12"
 dependencies = [
     "numpy==2.5.4",
-    "pydantic==2.14.1",
+    "pydantic==2.14.2",
     "quantlib==1.44",
     "streamlit==1.66.1",
     "taxcalc==6.8.5",
@@ -14,7 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 benchmarks = [
     "cryptography>=50.0.0",
-    "owlplanner==2026.10.10",
+    "owlplanner==2026.10.28",
 ]
 
 [dependency-groups]
